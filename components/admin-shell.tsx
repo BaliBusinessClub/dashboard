@@ -20,154 +20,170 @@ export function AdminShell() {
   const [refreshStatus, setRefreshStatus] = useState<string | null>(null);
 
   async function refreshSection(section: string) {
-    setRefreshStatus(`Refreshing ${section}...`);
+    setRefreshStatus(`REFRESHING ${section.toUpperCase()}...`);
 
     const response = await fetch(`/api/refresh/${section}`, { method: "POST" });
     const result = (await response.json()) as { message?: string };
-    setRefreshStatus(result.message ?? `Refresh completed for ${section}.`);
+    setRefreshStatus(result.message?.toUpperCase() ?? `REFRESH COMPLETED FOR ${section.toUpperCase()}.`);
   }
 
   return (
-    <main className="admin-shell">
-      <header className="admin-header">
-        <div>
-          <p className="eyebrow">BBC BACKEND</p>
-          <h1>ADMIN DASHBOARD</h1>
+    <main className="bbc-shell admin-mode">
+      <header className="bbc-header">
+        <div className="bbc-brand">
+          <div className="bbc-brand-mark admin-mark">BBC</div>
+          <div>
+            <div className="bbc-brand-name">BALI BUSINESS CLUB</div>
+            <div className="bbc-brand-sub">ADMIN DASHBOARD</div>
+          </div>
         </div>
       </header>
 
-      <nav className="admin-tabs">
+      <nav className="bbc-tab-nav">
         {adminTabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
-              className={activeTab === tab.id ? "admin-tab active" : "admin-tab"}
+              type="button"
+              className={activeTab === tab.id ? "bbc-tab active" : "bbc-tab"}
               onClick={() => setActiveTab(tab.id)}
             >
-              <Icon size={18} />
+              <Icon size={15} />
               {tab.label}
             </button>
           );
         })}
       </nav>
 
-      {activeTab === "analytics" ? (
-        <section className="admin-grid">
-          {[
-            { value: "28", label: "PEOPLE ONLINE" },
-            { value: "25-34", label: "TOP AGE RANGE" },
-            { value: "MARKET INSIGHTS", label: "MOST VISITED PAGE" },
-            { value: "14 MIN", label: "AVG SESSION TIME" }
-          ].map((card) => (
-            <article key={card.label} className="admin-card">
-              <strong>{card.value}</strong>
-              <span>{card.label}</span>
-            </article>
-          ))}
-        </section>
-      ) : null}
+      <section className="bbc-panel">
+        <div className="panel-heading">
+          <div>
+            <p className="eyebrow">BBC BACKEND</p>
+            <h1>{activeTab}</h1>
+          </div>
+        </div>
 
-      {activeTab === "reporting" ? (
-        <section className="admin-stack">
-          <article className="admin-panel">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">MANUAL CONTROLS</p>
-                <h3>UPDATE MAIN DASHBOARD CONTENT</h3>
-              </div>
-            </div>
-
-            <div className="reporting-grid">
-              {reportingTargets.map((target) => (
-                <button key={target} className="reporting-button" onClick={() => refreshSection(target)}>
-                  <RefreshCw size={18} />
-                  REFRESH {target.toUpperCase()}
-                </button>
+        {activeTab === "analytics" ? (
+          <section className="panel-stack">
+            <div className="metric-grid compact">
+              {[
+                { value: "28", label: "PEOPLE ONLINE", detail: "LIVE MEMBERS IN DASHBOARD" },
+                { value: "25-34", label: "TOP AGE RANGE", detail: "MOST ACTIVE MEMBER GROUP" },
+                { value: "MARKET INSIGHTS", label: "MOST VISITED PAGE", detail: "TOP PAGE THIS WEEK" },
+                { value: "14 MIN", label: "AVG SESSION TIME", detail: "AVERAGE MEMBER ENGAGEMENT" }
+              ].map((card) => (
+                <article key={card.label} className="metric-card">
+                  <div className="metric-label">{card.label}</div>
+                  <div className="metric-value">{card.value}</div>
+                  <p>{card.detail}</p>
+                </article>
               ))}
             </div>
+          </section>
+        ) : null}
 
-            {refreshStatus ? <p className="status-banner">{refreshStatus}</p> : null}
-          </article>
-        </section>
-      ) : null}
-
-      {activeTab === "database" ? (
-        <section className="admin-stack">
-          <article className="admin-panel">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">MEMBER DATABASE</p>
-                <h3>USERS</h3>
+        {activeTab === "reporting" ? (
+          <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">MANUAL CONTROLS</p>
+                  <h2>UPDATE DASHBOARD CONTENT</h2>
+                </div>
               </div>
-              <a href="/api/export/users" className="primary-link-button">
-                <Download size={16} />
-                EXPORT CSV
-              </a>
-            </div>
 
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>NAME</th>
-                    <th>EMAIL</th>
-                    <th>PHONE</th>
-                    <th>MEMBERSHIP</th>
-                    <th>JOINED</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dashboardUsers.map((user) => (
-                    <tr key={user.email}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.phone}</td>
-                      <td>{user.membership}</td>
-                      <td>{user.joined}</td>
+              <div className="reporting-grid">
+                {reportingTargets.map((target) => (
+                  <button key={target} type="button" className="reporting-button" onClick={() => refreshSection(target)}>
+                    <RefreshCw size={16} />
+                    REFRESH {target.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+
+              {refreshStatus ? <p className="status-banner">{refreshStatus}</p> : null}
+            </article>
+          </section>
+        ) : null}
+
+        {activeTab === "database" ? (
+          <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">MEMBER DATABASE</p>
+                  <h2>USERS</h2>
+                </div>
+                <a href="/api/export/users" className="table-link-button">
+                  <Download size={14} />
+                  EXPORT CSV
+                </a>
+              </div>
+
+              <div className="table-shell">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>NAME</th>
+                      <th>EMAIL</th>
+                      <th>PHONE</th>
+                      <th>MEMBERSHIP</th>
+                      <th>JOINED</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
-      ) : null}
+                  </thead>
+                  <tbody>
+                    {dashboardUsers.map((user) => (
+                      <tr key={user.email}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.phone}</td>
+                        <td>{user.membership}</td>
+                        <td>{user.joined}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        ) : null}
 
-      {activeTab === "settings" ? (
-        <section className="admin-stack">
-          <article className="admin-panel">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">SITE SETTINGS</p>
-                <h3>CONFIGURATION</h3>
+        {activeTab === "settings" ? (
+          <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">SYSTEM SETTINGS</p>
+                  <h2>CONFIGURATION</h2>
+                </div>
               </div>
-            </div>
 
-            <div className="settings-list">
-              <div className="setting-row">
-                <span>HOURLY NEWS REFRESH</span>
-                <button className="toggle-button active">ACTIVE</button>
+              <div className="settings-list clean">
+                <div className="setting-row clean">
+                  <span>HOURLY NEWS REFRESH</span>
+                  <button type="button" className="filter-btn active">ACTIVE</button>
+                </div>
+                <div className="setting-row clean">
+                  <span>PODCAST AUTO-SYNC</span>
+                  <button type="button" className="filter-btn active">ACTIVE</button>
+                </div>
+                <div className="setting-row clean">
+                  <span>EMAIL VERIFICATION REQUIRED</span>
+                  <button type="button" className="filter-btn active">ACTIVE</button>
+                </div>
+                <div className="setting-row clean">
+                  <span>ADMIN ALERTS</span>
+                  <button type="button" className="filter-btn">
+                    <BellRing size={14} />
+                    CONFIGURE
+                  </button>
+                </div>
               </div>
-              <div className="setting-row">
-                <span>PODCAST AUTO-SYNC</span>
-                <button className="toggle-button active">ACTIVE</button>
-              </div>
-              <div className="setting-row">
-                <span>EMAIL VERIFICATION REQUIRED</span>
-                <button className="toggle-button active">ACTIVE</button>
-              </div>
-              <div className="setting-row">
-                <span>ADMIN ALERTS</span>
-                <button className="toggle-button">
-                  <BellRing size={14} />
-                  CONFIGURE
-                </button>
-              </div>
-            </div>
-          </article>
-        </section>
-      ) : null}
+            </article>
+          </section>
+        ) : null}
+      </section>
     </main>
   );
 }

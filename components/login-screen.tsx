@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, BadgeCheck, KeyRound, Mail, ShieldCheck } from "lucide-react";
+import { ArrowRight, Mail, ShieldCheck } from "lucide-react";
 
 type Mode = "signin" | "create" | "verify";
 
 export function LoginScreen() {
   const [mode, setMode] = useState<Mode>("signin");
-  const [name, setName] = useState("Made");
+  const [name, setName] = useState("Made Prasetya");
   const [email, setEmail] = useState("member@balibusinessclub.com");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -16,7 +16,7 @@ export function LoginScreen() {
   const [previewCode, setPreviewCode] = useState<string | null>(null);
 
   async function sendCode() {
-    setStatus("Preparing BBC verification email...");
+    setStatus("PREPARING BBC VERIFICATION EMAIL...");
     setPreviewCode(null);
 
     const response = await fetch("/api/auth/send-code", {
@@ -28,17 +28,17 @@ export function LoginScreen() {
     const result = (await response.json()) as { ok?: boolean; message?: string; error?: string; code?: string };
 
     if (!response.ok) {
-      setStatus(result.error ?? "Unable to generate the verification code.");
+      setStatus(result.error ?? "UNABLE TO GENERATE THE VERIFICATION CODE.");
       return;
     }
 
     setMode("verify");
     setPreviewCode(result.code ?? null);
-    setStatus(result.message ?? "Verification email prepared.");
+    setStatus(result.message?.toUpperCase() ?? "VERIFICATION EMAIL PREPARED.");
   }
 
   async function verifyCode() {
-    setStatus("Checking your verification code...");
+    setStatus("CHECKING YOUR VERIFICATION CODE...");
 
     const response = await fetch("/api/auth/verify-code", {
       method: "POST",
@@ -49,73 +49,64 @@ export function LoginScreen() {
     const result = (await response.json()) as { ok?: boolean; error?: string };
 
     if (!response.ok) {
-      setStatus(result.error ?? "Verification failed.");
+      setStatus(result.error?.toUpperCase() ?? "VERIFICATION FAILED.");
       return;
     }
 
-    setStatus("Email verified. Your dashboard is ready.");
+    setStatus("EMAIL VERIFIED. YOUR DASHBOARD IS READY.");
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-panel auth-brand-panel">
+    <main className="auth-screen clean">
+      <section className="auth-showcase">
         <p className="eyebrow">BALI BUSINESS CLUB</p>
-        <h1>MEMBER DASHBOARD</h1>
-        <p className="auth-copy">
-          A clean members-only hub for Bali market intelligence, podcasts, curated resources, partner
-          benefits, favorites, and direct connection with the BBC team.
+        <h1>MEMBER ACCESS</h1>
+        <p className="auth-intro">
+          A cleaner BBC member experience with market insights, curated news, podcasts, resources, partner offers,
+          favorites, and direct community touchpoints.
         </p>
 
-        <div className="auth-feature-list">
-          <div className="auth-feature-card">
-            <ShieldCheck size={20} />
-            <div>
-              <strong>EMAIL VERIFICATION</strong>
-              <span>6-digit code flow with BBC-branded email preview, ready for live mail integration.</span>
-            </div>
+        <div className="auth-reference-list">
+          <div className="reference-line">
+            <span>GOOGLE SIGN IN</span>
+            <small>FAST MEMBER ACCESS</small>
           </div>
-          <div className="auth-feature-card">
-            <KeyRound size={20} />
-            <div>
-              <strong>GOOGLE OR EMAIL SIGN IN</strong>
-              <span>Fast access for members plus account creation for new users.</span>
-            </div>
+          <div className="reference-line">
+            <span>EMAIL CODE VERIFICATION</span>
+            <small>BBC BRANDED MESSAGE FLOW</small>
           </div>
-          <div className="auth-feature-card">
-            <BadgeCheck size={20} />
-            <div>
-              <strong>ADMIN CONSOLE READY</strong>
-              <span>Analytics, reporting, user export, and settings live in a dedicated backend view.</span>
-            </div>
+          <div className="reference-line">
+            <span>ADMIN BACKEND</span>
+            <small>ANALYTICS, REPORTING, DATABASE, SETTINGS</small>
           </div>
         </div>
       </section>
 
-      <section className="auth-panel auth-form-panel">
-        <div className="auth-tabs">
-          <button className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
+      <section className="auth-form-wrap clean">
+        <div className="auth-tabs clean">
+          <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
             SIGN IN
           </button>
-          <button className={mode === "create" ? "active" : ""} onClick={() => setMode("create")}>
+          <button type="button" className={mode === "create" ? "active" : ""} onClick={() => setMode("create")}>
             CREATE ACCOUNT
           </button>
-          <button className={mode === "verify" ? "active" : ""} onClick={() => setMode("verify")}>
+          <button type="button" className={mode === "verify" ? "active" : ""} onClick={() => setMode("verify")}>
             VERIFY EMAIL
           </button>
         </div>
 
-        <div className="auth-card">
-          <p className="eyebrow">WELCOME BACK</p>
-          <h2>{mode === "create" ? "CREATE YOUR ACCOUNT" : mode === "verify" ? "CONFIRM YOUR EMAIL" : "CONNECT TO BBC"}</h2>
+        <div className="auth-card clean">
+          <p className="eyebrow">BBC LOGIN</p>
+          <h2>{mode === "create" ? "CREATE ACCOUNT" : mode === "verify" ? "CONFIRM EMAIL" : "CONNECT"}</h2>
 
           {(mode === "signin" || mode === "create") && (
             <>
-              {mode === "create" && (
+              {mode === "create" ? (
                 <label>
                   FULL NAME
                   <input value={name} onChange={(event) => setName(event.target.value)} />
                 </label>
-              )}
+              ) : null}
 
               <label>
                 EMAIL
@@ -127,18 +118,18 @@ export function LoginScreen() {
                 <input
                   type="password"
                   value={password}
-                  placeholder="Minimum 8 characters"
+                  placeholder="MINIMUM 8 CHARACTERS"
                   onChange={(event) => setPassword(event.target.value)}
                 />
               </label>
 
-              <button className="primary-button" type="button" onClick={sendCode}>
-                <Mail size={16} />
+              <button type="button" className="primary-button compact" onClick={sendCode}>
+                <Mail size={14} />
                 {mode === "create" ? "CREATE ACCOUNT & SEND CODE" : "SEND VERIFICATION CODE"}
               </button>
 
-              <button className="secondary-button" type="button">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <button type="button" className="google-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     fill="currentColor"
                     d="M21.8 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.5c-.2 1.2-.9 2.3-1.9 3l3.1 2.4c1.8-1.6 3.1-4 3.1-7.2Z"
@@ -161,7 +152,7 @@ export function LoginScreen() {
             </>
           )}
 
-          {mode === "verify" && (
+          {mode === "verify" ? (
             <>
               <label>
                 EMAIL
@@ -171,27 +162,27 @@ export function LoginScreen() {
                 6-DIGIT CODE
                 <input value={code} onChange={(event) => setCode(event.target.value)} />
               </label>
-              <button className="primary-button" type="button" onClick={verifyCode}>
-                <ShieldCheck size={16} />
+              <button type="button" className="primary-button compact" onClick={verifyCode}>
+                <ShieldCheck size={14} />
                 VERIFY EMAIL
               </button>
-              <button className="ghost-button" type="button" onClick={sendCode}>
+              <button type="button" className="ghost-button compact" onClick={sendCode}>
                 RESEND CODE
               </button>
             </>
-          )}
+          ) : null}
 
           {status ? <p className="status-banner">{status}</p> : null}
           {previewCode ? <p className="preview-banner">PREVIEW CODE: {previewCode}</p> : null}
 
-          <div className="auth-links">
+          <div className="auth-links clean">
             <Link href="/dashboard">
               OPEN MEMBER DASHBOARD
-              <ArrowRight size={16} />
+              <ArrowRight size={14} />
             </Link>
             <Link href="/admin">
               OPEN ADMIN DASHBOARD
-              <ArrowRight size={16} />
+              <ArrowRight size={14} />
             </Link>
           </div>
         </div>
