@@ -64,15 +64,6 @@ export function DashboardShell() {
     <main className="bbc-shell">
       <header className="bbc-header">
         <div className="bbc-brand">
-          <div className="bbc-brand-mark">
-            <Image
-              src="/bali-business-club-logo-white.svg"
-              alt="Bali Business Club"
-              width={40}
-              height={40}
-              className="brand-mark-image"
-            />
-          </div>
           <div>
             <div className="bbc-brand-name">BALI BUSINESS CLUB</div>
             <div className="bbc-brand-sub">MEMBER DASHBOARD</div>
@@ -82,6 +73,15 @@ export function DashboardShell() {
         <div className="bbc-header-right">
           <div className="bali-time-chip">
             <BaliTime />
+          </div>
+          <div className="header-logo-lockup">
+            <Image
+              src="/bali-business-club-logo-white.svg"
+              alt="Bali Business Club"
+              width={132}
+              height={28}
+              className="header-logo-image"
+            />
           </div>
           <div className="profile-menu-wrap">
             <button type="button" className="profile-chip minimal" onClick={() => setProfileOpen((open) => !open)}>

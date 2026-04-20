@@ -57,32 +57,8 @@ export function LoginScreen() {
   }
 
   return (
-    <main className="auth-screen clean">
-      <section className="auth-showcase">
-        <p className="eyebrow">BALI BUSINESS CLUB</p>
-        <h1>MEMBER ACCESS</h1>
-        <p className="auth-intro">
-          A cleaner BBC member experience with market insights, curated news, podcasts, resources, partner offers,
-          favorites, and direct community touchpoints.
-        </p>
-
-        <div className="auth-reference-list">
-          <div className="reference-line">
-            <span>GOOGLE SIGN IN</span>
-            <small>FAST MEMBER ACCESS</small>
-          </div>
-          <div className="reference-line">
-            <span>EMAIL CODE VERIFICATION</span>
-            <small>BBC BRANDED MESSAGE FLOW</small>
-          </div>
-          <div className="reference-line">
-            <span>ADMIN BACKEND</span>
-            <small>ANALYTICS, REPORTING, DATABASE, SETTINGS</small>
-          </div>
-        </div>
-      </section>
-
-      <section className="auth-form-wrap clean">
+    <main className="auth-screen simple">
+      <section className="auth-center">
         <div className="auth-tabs clean">
           <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
             SIGN IN
@@ -96,6 +72,8 @@ export function LoginScreen() {
         </div>
 
         <div className="auth-card clean">
+          <p className="eyebrow">BALI BUSINESS CLUB</p>
+          <h1 className="auth-main-title">MEMBER LOGIN</h1>
           <p className="eyebrow">BBC LOGIN</p>
           <h2>{mode === "create" ? "CREATE ACCOUNT" : mode === "verify" ? "CONFIRM EMAIL" : "CONNECT"}</h2>
 
