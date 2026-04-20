@@ -1,0 +1,12 @@
+<svg width="480" height="120" viewBox="0 0 480 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="480" height="120" rx="24" fill="black"/>
+  <circle cx="60" cy="60" r="28" stroke="white" stroke-width="6"/>
+  <path d="M54 42H68C78 42 84 47 84 55C84 61 80 65 74 66.5C81 68 86 72.5 86 80C86 89 79 95 67 95H54V42ZM66 63C71 63 74 60.5 74 56C74 51.5 71 49 65.5 49H63V63H66ZM66.5 88C73.5 88 77 85 77 79.5C77 74.5 73.5 71 66 71H63V88H66.5Z" fill="white"/>
+  <path d="M115 79V42H125V79C125 85 128.5 88.5 134 88.5C139.5 88.5 143 85 143 79V42H153V79C153 90.5 145.5 97.5 134 97.5C122.5 97.5 115 90.5 115 79Z" fill="white"/>
+  <path d="M183 95V50.5H167V42H209V50.5H193V95H183Z" fill="white"/>
+  <path d="M234 95V42H260C275 42 285 50.5 285 63.5C285 77 274.5 85.5 260 85.5H244V95H234ZM244 77H259C267 77 274 73 274 63.5C274 54 267 50.5 259 50.5H244V77Z" fill="white"/>
+  <path d="M308 95V42H318V95H308Z" fill="white"/>
+  <path d="M351 95V42H361L387.5 78.5V42H397.5V95H388L361 57.5V95H351Z" fill="white"/>
+  <path d="M427 95V42H470V50.5H437V64H466V72H437V86.5H471V95H427Z" fill="white"/>
+  <text x="115" y="28" fill="white" font-family="Arial, sans-serif" font-size="14" letter-spacing="4">BALI BUSINESS CLUB</text>
+</svg>
