@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   BookOpen,
@@ -274,10 +273,10 @@ export function DashboardShell() {
                           {expanded ? (
                             <div className="news-source-row">
                               <span>SOURCE: {article.source}</span>
-                              <Link href={article.url} target="_blank">
+                              <a href={article.url} target="_blank" rel="noreferrer">
                                 READ SOURCE
                                 <ExternalLink size={14} />
-                              </Link>
+                              </a>
                             </div>
                           ) : null}
                           <small>{article.date}</small>
@@ -299,9 +298,14 @@ export function DashboardShell() {
                   <p className="eyebrow">YOUTUBE SYNC</p>
                   <h3>BALI BUSINESS CLUB PODCASTS</h3>
                 </div>
-                <Link className="pill-link" href="https://www.youtube.com/@BaliBusinessClub" target="_blank">
+                <a
+                  className="pill-link"
+                  href="https://www.youtube.com/@BaliBusinessClub"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   OPEN CHANNEL
-                </Link>
+                </a>
               </div>
 
               <div className="podcast-grid">
@@ -310,10 +314,10 @@ export function DashboardShell() {
                     <span>{episode.published}</span>
                     <strong>{episode.title}</strong>
                     <p>{episode.description}</p>
-                    <Link href={episode.url} target="_blank">
+                    <a href={episode.url} target="_blank" rel="noreferrer">
                       WATCH EPISODE
                       <ExternalLink size={14} />
-                    </Link>
+                    </a>
                   </article>
                 ))}
               </div>
@@ -339,9 +343,9 @@ export function DashboardShell() {
                       <p>{resource.copy}</p>
                       <small>SOURCE: {resource.source}</small>
                     </div>
-                    <Link href={resource.url} target="_blank" className="primary-link-button">
+                    <a href={resource.url} target="_blank" rel="noreferrer" className="primary-link-button">
                       DOWNLOAD
-                    </Link>
+                    </a>
                   </article>
                 ))}
               </div>
@@ -364,9 +368,9 @@ export function DashboardShell() {
                   <article key={partner.name} className="partner-card">
                     <strong>{partner.name}</strong>
                     <p>{partner.offer}</p>
-                    <Link href={partner.url} target="_blank" className="primary-link-button">
+                    <a href={partner.url} target="_blank" rel="noreferrer" className="primary-link-button">
                       {partner.button}
-                    </Link>
+                    </a>
                   </article>
                 ))}
               </div>
@@ -446,16 +450,21 @@ export function DashboardShell() {
 
               <div className="social-grid">
                 {socials.map((social) => (
-                  <Link key={social.name} href={social.url} target="_blank" className="social-card">
+                  <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-card">
                     <strong>{social.name}</strong>
                     <span>{social.handle}</span>
-                  </Link>
+                  </a>
                 ))}
               </div>
 
-              <Link href="https://wa.link/zg5xw8" target="_blank" className="primary-link-button wide">
+              <a
+                href="https://wa.link/zg5xw8"
+                target="_blank"
+                rel="noreferrer"
+                className="primary-link-button wide"
+              >
                 CONTACT BBC ON WHATSAPP
-              </Link>
+              </a>
             </article>
 
             <article className="section-card">
@@ -495,11 +504,11 @@ export function DashboardShell() {
 
               <div className="carousel-row">
                 {connectPanels.map((panel) => (
-                  <Link key={panel.title} href={panel.url} target="_blank" className="carousel-card">
+                  <a key={panel.title} href={panel.url} target="_blank" rel="noreferrer" className="carousel-card">
                     <span>{panel.meta}</span>
                     <strong>{panel.title}</strong>
                     <p>{panel.copy}</p>
-                  </Link>
+                  </a>
                 ))}
               </div>
             </article>
