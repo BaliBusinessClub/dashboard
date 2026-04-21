@@ -6,13 +6,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   Building2,
+  ChartNoAxesColumn,
   ChartColumn,
   ChevronDown,
   CircleUserRound,
   ExternalLink,
   Heart,
   House,
-  LineChart,
   LogOut,
   Newspaper,
   PencilLine,
@@ -26,7 +26,6 @@ import { BaliTime } from "@/components/bali-time";
 import {
   dashboardShortcuts,
   initialFavorites,
-  insightHighlights,
   marketChartSeries,
   marketFilters,
   marketStatCards,
@@ -59,50 +58,45 @@ type FavoriteItem = {
   sourceId: string;
 };
 
-function InteractiveLineChart({
+function formatMetricValue(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
+function InteractiveBarChart({
   values,
   activeIndex,
   onSelect,
   labels
 }: {
-  values: number[];
+  values: readonly number[];
   activeIndex: number;
   onSelect: (index: number) => void;
-  labels: string[];
+  labels: readonly string[];
 }) {
   const max = Math.max(...values);
-  const min = Math.min(...values);
-  const points = values
-    .map((value, index) => {
-      const x = (index / (values.length - 1)) * 100;
-      const y = max === min ? 50 : 100 - ((value - min) / (max - min)) * 76 - 10;
-      return { x, y, value, index };
-    });
 
   return (
-    <div className="interactive-chart">
-      <svg viewBox="0 0 100 100" className="sparkline">
-        <polyline points={points.map((point) => `${point.x},${point.y}`).join(" ")} className="sparkline-line yellow" />
-        {points.map((point) => (
-          <circle
-            key={point.index}
-            cx={point.x}
-            cy={point.y}
-            r={point.index === activeIndex ? 3.4 : 2.2}
-            className={point.index === activeIndex ? "chart-dot active" : "chart-dot"}
-            onClick={() => onSelect(point.index)}
-          />
-        ))}
-      </svg>
-      <div className="chart-index-row">
-        {values.map((_, index) => (
+    <div className="interactive-chart bars">
+      <div className="bar-chart">
+        {values.map((value, index) => (
           <button
-            key={index}
+            key={labels[index] ?? index}
             type="button"
-            className={index === activeIndex ? "chart-index-button active" : "chart-index-button"}
+            className={index === activeIndex ? "bar-row active" : "bar-row"}
             onClick={() => onSelect(index)}
           >
-            {labels[index] ?? index + 1}
+            <div className="bar-row-head">
+              <span>{labels[index]}</span>
+              <strong>{formatMetricValue(value)}</strong>
+            </div>
+            <div className="bar-track">
+              <div
+                className="bar-fill"
+                style={{
+                  width: `${max === 0 ? 0 : (value / max) * 100}%`
+                }}
+              />
+            </div>
           </button>
         ))}
       </div>
@@ -200,7 +194,7 @@ export function DashboardShell() {
   const [activeTab, setActiveTab] = useState<DashboardTab>("home");
   const [profileOpen, setProfileOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [marketFilter, setMarketFilter] = useState<MarketFilter>("All");
+  const [marketFilter, setMarketFilter] = useState<MarketFilter>(marketFilters[0]);
   const [chartSelection, setChartSelection] = useState<Record<string, number>>({});
   const [newsTopic, setNewsTopic] = useState<NewsTopic>(newsSections[0].title);
   const [expandedArticles, setExpandedArticles] = useState<string[]>([]);
@@ -246,14 +240,23 @@ export function DashboardShell() {
     [activeTab]
   );
 
-  const filteredInsights = useMemo(
-    () => insightHighlights.filter((item) => item.strategies.includes(marketFilter)),
+  const filteredCharts = useMemo(
+    () => marketChartSeries.filter((item) => item.strategies[0] === marketFilter),
     [marketFilter]
   );
 
-  const filteredCharts = useMemo(
-    () => marketChartSeries.filter((item) => item.strategies.includes(marketFilter)),
-    [marketFilter]
+  const selectedMarketSeries = filteredCharts[0];
+
+  const groupedResources = useMemo(
+    () =>
+      resourceDocuments.reduce<Record<string, Array<(typeof resourceDocuments)[number]>>>((groups, item) => {
+        if (!groups[item.section]) {
+          groups[item.section] = [];
+        }
+        groups[item.section].push(item);
+        return groups;
+      }, {}),
+    []
   );
 
   const visiblePodcastFeed = useMemo(
@@ -293,10 +296,10 @@ export function DashboardShell() {
       <header className="bbc-header">
         <div className="bbc-brand clean">
           <Image
-            src="/bali-business-club-logo-white.svg"
+            src="/bali-business-club-logo-white.png"
             alt="Bali Business Club"
-            width={164}
-            height={34}
+            width={286}
+            height={94}
             className="header-logo-image left"
           />
         </div>
@@ -399,7 +402,7 @@ export function DashboardShell() {
                     </div>
                     <div className="shortcut-copy">
                       <strong>{shortcut.title}</strong>
-                      <span>Open section</span>
+                      <span>Explore</span>
                     </div>
                   </button>
                 );
@@ -418,7 +421,7 @@ export function DashboardShell() {
                 </div>
               </div>
 
-              <div className="filter-bar">
+              <div className="filter-bar market-filter-bar">
                 {marketFilters.map((filter) => (
                   <button
                     key={filter}
@@ -431,49 +434,41 @@ export function DashboardShell() {
                 ))}
               </div>
 
-              <div className="dashboard-chart-grid">
-                {filteredCharts.map((series) => {
-                  const activeIndex = chartSelection[series.title] ?? series.values.length - 1;
-                  return (
-                    <article key={series.title} className="chart-card clean">
-                      <div className="chart-card-head">
-                        <div>
-                          <div className="metric-label">{series.title}</div>
-                          <div className="metric-value small">{series.values[activeIndex]}</div>
-                        </div>
-                        <LineChart size={18} />
-                      </div>
-                      <InteractiveLineChart
-                        values={series.values}
-                        activeIndex={activeIndex}
-                        labels={["Jan", "Feb", "Mar", "Apr", "May", "Latest"]}
-                        onSelect={(index) =>
-                          setChartSelection((current) => ({
-                            ...current,
-                            [series.title]: index
-                          }))
-                        }
-                      />
-                      <div className="chart-caption">
-                        <span>Selected point</span>
-                        <strong>{series.values[activeIndex]}</strong>
-                      </div>
-                      <p>{series.context}</p>
-                    </article>
-                  );
-                })}
-              </div>
+              {selectedMarketSeries ? (
+                <article className="chart-card clean chart-card-featured">
+                  <div className="chart-card-head">
+                    <div>
+                      <span className="eyebrow small-pill">Report view</span>
+                      <div className="metric-label">{selectedMarketSeries.title}</div>
+                      <div className="metric-value">{selectedMarketSeries.highlight}</div>
+                    </div>
+                    <ChartNoAxesColumn size={18} />
+                  </div>
 
-              <div className="insight-grid clean compact">
-                {filteredInsights.map((item) => (
-                  <article key={item.title} className="insight-card clean">
-                    <span className="eyebrow small-pill">{item.label}</span>
-                    <strong>{item.title}</strong>
-                    <p>{item.summary}</p>
-                    <small>{item.source}</small>
-                  </article>
-                ))}
-              </div>
+                  <InteractiveBarChart
+                    values={selectedMarketSeries.values}
+                    activeIndex={chartSelection[selectedMarketSeries.title] ?? 0}
+                    labels={selectedMarketSeries.labels}
+                    onSelect={(index) =>
+                      setChartSelection((current) => ({
+                        ...current,
+                        [selectedMarketSeries.title]: index
+                      }))
+                    }
+                  />
+
+                  <div className="chart-caption">
+                    <span>Selected point</span>
+                    <strong>
+                      {selectedMarketSeries.labels[chartSelection[selectedMarketSeries.title] ?? 0]}:{" "}
+                      {formatMetricValue(selectedMarketSeries.values[chartSelection[selectedMarketSeries.title] ?? 0])}
+                    </strong>
+                  </div>
+
+                  <p>{selectedMarketSeries.context}</p>
+                  <small>{selectedMarketSeries.source}</small>
+                </article>
+              ) : null}
             </article>
 
             <article className="section-card clean">
@@ -602,7 +597,8 @@ export function DashboardShell() {
                   return (
                     <a key={episode.id} href={episode.url} target="_blank" rel="noreferrer" className="episode-card cover-card">
                       <div className="episode-cover">
-                        <Image src={episode.image} alt={episode.title} width={640} height={360} className="episode-cover-image" />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={episode.image} alt={episode.title} className="episode-cover-image" />
                       </div>
                       <div className="episode-tag">{episode.topic}</div>
                       <strong>{episode.title}</strong>
@@ -631,49 +627,47 @@ export function DashboardShell() {
 
         {activeTab === "resources" ? (
           <section className="panel-stack">
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <span className="eyebrow">Resource library</span>
-                  <h2>PDF library</h2>
+            {Object.entries(groupedResources).map(([section, items]) => (
+              <article key={section} className="section-card clean">
+                <div className="section-heading">
+                  <div>
+                    <span className="eyebrow">{section === "Ebooks" ? "BBC library" : "External reports"}</span>
+                    <h2>{section}</h2>
+                  </div>
                 </div>
-              </div>
 
-              <p className="section-note">
-                The direct file-by-file PDF sync still needs the public Google Drive file list or Drive API wiring. The layout is ready for it, but I am not going to invent files that are not exposed yet.
-              </p>
+                <div className="resource-list">
+                  {items.map((resource) => {
+                    const favorite: FavoriteItem = {
+                      id: `fav-${resource.id}`,
+                      type: "Ressource",
+                      title: resource.title,
+                      note: resource.source,
+                      sourceId: resource.id
+                    };
 
-              <div className="resource-list">
-                {resourceDocuments.map((resource) => {
-                  const favorite: FavoriteItem = {
-                    id: `fav-${resource.id}`,
-                    type: "Ressource",
-                    title: resource.title,
-                    note: resource.source,
-                    sourceId: resource.id
-                  };
-
-                  return (
-                    <article key={resource.id} className="resource-row">
-                      <div>
-                        <div className="table-main">{resource.title}</div>
-                        <div className="table-sub">{resource.note}</div>
-                        <small>{resource.source}</small>
-                      </div>
-                      <div className="resource-actions">
-                        <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
-                          <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
-                          {isFavorite(favorite.id) ? "Saved" : "Save"}
-                        </button>
-                        <a href={resource.url} target="_blank" rel="noreferrer" className="table-link-button">
-                          Download
-                        </a>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </article>
+                    return (
+                      <article key={resource.id} className="resource-row">
+                        <div className="resource-copy">
+                          <div className="table-main">{resource.title}</div>
+                          <div className="table-sub">{resource.note}</div>
+                          <small>{resource.source}</small>
+                        </div>
+                        <div className="resource-actions">
+                          <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
+                            <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                            {isFavorite(favorite.id) ? "Saved" : "Save"}
+                          </button>
+                          <a href={resource.url} download className="table-link-button">
+                            Download
+                          </a>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </article>
+            ))}
           </section>
         ) : null}
 

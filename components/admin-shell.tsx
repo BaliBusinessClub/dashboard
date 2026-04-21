@@ -56,7 +56,7 @@ export function AdminShell() {
       <header className="bbc-header">
         <div className="bbc-brand clean">
           <Image
-            src="/bali-business-club-logo-white.svg"
+            src="/bali-business-club-logo-white.png"
             alt="Bali Business Club"
             width={144}
             height={26}

@@ -40,98 +40,73 @@ export const dashboardShortcuts = [
   }
 ] as const;
 
-export const marketFilters = ["All", "Buy", "Build", "Sell", "Operate"] as const;
-
-export const insightHighlights = [
-  {
-    label: "Market read",
-    title: "Bali is moving into a more selective phase",
-    summary:
-      "REID's annual market read points to a shift from broad expansion toward sharper investor discipline, more careful project selection, and higher attention on location quality.",
-    source: "REID 2025 Annual Market Report",
-    strategies: ["All", "Buy", "Build", "Sell"]
-  },
-  {
-    label: "Supply",
-    title: "New launches appear more disciplined than before",
-    summary:
-      "REID notes supply remains broad, but new project launches are no longer expanding with the same speed, suggesting more caution in the development pipeline.",
-    source: "REID 2025 Annual Market Report",
-    strategies: ["All", "Build", "Sell"]
-  },
-  {
-    label: "Operations",
-    title: "Rental performance still matters to strategy selection",
-    summary:
-      "Occupancy and ADR signals in the REID reports keep operational performance central to investment decisions, especially for yield-focused buyers and villa operators.",
-    source: "REID Q3 2023 Buyers and Operators Reports",
-    strategies: ["All", "Buy", "Operate"]
-  }
-];
+export const marketFilters = ["Land Rights", "Permitted Use", "Market Scale"] as const;
 
 export const marketChartSeries = [
   {
-    title: "Average Occupancy",
-    highlight: "64.9%",
-    values: [52, 57, 60, 63, 66, 64.9],
-    context: "Q3 2023 Buyers Report market occupancy trend snapshot.",
-    strategies: ["All", "Buy", "Operate"]
+    title: "Land rights split",
+    highlight: "91% leasehold",
+    values: [91, 9],
+    labels: ["Leasehold", "Freehold"],
+    context:
+      "Mirra Centre's July 2025 review of villas under construction shows a market still overwhelmingly structured around leasehold supply, with freehold representing a much smaller slice of live projects.",
+    source: "Analytical Review of the Market for Villas Under Construction in Bali 2025, Mirra Centre",
+    strategies: ["Land Rights"]
   },
   {
-    title: "Average Daily Rate",
-    highlight: "$195",
-    values: [168, 175, 182, 191, 198, 195],
-    context: "Rate performance signal from REID's Q3 2023 buyer-facing market view.",
-    strategies: ["All", "Buy", "Operate"]
+    title: "Permitted land use",
+    highlight: "68% commercial",
+    values: [68, 26, 3, 3],
+    labels: ["Commercial", "Residential", "Farm", "No data"],
+    context:
+      "Commercial-zoned developments dominate the active villa pipeline, while residential projects still hold a meaningful secondary share. Limited or missing zoning data is a smaller but relevant risk pocket to watch.",
+    source: "Analytical Review of the Market for Villas Under Construction in Bali 2025, Mirra Centre",
+    strategies: ["Permitted Use"]
   },
   {
-    title: "Rental Revenue",
-    highlight: "$389M",
-    values: [248, 292, 318, 341, 372, 389],
-    context: "Total Bali rental revenue noted in the REID Q3 2023 Buyers Report.",
-    strategies: ["All", "Buy", "Operate", "Sell"]
-  },
-  {
-    title: "Leasehold Supply Depth",
-    highlight: "7,000+",
-    values: [5200, 5600, 6100, 6500, 6900, 7000],
-    context: "REID overview signal for leasehold inventory scale across Bali.",
-    strategies: ["All", "Buy", "Sell"]
+    title: "Tracked market scale",
+    highlight: "3,900 villas",
+    values: [3900, 200, 300],
+    labels: ["Villas", "Active projects", "Tracked projects"],
+    context:
+      "Mirra Centre's live database snapshot gives a sense of current market depth: thousands of villas, hundreds of active construction projects, and a broader tracked universe that extends beyond the active villa pipeline.",
+    source: "Analytical Review of the Market for Villas Under Construction in Bali 2025, Mirra Centre",
+    strategies: ["Market Scale"]
   }
-];
+] as const;
 
 export const marketStatCards = [
   {
-    title: "64.9%",
-    detail: "Average market occupancy in Q3 2023",
-    source: "REID Q3 2023 Buyers Report"
+    title: "3,900",
+    detail: "Villas included in Mirra Centre's Bali construction database.",
+    source: "Mirra Centre, July 2025"
   },
   {
-    title: "$195",
-    detail: "Average daily rate in Q3 2023",
-    source: "REID Q3 2023 Buyers Report"
+    title: "200",
+    detail: "Active villa construction projects tracked across Bali.",
+    source: "Mirra Centre, July 2025"
   },
   {
-    title: "$389M",
-    detail: "Total Bali rental revenue in Q3 2023",
-    source: "REID Q3 2023 Buyers Report"
+    title: "91%",
+    detail: "Share of tracked projects structured as leasehold.",
+    source: "Mirra Centre, July 2025"
   },
   {
-    title: "7,000+",
-    detail: "Leasehold properties tracked in REID's market overview",
-    source: "REID Home Updated"
+    title: "68%",
+    detail: "Projects located on commercially designated land.",
+    source: "Mirra Centre, July 2025"
   },
   {
-    title: "3,000+",
-    detail: "Freehold properties tracked in REID's market overview",
-    source: "REID Home Updated"
+    title: "7M+",
+    detail: "Tourists welcomed by Bali in 2024 according to the report.",
+    source: "Mirra Centre, 2025 market overview"
   },
   {
-    title: "60,000+",
-    detail: "Rental properties tracked in REID's market overview",
-    source: "REID Home Updated"
+    title: "10-15%",
+    detail: "Projected annual growth range for 2025-2026 in the report outlook.",
+    source: "Mirra Centre, 2025 market outlook"
   }
-];
+] as const;
 
 export const newsSections = [
   {
@@ -208,70 +183,339 @@ export const newsSections = [
   }
 ] as const;
 
-export const podcastTopics = ["All", "Investment", "Legal", "Strategy"] as const;
+export const podcastTopics = ["All", "Property", "Investment", "Business", "Marketing"] as const;
 
 export const podcastFeed = [
   {
-    id: "pod-1",
-    title: "Pioneer Investing: The 3 Golden Rules",
-    description: "A BBC conversation around frontier locations, timing, and how early-stage positioning changes returns.",
-    published: "Published 2025",
+    id: "x5iGqCEj1og",
+    title: "Dubai vs Bali Property: Returns, Risks, and the truth",
+    description: "A current BBC conversation comparing return logic, downside risk, and market positioning across Dubai and Bali.",
+    published: "7 days ago",
     topic: "Investment",
-    url: "https://youtu.be/oFFzcP9m-14",
-    image: "https://i.ytimg.com/vi/oFFzcP9m-14/hqdefault.jpg"
+    url: "https://www.youtube.com/watch?v=x5iGqCEj1og",
+    image: "https://i.ytimg.com/vi/x5iGqCEj1og/hqdefault.jpg"
   },
   {
-    id: "pod-2",
-    title: "Leasehold vs Freehold",
-    description: "A practical breakdown of ownership structure and why it matters to investors entering Bali.",
-    published: "Published 2025",
-    topic: "Legal",
-    url: "https://youtu.be/A-8XYkc3hCA",
-    image: "https://i.ytimg.com/vi/A-8XYkc3hCA/hqdefault.jpg"
+    id: "vyL_5E7htbo",
+    title: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
+    description: "Hiring, talent signals, and what strong companies in Bali look for as they scale.",
+    published: "2 months ago",
+    topic: "Business",
+    url: "https://www.youtube.com/watch?v=vyL_5E7htbo",
+    image: "https://i.ytimg.com/vi/vyL_5E7htbo/hqdefault.jpg"
   },
   {
-    id: "pod-3",
-    title: "Lease Extensions in Bali",
-    description: "A focused BBC episode on lease extension risk, structure, and investor implications.",
-    published: "Published 2025",
-    topic: "Legal",
-    url: "https://youtu.be/E1FguH5Op68",
-    image: "https://i.ytimg.com/vi/E1FguH5Op68/hqdefault.jpg"
+    id: "PG2TFBF0uY8",
+    title: "Bali Real Estate Market in 2026: What the Data Really Shows",
+    description: "A data-focused BBC episode unpacking where the Bali property market is actually heading.",
+    published: "3 months ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=PG2TFBF0uY8",
+    image: "https://i.ytimg.com/vi/PG2TFBF0uY8/hqdefault.jpg"
   },
   {
-    id: "pod-4",
+    id: "Ayb4THzSjE0",
+    title: "From marketing to brokering and development: Inside GEONET's Real Estate Machine",
+    description: "An inside look at how brokerage, development, and positioning come together in Bali real estate.",
+    published: "3 months ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=Ayb4THzSjE0",
+    image: "https://i.ytimg.com/vi/Ayb4THzSjE0/hqdefault.jpg"
+  },
+  {
+    id: "LkiYTQ1k0ss",
+    title: "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
+    description: "Fund performance, location thesis, and the strategic logic behind Kedungu's trajectory.",
+    published: "5 months ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=LkiYTQ1k0ss",
+    image: "https://i.ytimg.com/vi/LkiYTQ1k0ss/hqdefault.jpg"
+  },
+  {
+    id: "4jIi_bXuUSU",
+    title: "How Bali Business Founders Can Attract Investors from the Middle East",
+    description: "Capital raising lessons for founders building Bali-facing businesses and investor relationships.",
+    published: "6 months ago",
+    topic: "Business",
+    url: "https://www.youtube.com/watch?v=4jIi_bXuUSU",
+    image: "https://i.ytimg.com/vi/4jIi_bXuUSU/hqdefault.jpg"
+  },
+  {
+    id: "KScozjNYu9Q",
+    title: "Bali Property Made Simple: The 9-Step Process Explained",
+    description: "A clear walkthrough of the property acquisition journey from first look to closing.",
+    published: "7 months ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=KScozjNYu9Q",
+    image: "https://i.ytimg.com/vi/KScozjNYu9Q/hqdefault.jpg"
+  },
+  {
+    id: "UNaQQiIjoCk",
+    title: "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
+    description: "A marketing and sales conversation around launch velocity, positioning, and off-plan demand.",
+    published: "8 months ago",
+    topic: "Marketing",
+    url: "https://www.youtube.com/watch?v=UNaQQiIjoCk",
+    image: "https://i.ytimg.com/vi/UNaQQiIjoCk/hqdefault.jpg"
+  },
+  {
+    id: "0cMjvf1lb3g",
+    title: "The Kedungu Fund's $10M Milestone: A Look Ahead",
+    description: "A milestone review focused on fund growth, thesis validation, and the next phase.",
+    published: "9 months ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=0cMjvf1lb3g",
+    image: "https://i.ytimg.com/vi/0cMjvf1lb3g/hqdefault.jpg"
+  },
+  {
+    id: "yxJwNl3n3t4",
+    title: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
+    description: "A practical checklist episode for buyers evaluating off-plan opportunities in Bali.",
+    published: "11 months ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=yxJwNl3n3t4",
+    image: "https://i.ytimg.com/vi/yxJwNl3n3t4/hqdefault.jpg"
+  },
+  {
+    id: "bfHu20vi2g8",
+    title: "The Secret Growth Formula Content Creators Must Know!",
+    description: "A BBC episode on distribution, audience-building, and creator-led business growth.",
+    published: "1 year ago",
+    topic: "Marketing",
+    url: "https://www.youtube.com/watch?v=bfHu20vi2g8",
+    image: "https://i.ytimg.com/vi/bfHu20vi2g8/hqdefault.jpg"
+  },
+  {
+    id: "G1lT0E2nSGQ",
+    title: "Bali Real Estate: Triple Your Investment In 3 Years!",
+    description: "A high-conviction discussion around upside potential, timing, and market selection.",
+    published: "1 year ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=G1lT0E2nSGQ",
+    image: "https://i.ytimg.com/vi/G1lT0E2nSGQ/hqdefault.jpg"
+  },
+  {
+    id: "7bXHvn8Vksw",
+    title: "When Is the BEST Time to Invest in Bali? ROI Cycles Explained!",
+    description: "Timing, cycle awareness, and how investors can interpret momentum in Bali.",
+    published: "1 year ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=7bXHvn8Vksw",
+    image: "https://i.ytimg.com/vi/7bXHvn8Vksw/hqdefault.jpg"
+  },
+  {
+    id: "9LNXudhoxO0",
+    title: "Short-Term Rentals in Crisis: Why You Should Opt For Long-Term",
+    description: "An episode exploring rental strategy choices and how operators should think about demand shifts.",
+    published: "1 year ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=9LNXudhoxO0",
+    image: "https://i.ytimg.com/vi/9LNXudhoxO0/hqdefault.jpg"
+  },
+  {
+    id: "fGuiCmtcOKo",
+    title: "Beware! Why We NEVER Invest in Uluwatu!",
+    description: "A strong viewpoint on location risk, execution quality, and what to avoid in property investing.",
+    published: "1 year ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=fGuiCmtcOKo",
+    image: "https://i.ytimg.com/vi/fGuiCmtcOKo/hqdefault.jpg"
+  },
+  {
+    id: "SPFp95YSETE",
     title: "The Kedungu Fund: All the Answers",
-    description: "An episode centered on frontier-location thesis, fund logic, and the next phase of Bali growth.",
-    published: "Published 2025",
+    description: "A detailed Q&A style episode covering the fund's structure, rationale, and opportunity set.",
+    published: "1 year ago",
     topic: "Investment",
-    url: "https://youtu.be/jh_Ejqlc40g",
+    url: "https://www.youtube.com/watch?v=SPFp95YSETE",
+    image: "https://i.ytimg.com/vi/SPFp95YSETE/hqdefault.jpg"
+  },
+  {
+    id: "jh_Ejqlc40g",
+    title: "How To Sell More, Marketing Funnels: How And Why They Work",
+    description: "A funnel-focused episode for brands and operators who want clearer conversion systems.",
+    published: "1 year ago",
+    topic: "Marketing",
+    url: "https://www.youtube.com/watch?v=jh_Ejqlc40g",
     image: "https://i.ytimg.com/vi/jh_Ejqlc40g/hqdefault.jpg"
   },
   {
-    id: "pod-5",
-    title: "Bali Real Estate: Triple Your Investment In 3 Years!",
-    description: "A strategy-heavy BBC episode on location choice, wave patterns, and ROI logic in Bali.",
-    published: "Published March 28, 2025",
-    topic: "Strategy",
-    url: "https://music.youtube.com/podcast/7bXHvn8Vksw",
-    image: "/bali-business-club-logo-white.svg"
+    id: "qDP46lfSpaI",
+    title: "Bali Beach Glamping : The Journey to success",
+    description: "A founder story about product-market fit, hospitality experience, and operating execution.",
+    published: "1 year ago",
+    topic: "Business",
+    url: "https://www.youtube.com/watch?v=qDP46lfSpaI",
+    image: "https://i.ytimg.com/vi/qDP46lfSpaI/hqdefault.jpg"
+  },
+  {
+    id: "CfgZ7lqMhS8",
+    title: "Stop! 7 Key Tips to Know Before Buying a Bali Property",
+    description: "A practical buyer's guide to avoiding common mistakes before entering the market.",
+    published: "1 year ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=CfgZ7lqMhS8",
+    image: "https://i.ytimg.com/vi/CfgZ7lqMhS8/hqdefault.jpg"
+  },
+  {
+    id: "DHIQD-7YkTo",
+    title: "Pioneer Investing: The 3 Golden Rules",
+    description: "A BBC framework for identifying emerging opportunities before the crowd arrives.",
+    published: "1 year ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=DHIQD-7YkTo",
+    image: "https://i.ytimg.com/vi/DHIQD-7YkTo/hqdefault.jpg"
+  },
+  {
+    id: "oFFzcP9m-14",
+    title: "Bali Leasehold vs. Freehold! The Ultimate Guide to the Hows, Whats and Whys!",
+    description: "A core BBC episode covering ownership structures and why they matter so much in Bali.",
+    published: "1 year ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=oFFzcP9m-14",
+    image: "https://i.ytimg.com/vi/oFFzcP9m-14/hqdefault.jpg"
+  },
+  {
+    id: "A-8XYkc3hCA",
+    title: "A Fashion Success Story: Paul Ropp and Biasa Group",
+    description: "A founder-led business story on brand-building, staying power, and regional growth.",
+    published: "1 year ago",
+    topic: "Business",
+    url: "https://www.youtube.com/watch?v=A-8XYkc3hCA",
+    image: "https://i.ytimg.com/vi/A-8XYkc3hCA/hqdefault.jpg"
+  },
+  {
+    id: "BhrlhfO1hz4",
+    title: "Killer Tips for Investors: Leasehold Extensions in Bali",
+    description: "A focused investor episode on extension mechanics, negotiation risk, and legal diligence.",
+    published: "1 year ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=BhrlhfO1hz4",
+    image: "https://i.ytimg.com/vi/BhrlhfO1hz4/hqdefault.jpg"
+  },
+  {
+    id: "E1FguH5Op68",
+    title: "Building in Bali? Top Architect and Project Manager Insights",
+    description: "A construction-focused conversation around design, execution, and project delivery realities.",
+    published: "1 year ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=E1FguH5Op68",
+    image: "https://i.ytimg.com/vi/E1FguH5Op68/hqdefault.jpg"
   }
 ] as const;
 
 export const resourceDocuments = [
   {
-    id: "res-1",
-    title: "BBC Ebook Library",
-    source: "BBC Google Drive",
-    url: "https://drive.google.com/drive/folders/1lOg3Rvx1YWxAWfQGJ0X1rx0bKu3JxxGk?usp=drive_link",
-    note: "Live folder integration still needed to list every individual PDF automatically."
+    id: "ebook-bbc-real-estate-investing-bali",
+    section: "Ebooks",
+    title: "Comprehensive Guide to Real Estate Investing in Bali",
+    source: "Bali Business Club",
+    url: "/resources/ebooks/bbc-comprehensive-guide-real-estate-investing-bali.pdf",
+    note: "BBC ebook"
   },
   {
-    id: "res-2",
-    title: "External Reports Library",
-    source: "BBC Curated Reports Folder",
-    url: "https://drive.google.com/drive/folders/159gqNAUbLn3F3NgCCL-aa7pb5PzeD83j?usp=drive_link",
-    note: "Live folder integration still needed to list every individual report automatically."
+    id: "ebook-bbc-why-location-is-everything",
+    section: "Ebooks",
+    title: "Why Location Is Everything",
+    source: "Bali Business Club",
+    url: "/resources/ebooks/bbc-ebook-why-location-is-everything.pdf",
+    note: "BBC ebook"
+  },
+  {
+    id: "ebook-bbc-dubai-based-entrepreneurs-and-investors",
+    section: "Ebooks",
+    title: "Dubai-Based Entrepreneurs and Investors",
+    source: "Bali Business Club",
+    url: "/resources/ebooks/bbc-ebook-dubai-based-entrepreneurs-and-investors.pdf",
+    note: "BBC ebook"
+  },
+  {
+    id: "ebook-bbc-escape-to-bali",
+    section: "Ebooks",
+    title: "Escape to Bali - A Guide to a Better Life",
+    source: "Bali Business Club",
+    url: "/resources/ebooks/bbc-ebook-escape-to-bali-a-guide-to-a-better-life.pdf",
+    note: "BBC ebook"
+  },
+  {
+    id: "report-analytical-review-bali-villas",
+    section: "Reports",
+    title: "Analytical Review Bali Villas 07 2025",
+    source: "Mirra Centre",
+    url: "/resources/reports/analytical-review-bali-villas-07-2025.pdf",
+    note: "Villa construction market report"
+  },
+  {
+    id: "report-doing-business-indonesia-2025",
+    section: "Reports",
+    title: "An Introduction to Doing Business in Indonesia 2025",
+    source: "Business Guide",
+    url: "/resources/reports/introduction-to-doing-business-in-indonesia-2025.pdf",
+    note: "Indonesia business guide"
+  },
+  {
+    id: "report-bali-market-report-2025",
+    section: "Reports",
+    title: "Bali Market Report 2025 - Update February 2026",
+    source: "Betterplace",
+    url: "/resources/reports/bali-market-report-2025-upd-feb-2026.pdf",
+    note: "Bali market overview and outlook"
+  },
+  {
+    id: "report-bali-villa-rental-comparative-analysis",
+    section: "Reports",
+    title: "Bali Villa Rental Market - Comparative Analysis 01 25",
+    source: "Comparative Analysis",
+    url: "/resources/reports/bali-villa-rental-market-comparative-analysis-01-25.pdf",
+    note: "Villa rental comparison report"
+  },
+  {
+    id: "report-colliers-bali-apartment-h2-2025",
+    section: "Reports",
+    title: "Colliers Quarterly Bali Apartment H2 2025",
+    source: "Colliers",
+    url: "/resources/reports/h2-2025-colliers-quarterly-bali-apartment.pdf",
+    note: "Apartment market report"
+  },
+  {
+    id: "report-colliers-bali-hotel-h2-2025",
+    section: "Reports",
+    title: "Colliers Quarterly Bali Hotel H2 2025",
+    source: "Colliers",
+    url: "/resources/reports/h2-2025-colliers-quarterly-bali-hotel.pdf",
+    note: "Hotel market report"
+  },
+  {
+    id: "report-colliers-bali-retail-h2-2025",
+    section: "Reports",
+    title: "Colliers Quarterly Bali Retail H2 2025",
+    source: "Colliers",
+    url: "/resources/reports/h2-2025-colliers-quarterly-bali-retail.pdf",
+    note: "Retail market report"
+  },
+  {
+    id: "report-bali-hotel-branded-residences-2026",
+    section: "Reports",
+    title: "Bali Hotel Branded Residences 2026",
+    source: "Horwath HTL",
+    url: "/resources/reports/bali-hotel-branded-residences-2026.pdf",
+    note: "Branded residences report"
+  },
+  {
+    id: "report-colliers-bali-hotel-q3-2025",
+    section: "Reports",
+    title: "Colliers Quarterly Bali Hotel Q3 2025",
+    source: "Colliers",
+    url: "/resources/reports/q3-2025-colliers-quarterly-bali-hotel.pdf",
+    note: "Hotel quarter report"
+  },
+  {
+    id: "report-the-wealth-report-2025",
+    section: "Reports",
+    title: "The Wealth Report 2025",
+    source: "Knight Frank",
+    url: "/resources/reports/the-wealth-report-2025.pdf",
+    note: "Global wealth and property trends"
   }
 ] as const;
 
@@ -305,69 +549,18 @@ export const initialFavorites = [
     sourceId: "news-business-1"
   },
   {
-    id: "fav-pod-2",
+    id: "fav-oFFzcP9m-14",
     type: "Podcast",
-    title: "Leasehold vs Freehold",
-    note: "Saved for legal structure review.",
-    sourceId: "pod-2"
+    title: "Bali Leasehold vs. Freehold! The Ultimate Guide to the Hows, Whats and Whys!",
+    note: "Saved for ownership structure review.",
+    sourceId: "oFFzcP9m-14"
   },
   {
-    id: "fav-res-1",
+    id: "fav-ebook-bbc-real-estate-investing-bali",
     type: "Ressource",
-    title: "BBC Ebook Library",
-    note: "Saved for BBC internal materials.",
-    sourceId: "res-1"
-  }
-] as const;
-
-export const socials = [
-  {
-    name: "YouTube",
-    handle: "@BaliBusinessClub",
-    url: "https://youtube.com/@BaliBusinessClub?sub_confirmation=1",
-    icon: "YT"
-  },
-  {
-    name: "Spotify",
-    handle: "Bali Business Club",
-    url: "https://open.spotify.com/show/3fKJEwQXsQwR7TaFrl1d1b?si=48e00d7b104544e4",
-    icon: "SP"
-  },
-  {
-    name: "Instagram",
-    handle: "@bali.business.club",
-    url: "https://www.instagram.com/bali.business.club/",
-    icon: "IG"
-  },
-  {
-    name: "Facebook",
-    handle: "Balibizclub",
-    url: "https://www.facebook.com/Balibizclub/",
-    icon: "FB"
-  },
-  {
-    name: "TikTok",
-    handle: "@balibusinessclub",
-    url: "https://www.tiktok.com/@balibusinessclub",
-    icon: "TT"
-  }
-] as const;
-
-export const instagramPanels = [
-  {
-    title: "Instagram feed integration pending",
-    copy: "The layout is ready, but actual recent posts still need Instagram API or embed wiring.",
-    url: "https://www.instagram.com/bali.business.club/"
-  },
-  {
-    title: "Community and episode promo slot",
-    copy: "Use this area for live reels, member highlights, and podcast clips once connected.",
-    url: "https://www.instagram.com/bali.business.club/"
-  },
-  {
-    title: "BBC visual storytelling slot",
-    copy: "This panel is ready for actual post thumbnails from the Instagram account.",
-    url: "https://www.instagram.com/bali.business.club/"
+    title: "Comprehensive Guide to Real Estate Investing in Bali",
+    note: "Saved BBC ebook.",
+    sourceId: "ebook-bbc-real-estate-investing-bali"
   }
 ] as const;
 

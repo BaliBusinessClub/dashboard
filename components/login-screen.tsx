@@ -95,10 +95,10 @@ export function LoginScreen() {
         <div className="auth-card clean">
           <div className="auth-logo-wrap">
             <Image
-              src="/bali-business-club-logo-white.svg"
+              src="/bali-business-club-logo-white.png"
               alt="Bali Business Club"
-              width={220}
-              height={48}
+              width={286}
+              height={94}
               className="login-logo-image"
             />
           </div>

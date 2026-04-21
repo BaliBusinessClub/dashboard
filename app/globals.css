@@ -29,7 +29,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(255, 216, 0, 0.08), transparent 22%),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.05), transparent 22%),
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.04), transparent 18%),
     #000;
   color: var(--bbc-text);
@@ -142,12 +142,12 @@ label {
   align-items: center;
   justify-content: center;
   width: fit-content;
-  min-height: 32px;
-  padding: 0 13px;
+  min-height: 28px;
+  padding: 0 11px;
   border-radius: 999px;
   background: var(--bbc-blue);
   color: #fff;
-  font-size: 0.77rem;
+  font-size: 0.72rem;
   letter-spacing: 0.08em;
   line-height: 1;
 }
@@ -307,7 +307,7 @@ label {
 .hero-compact,
 .auth-card.clean,
 .modal-card {
-  padding: 30px;
+  padding: 32px;
 }
 
 .hero-compact {
@@ -344,7 +344,7 @@ label {
 .section-heading {
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .section-heading-inline {
@@ -360,9 +360,9 @@ label {
 .filter-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .filter-btn,
@@ -375,8 +375,8 @@ label {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
-  padding: 0 16px;
+  min-height: 38px;
+  padding: 0 14px;
   border: 1px solid var(--bbc-border-strong);
   border-radius: 999px;
   background: rgba(18, 18, 18, 0.96);
@@ -408,8 +408,16 @@ label {
 }
 
 .profile-chip.minimal {
+  max-width: 250px;
   color: #fff;
   background: rgba(16, 16, 16, 0.9);
+}
+
+.profile-chip.minimal span {
+  max-width: 132px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-chip-image {
@@ -424,8 +432,8 @@ label {
   top: calc(100% + 10px);
   right: 0;
   z-index: 30;
-  width: min(290px, calc(100vw - 32px));
-  padding: 16px;
+  width: min(320px, calc(100vw - 32px));
+  padding: 18px;
   display: grid;
   gap: 12px;
   background: rgba(15, 15, 16, 0.98);
@@ -443,6 +451,16 @@ label {
 .profile-menu-copy {
   display: grid;
   gap: 3px;
+  min-width: 0;
+}
+
+.profile-menu-copy strong,
+.profile-menu-copy span {
+  line-height: 1.4;
+}
+
+.profile-menu-copy span {
+  overflow-wrap: anywhere;
 }
 
 .profile-menu button {
@@ -518,7 +536,7 @@ label {
 .carousel-card.clean,
 .stat-rectangle,
 .resource-row {
-  padding: 22px;
+  padding: 24px;
 }
 
 .shortcut-card.clean {
@@ -565,12 +583,12 @@ label {
 }
 
 .shortcut-card.clean.large strong {
-  font-size: 1.45rem;
+  font-size: 1.38rem;
 }
 
 .shortcut-card.clean.large span {
   color: var(--bbc-muted);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 
 .insight-grid.clean.compact,
@@ -626,6 +644,10 @@ label {
   gap: 16px;
 }
 
+.chart-card-featured {
+  max-width: 920px;
+}
+
 .chart-card-head,
 .chart-caption,
 .resource-row,
@@ -642,60 +664,62 @@ label {
   gap: 16px;
 }
 
-.sparkline {
-  width: 100%;
-  height: 192px;
-  border: 1px solid var(--bbc-border);
-  border-radius: 16px;
-  background:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 100% 25%,
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 25% 100%,
-    #0a0a0a;
-  overflow: visible;
+.interactive-chart.bars {
+  gap: 14px;
 }
 
-.sparkline-line {
-  fill: none;
-  stroke-width: 2.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.bar-chart {
+  display: grid;
+  gap: 12px;
 }
 
-.sparkline-line.yellow {
-  stroke: var(--bbc-yellow);
-}
-
-.chart-dot {
-  fill: #fff;
-  cursor: pointer;
-  transition: fill 0.18s ease, transform 0.18s ease;
-}
-
-.chart-dot.active {
-  fill: var(--bbc-yellow);
-}
-
-.chart-index-row {
-  display: flex;
-  flex-wrap: wrap;
+.bar-row {
+  display: grid;
   gap: 10px;
-}
-
-.chart-index-button {
-  min-width: 58px;
-  min-height: 36px;
-  padding: 0 12px;
+  padding: 14px 16px;
   border: 1px solid var(--bbc-border);
-  border-radius: 999px;
-  background: #111;
-  color: var(--bbc-muted);
+  border-radius: 18px;
+  background: #0b0b0c;
+  color: var(--bbc-text);
   cursor: pointer;
+  text-align: left;
+  transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
 }
 
-.chart-index-button.active {
-  color: #000;
+.bar-row:hover,
+.bar-row.active {
+  border-color: rgba(255, 216, 0, 0.34);
+  background: #111112;
+  transform: translateY(-1px);
+}
+
+.bar-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.bar-row-head span {
+  color: #f0efeb;
+}
+
+.bar-row-head strong {
+  white-space: nowrap;
+}
+
+.bar-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #1c1c1d;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
   background: var(--bbc-yellow);
-  border-color: var(--bbc-yellow);
 }
 
 .chart-caption span {
@@ -828,18 +852,18 @@ tbody td {
 .favorite-label {
   display: inline-flex;
   width: fit-content;
-  padding: 6px 10px;
+  padding: 5px 9px;
   border-radius: 999px;
   background: var(--bbc-blue);
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
 }
 
 .news-title {
   color: #fff;
   font-size: 1.14rem;
-  line-height: 1.45;
-  margin-bottom: 10px;
+  line-height: 1.4;
+  margin-bottom: 12px;
 }
 
 .news-summary,
@@ -857,7 +881,7 @@ tbody td {
 }
 
 .news-footer {
-  padding-top: 10px;
+  padding-top: 14px;
   border-top: 1px solid var(--bbc-border);
 }
 
@@ -912,15 +936,23 @@ tbody td {
 
 .episode-meta {
   align-items: center;
+  margin-top: 4px;
 }
 
 .resource-list {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .resource-row {
   align-items: center;
+  padding: 22px 24px;
+}
+
+.resource-copy {
+  display: grid;
+  gap: 8px;
+  padding-right: 18px;
 }
 
 .resource-actions {
@@ -990,7 +1022,7 @@ tbody td {
   place-items: center;
   padding: 24px;
   background:
-    radial-gradient(circle at top, rgba(255, 216, 0, 0.09), transparent 25%),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 25%),
     radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.05), transparent 24%),
     #000;
 }
@@ -1008,7 +1040,7 @@ tbody td {
 
 .login-logo-image {
   width: auto;
-  height: 52px;
+  height: 64px;
   object-fit: contain;
 }
 
