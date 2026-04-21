@@ -92,30 +92,34 @@ export function LoginScreen() {
   return (
     <main className="auth-screen simple">
       <section className="auth-center">
-        <div className="auth-logo-wrap">
-          <Image
-            src="/bali-business-club-logo-white.svg"
-            alt="Bali Business Club"
-            width={220}
-            height={48}
-            className="login-logo-image"
-          />
-        </div>
-
-        <div className="auth-tabs clean">
-          <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
-            SIGN IN
-          </button>
-          <button type="button" className={mode === "create" ? "active" : ""} onClick={() => setMode("create")}>
-            CREATE ACCOUNT
-          </button>
-          <button type="button" className={mode === "verify" ? "active" : ""} onClick={() => setMode("verify")}>
-            VERIFY EMAIL
-          </button>
-        </div>
-
         <div className="auth-card clean">
-          <h1 className="auth-main-title">LOGIN</h1>
+          <div className="auth-logo-wrap">
+            <Image
+              src="/bali-business-club-logo-white.svg"
+              alt="Bali Business Club"
+              width={220}
+              height={48}
+              className="login-logo-image"
+            />
+          </div>
+
+          <div className="auth-card-intro">
+            <span className="eyebrow">Member access</span>
+            <h1 className="auth-main-title">Login</h1>
+            <p>Use your BBC account to access the dashboard.</p>
+          </div>
+
+          <div className="auth-tabs clean">
+            <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
+              SIGN IN
+            </button>
+            <button type="button" className={mode === "create" ? "active" : ""} onClick={() => setMode("create")}>
+              CREATE ACCOUNT
+            </button>
+            <button type="button" className={mode === "verify" ? "active" : ""} onClick={() => setMode("verify")}>
+              VERIFY EMAIL
+            </button>
+          </div>
 
           {mode === "create" ? (
             <label>

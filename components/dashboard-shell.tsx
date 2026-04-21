@@ -379,7 +379,7 @@ export function DashboardShell() {
 
         {activeTab === "home" ? (
           <section className="panel-stack">
-            <article className="hero-compact minimal-home">
+            <article className="hero-compact minimal-home premium-hero">
               <div>
                 <span className="eyebrow">Welcome</span>
                 <h2>Hello {user.name}</h2>
@@ -392,9 +392,15 @@ export function DashboardShell() {
                 const Icon = shortcut.icon;
                 return (
                   <button key={shortcut.id} type="button" className="shortcut-card clean large" onClick={() => setActiveTab(shortcut.id)}>
-                    <Icon size={20} />
-                    <strong>{shortcut.title}</strong>
-                    <span>Open section</span>
+                    <div className="shortcut-card-top">
+                      <div className="shortcut-icon-wrap">
+                        <Icon size={20} />
+                      </div>
+                    </div>
+                    <div className="shortcut-copy">
+                      <strong>{shortcut.title}</strong>
+                      <span>Open section</span>
+                    </div>
                   </button>
                 );
               })}
