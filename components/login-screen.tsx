@@ -1,12 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { ArrowRight, Mail, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Mail, ShieldCheck } from "lucide-react";
+import { useAuth } from "@/components/auth-provider";
 
 type Mode = "signin" | "create" | "verify";
 
 export function LoginScreen() {
+  const router = useRouter();
+  const { user, ready, signInWithEmail } = useAuth();
   const [mode, setMode] = useState<Mode>("signin");
   const [name, setName] = useState("Made Prasetya");
   const [email, setEmail] = useState("member@balibusinessclub.com");
@@ -14,6 +18,14 @@ export function LoginScreen() {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [previewCode, setPreviewCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!ready || !user) {
+      return;
+    }
+
+    router.replace(user.role === "admin" ? "/admin" : "/dashboard");
+  }, [ready, router, user]);
 
   async function sendCode() {
     setStatus("PREPARING BBC VERIFICATION EMAIL...");
@@ -53,12 +65,43 @@ export function LoginScreen() {
       return;
     }
 
-    setStatus("EMAIL VERIFIED. YOUR DASHBOARD IS READY.");
+    const sessionUser = signInWithEmail(email, name);
+    setStatus("EMAIL VERIFIED. ACCESS GRANTED.");
+    router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
+  }
+
+  function continueWithEmail() {
+    if (mode === "signin") {
+      const sessionUser = signInWithEmail(email, name);
+      setStatus(sessionUser.role === "admin" ? "ADMIN ACCESS GRANTED." : "MEMBER ACCESS GRANTED.");
+      router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
+      return;
+    }
+
+    void sendCode();
+  }
+
+  function continueWithGoogle() {
+    setStatus("GOOGLE SIGN-IN NEEDS A GOOGLE CLIENT ID AND OAUTH SETUP TO WORK LIVE.");
+  }
+
+  if (!ready) {
+    return <main className="auth-screen simple" />;
   }
 
   return (
     <main className="auth-screen simple">
       <section className="auth-center">
+        <div className="auth-logo-wrap">
+          <Image
+            src="/bali-business-club-logo-white.svg"
+            alt="Bali Business Club"
+            width={220}
+            height={48}
+            className="login-logo-image"
+          />
+        </div>
+
         <div className="auth-tabs clean">
           <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
             SIGN IN
@@ -72,41 +115,54 @@ export function LoginScreen() {
         </div>
 
         <div className="auth-card clean">
-          <p className="eyebrow">BALI BUSINESS CLUB</p>
-          <h1 className="auth-main-title">MEMBER LOGIN</h1>
-          <p className="eyebrow">BBC LOGIN</p>
-          <h2>{mode === "create" ? "CREATE ACCOUNT" : mode === "verify" ? "CONFIRM EMAIL" : "CONNECT"}</h2>
+          <h1 className="auth-main-title">LOGIN</h1>
 
-          {(mode === "signin" || mode === "create") && (
+          {mode === "create" ? (
+            <label>
+              FULL NAME
+              <input value={name} onChange={(event) => setName(event.target.value)} />
+            </label>
+          ) : null}
+
+          <label>
+            EMAIL
+            <input value={email} onChange={(event) => setEmail(event.target.value)} />
+          </label>
+
+          {mode !== "verify" ? (
+            <label>
+              PASSWORD
+              <input
+                type="password"
+                value={password}
+                placeholder="MINIMUM 8 CHARACTERS"
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </label>
+          ) : (
+            <label>
+              6-DIGIT CODE
+              <input value={code} onChange={(event) => setCode(event.target.value)} />
+            </label>
+          )}
+
+          {mode === "verify" ? (
             <>
-              {mode === "create" ? (
-                <label>
-                  FULL NAME
-                  <input value={name} onChange={(event) => setName(event.target.value)} />
-                </label>
-              ) : null}
-
-              <label>
-                EMAIL
-                <input value={email} onChange={(event) => setEmail(event.target.value)} />
-              </label>
-
-              <label>
-                PASSWORD
-                <input
-                  type="password"
-                  value={password}
-                  placeholder="MINIMUM 8 CHARACTERS"
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </label>
-
-              <button type="button" className="primary-button compact" onClick={sendCode}>
-                <Mail size={14} />
-                {mode === "create" ? "CREATE ACCOUNT & SEND CODE" : "SEND VERIFICATION CODE"}
+              <button type="button" className="primary-button compact" onClick={verifyCode}>
+                <ShieldCheck size={14} />
+                VERIFY EMAIL
               </button>
-
-              <button type="button" className="google-button">
+              <button type="button" className="ghost-button compact" onClick={() => void sendCode()}>
+                RESEND CODE
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" className="primary-button compact" onClick={continueWithEmail}>
+                <Mail size={14} />
+                {mode === "create" ? "CREATE ACCOUNT" : "LOGIN"}
+              </button>
+              <button type="button" className="google-button" onClick={continueWithGoogle}>
                 <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     fill="currentColor"
@@ -130,39 +186,8 @@ export function LoginScreen() {
             </>
           )}
 
-          {mode === "verify" ? (
-            <>
-              <label>
-                EMAIL
-                <input value={email} onChange={(event) => setEmail(event.target.value)} />
-              </label>
-              <label>
-                6-DIGIT CODE
-                <input value={code} onChange={(event) => setCode(event.target.value)} />
-              </label>
-              <button type="button" className="primary-button compact" onClick={verifyCode}>
-                <ShieldCheck size={14} />
-                VERIFY EMAIL
-              </button>
-              <button type="button" className="ghost-button compact" onClick={sendCode}>
-                RESEND CODE
-              </button>
-            </>
-          ) : null}
-
           {status ? <p className="status-banner">{status}</p> : null}
           {previewCode ? <p className="preview-banner">PREVIEW CODE: {previewCode}</p> : null}
-
-          <div className="auth-links clean">
-            <Link href="/dashboard">
-              OPEN MEMBER DASHBOARD
-              <ArrowRight size={14} />
-            </Link>
-            <Link href="/admin">
-              OPEN ADMIN DASHBOARD
-              <ArrowRight size={14} />
-            </Link>
-          </div>
         </div>
       </section>
     </main>

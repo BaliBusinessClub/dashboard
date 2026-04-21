@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   Building2,
@@ -11,18 +12,23 @@ import {
   ExternalLink,
   Heart,
   House,
+  LineChart,
+  LogOut,
   Newspaper,
+  PencilLine,
   Podcast,
-  Settings,
-  Sparkles,
-  UsersRound
+  Save,
+  UsersRound,
+  X
 } from "lucide-react";
 import { BaliTime } from "@/components/bali-time";
+import { SessionUser, useAuth } from "@/components/auth-provider";
 import {
   connectPanels,
   dashboardShortcuts,
   favorites,
   insightHighlights,
+  marketChartSeries,
   marketStatCards,
   newsSections,
   partnerBenefits,
@@ -44,10 +50,98 @@ const dashboardTabs = [
 
 type DashboardTab = (typeof dashboardTabs)[number]["id"];
 
+function ChartSparkline({ values, tone }: { values: number[]; tone: "yellow" | "blue" }) {
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const points = values
+    .map((value, index) => {
+      const x = (index / (values.length - 1)) * 100;
+      const y = max === min ? 50 : 100 - ((value - min) / (max - min)) * 82;
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  return (
+    <svg viewBox="0 0 100 100" className="sparkline">
+      <polyline points={points} className={tone === "yellow" ? "sparkline-line yellow" : "sparkline-line blue"} />
+    </svg>
+  );
+}
+
+function ProfileModal({
+  user,
+  onClose,
+  onSave
+}: {
+  user: SessionUser;
+  onClose: () => void;
+  onSave: (updates: Partial<SessionUser>) => void;
+}) {
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+  const [picture, setPicture] = useState(user.picture ?? "");
+
+  return (
+    <div className="modal-overlay open">
+      <div className="modal-card">
+        <div className="modal-head">
+          <h2>EDIT PROFILE</h2>
+          <button type="button" className="icon-button" onClick={onClose}>
+            <X size={16} />
+          </button>
+        </div>
+        <div className="form-grid clean">
+          <label>
+            FULL NAME
+            <input value={name} onChange={(event) => setName(event.target.value)} />
+          </label>
+          <label>
+            EMAIL
+            <input value={email} onChange={(event) => setEmail(event.target.value)} />
+          </label>
+          <label>
+            PROFILE IMAGE URL
+            <input value={picture} onChange={(event) => setPicture(event.target.value)} placeholder="https://..." />
+          </label>
+          <button
+            type="button"
+            className="primary-button compact"
+            onClick={() => {
+              onSave({ name, email, picture, role: email.toLowerCase().includes("admin") ? "admin" : "member" });
+              onClose();
+            }}
+          >
+            <Save size={14} />
+            SAVE PROFILE
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function DashboardShell() {
+  const router = useRouter();
+  const { user, ready, signOut, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<DashboardTab>("home");
   const [expandedArticles, setExpandedArticles] = useState<string[]>([]);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    if (!user) {
+      router.replace("/");
+      return;
+    }
+
+    if (user.role === "admin") {
+      router.replace("/admin");
+    }
+  }, [ready, router, user]);
 
   const activeTitle = useMemo(
     () => dashboardTabs.find((tab) => tab.id === activeTab)?.label ?? "HOME",
@@ -60,49 +154,60 @@ export function DashboardShell() {
     );
   }
 
+  if (!ready || !user) {
+    return <main className="bbc-shell" />;
+  }
+
   return (
     <main className="bbc-shell">
       <header className="bbc-header">
-        <div className="bbc-brand">
-          <div>
-            <div className="bbc-brand-name">BALI BUSINESS CLUB</div>
-            <div className="bbc-brand-sub">MEMBER DASHBOARD</div>
-          </div>
+        <div className="bbc-brand clean">
+          <Image
+            src="/bali-business-club-logo-white.svg"
+            alt="Bali Business Club"
+            width={144}
+            height={26}
+            className="header-logo-image left"
+          />
         </div>
 
         <div className="bbc-header-right">
           <div className="bali-time-chip">
             <BaliTime />
           </div>
-          <div className="header-logo-lockup">
-            <Image
-              src="/bali-business-club-logo-white.svg"
-              alt="Bali Business Club"
-              width={132}
-              height={28}
-              className="header-logo-image"
-            />
-          </div>
           <div className="profile-menu-wrap">
             <button type="button" className="profile-chip minimal" onClick={() => setProfileOpen((open) => !open)}>
               <CircleUserRound size={18} />
-              <span>MADE</span>
+              <span>{user.name.toUpperCase()}</span>
               <ChevronDown size={14} />
             </button>
             {profileOpen ? (
               <div className="profile-menu">
-                <div className="profile-avatar">M</div>
-                <div>
-                  <strong>Made Prasetya</strong>
-                  <span>made@balibusinessclub.com</span>
+                <div className="profile-avatar profile-avatar-image">
+                  {user.picture ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={user.picture} alt={user.name} />
+                  ) : (
+                    <span>{user.name.charAt(0).toUpperCase()}</span>
+                  )}
                 </div>
-                <button type="button">
-                  <Sparkles size={14} />
-                  UPDATE PHOTO
-                </button>
-                <button type="button">
-                  <Settings size={14} />
+                <div>
+                  <strong>{user.name.toUpperCase()}</strong>
+                  <span>{user.email}</span>
+                </div>
+                <button type="button" onClick={() => setEditOpen(true)}>
+                  <PencilLine size={14} />
                   EDIT PROFILE
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    signOut();
+                    router.push("/");
+                  }}
+                >
+                  <LogOut size={14} />
+                  LOGOUT
                 </button>
               </div>
             ) : null}
@@ -137,28 +242,21 @@ export function DashboardShell() {
 
         {activeTab === "home" ? (
           <section className="panel-stack">
-            <article className="hero-compact">
+            <article className="hero-compact minimal-home">
               <div>
                 <p className="eyebrow">WELCOME</p>
-                <h2>HELLO MADE</h2>
+                <h2>HELLO {user.name.toUpperCase()}</h2>
               </div>
-              <p>
-                Keep this homepage minimal and fast. Use the shortcuts below to jump straight into the dashboard
-                section you need, without charts or extra noise.
-              </p>
+              <p>Choose what you want to open.</p>
             </article>
 
-            <div className="shortcut-grid clean">
+            <div className="shortcut-grid clean minimal">
               {dashboardShortcuts.map((shortcut) => {
                 const Icon = shortcut.icon;
                 return (
-                  <button key={shortcut.id} type="button" className="shortcut-card clean" onClick={() => setActiveTab(shortcut.id)}>
-                    <div className="shortcut-top">
-                      <Icon size={18} />
-                      <span>SHORTCUT</span>
-                    </div>
+                  <button key={shortcut.id} type="button" className="shortcut-card clean minimal" onClick={() => setActiveTab(shortcut.id)}>
+                    <Icon size={18} />
                     <strong>{shortcut.title}</strong>
-                    <p>{shortcut.copy}</p>
                   </button>
                 );
               })}
@@ -185,7 +283,23 @@ export function DashboardShell() {
                 <button type="button" className="filter-btn">OPERATE</button>
               </div>
 
-              <div className="insight-grid clean">
+              <div className="dashboard-chart-grid">
+                {marketChartSeries.map((series) => (
+                  <article key={series.title} className="chart-card clean">
+                    <div className="chart-card-head">
+                      <div>
+                        <div className="metric-label">{series.title}</div>
+                        <div className="metric-value small">{series.highlight}</div>
+                      </div>
+                      <LineChart size={18} />
+                    </div>
+                    <ChartSparkline values={series.values} tone={series.tone} />
+                    <p>{series.context}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="insight-grid clean compact">
                 {insightHighlights.map((item) => (
                   <article key={item.title} className="insight-card clean">
                     <span>{item.label}</span>
@@ -200,13 +314,13 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <p className="eyebrow">MARKET SNAPSHOT</p>
-                  <h2>KEY REID SIGNALS</h2>
+                  <p className="eyebrow">TOP 6</p>
+                  <h2>INTERESTING MARKET STATS</h2>
                 </div>
               </div>
 
               <div className="metric-grid">
-                {marketStatCards.map((card) => (
+                {marketStatCards.slice(0, 4).map((card) => (
                   <article key={card.title} className="metric-card">
                     <div className="metric-label">{card.title}</div>
                     <div className="metric-value">{card.figure}</div>
@@ -216,15 +330,6 @@ export function DashboardShell() {
                     <p>{card.context}</p>
                   </article>
                 ))}
-              </div>
-            </article>
-
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">TOP 6</p>
-                  <h2>INTERESTING MARKET STATS</h2>
-                </div>
               </div>
 
               <div className="table-shell">
@@ -239,33 +344,33 @@ export function DashboardShell() {
                   <tbody>
                     <tr>
                       <td>70,000+</td>
-                      <td>Records in REID&apos;s database</td>
-                      <td>REID Our Data</td>
+                      <td>RECORDS IN REID&apos;S DATABASE</td>
+                      <td>REID OUR DATA</td>
                     </tr>
                     <tr>
                       <td>7,000+</td>
-                      <td>Leasehold properties in REID market overview</td>
-                      <td>REID Home Updated</td>
+                      <td>LEASEHOLD PROPERTIES IN REID MARKET OVERVIEW</td>
+                      <td>REID HOME UPDATED</td>
                     </tr>
                     <tr>
                       <td>3,000+</td>
-                      <td>Freehold properties in REID market overview</td>
-                      <td>REID Home Updated</td>
+                      <td>FREEHOLD PROPERTIES IN REID MARKET OVERVIEW</td>
+                      <td>REID HOME UPDATED</td>
                     </tr>
                     <tr>
                       <td>60,000+</td>
-                      <td>Rental properties in REID market overview</td>
-                      <td>REID Home Updated</td>
+                      <td>RENTAL PROPERTIES IN REID MARKET OVERVIEW</td>
+                      <td>REID HOME UPDATED</td>
                     </tr>
                     <tr>
                       <td>$389M</td>
-                      <td>Total Bali rental revenue in Q3 2023</td>
-                      <td>REID Q3 2023 Buyers Report</td>
+                      <td>TOTAL BALI RENTAL REVENUE IN Q3 2023</td>
+                      <td>REID Q3 2023 BUYERS REPORT</td>
                     </tr>
                     <tr>
                       <td>64.9%</td>
-                      <td>Average market occupancy in Q3 2023</td>
-                      <td>REID Q3 2023 Buyers Report</td>
+                      <td>AVERAGE MARKET OCCUPANCY IN Q3 2023</td>
+                      <td>REID Q3 2023 BUYERS REPORT</td>
                     </tr>
                   </tbody>
                 </table>
@@ -311,7 +416,9 @@ export function DashboardShell() {
                                 SOURCE: {article.source}
                                 <ExternalLink size={13} />
                               </a>
-                            ) : <span className="news-source-link muted">CLICK TO EXPAND</span>}
+                            ) : (
+                              <span className="news-source-link muted">CLICK TO EXPAND</span>
+                            )}
                           </div>
                         </article>
                       );
@@ -489,8 +596,8 @@ export function DashboardShell() {
                   </div>
                 </div>
                 <p className="section-copy">
-                  Bali Business Club brings together entrepreneurs, investors, operators, and media around the
-                  business opportunities shaping Bali. Use the links below to stay close to our content and team.
+                  Bali Business Club brings together entrepreneurs, investors, operators, and media around the business
+                  opportunities shaping Bali. Use the links below to stay close to our content and team.
                 </p>
                 <div className="social-list">
                   {socials.map((social) => (
@@ -553,6 +660,16 @@ export function DashboardShell() {
           </section>
         ) : null}
       </section>
+
+      {editOpen ? (
+        <ProfileModal
+          user={user}
+          onClose={() => setEditOpen(false)}
+          onSave={(updates) => {
+            updateProfile(updates);
+          }}
+        />
+      ) : null}
     </main>
   );
 }

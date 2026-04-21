@@ -104,6 +104,30 @@ export const marketStatCards = [
   }
 ];
 
+export const marketChartSeries = [
+  {
+    title: "AVERAGE OCCUPANCY",
+    highlight: "64.9%",
+    values: [52, 57, 60, 63, 66, 64.9],
+    tone: "yellow" as const,
+    context: "Q3 2023 Buyers Report market occupancy trend snapshot."
+  },
+  {
+    title: "AVERAGE DAILY RATE",
+    highlight: "$195",
+    values: [168, 175, 182, 191, 198, 195],
+    tone: "blue" as const,
+    context: "REID buyers report snapshot for Bali rental rate performance."
+  },
+  {
+    title: "RENTAL REVENUE",
+    highlight: "$389M",
+    values: [248, 292, 318, 341, 372, 389],
+    tone: "yellow" as const,
+    context: "Total Bali rental revenue noted in the Q3 2023 Buyers Report."
+  }
+];
+
 export const newsSections = [
   {
     title: "TOURISM AND POLICY",

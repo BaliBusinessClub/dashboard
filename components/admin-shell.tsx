@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { BellRing, Database, Download, RefreshCw, Settings, Users } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { BellRing, Database, Download, LogOut, RefreshCw, Settings, Users } from "lucide-react";
+import { useAuth } from "@/components/auth-provider";
 import { dashboardUsers } from "@/lib/mock-data";
 
 const adminTabs = [
@@ -16,8 +19,25 @@ type AdminTab = (typeof adminTabs)[number]["id"];
 const reportingTargets = ["market-insights", "news", "podcasts", "resources"];
 
 export function AdminShell() {
+  const router = useRouter();
+  const { user, ready, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
   const [refreshStatus, setRefreshStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    if (!user) {
+      router.replace("/");
+      return;
+    }
+
+    if (user.role !== "admin") {
+      router.replace("/dashboard");
+    }
+  }, [ready, router, user]);
 
   async function refreshSection(section: string) {
     setRefreshStatus(`REFRESHING ${section.toUpperCase()}...`);
@@ -27,16 +47,33 @@ export function AdminShell() {
     setRefreshStatus(result.message?.toUpperCase() ?? `REFRESH COMPLETED FOR ${section.toUpperCase()}.`);
   }
 
+  if (!ready || !user) {
+    return <main className="bbc-shell admin-mode" />;
+  }
+
   return (
     <main className="bbc-shell admin-mode">
       <header className="bbc-header">
-        <div className="bbc-brand">
-          <div className="bbc-brand-mark admin-mark">BBC</div>
-          <div>
-            <div className="bbc-brand-name">BALI BUSINESS CLUB</div>
-            <div className="bbc-brand-sub">ADMIN DASHBOARD</div>
-          </div>
+        <div className="bbc-brand clean">
+          <Image
+            src="/bali-business-club-logo-white.svg"
+            alt="Bali Business Club"
+            width={144}
+            height={26}
+            className="header-logo-image left"
+          />
         </div>
+        <button
+          type="button"
+          className="profile-chip minimal"
+          onClick={() => {
+            signOut();
+            router.push("/");
+          }}
+        >
+          <LogOut size={16} />
+          LOGOUT
+        </button>
       </header>
 
       <nav className="bbc-tab-nav">
@@ -133,13 +170,13 @@ export function AdminShell() {
                     </tr>
                   </thead>
                   <tbody>
-                    {dashboardUsers.map((user) => (
-                      <tr key={user.email}>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>{user.phone}</td>
-                        <td>{user.membership}</td>
-                        <td>{user.joined}</td>
+                    {dashboardUsers.map((member) => (
+                      <tr key={member.email}>
+                        <td>{member.name}</td>
+                        <td>{member.email}</td>
+                        <td>{member.phone}</td>
+                        <td>{member.membership}</td>
+                        <td>{member.joined}</td>
                       </tr>
                     ))}
                   </tbody>
