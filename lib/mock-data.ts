@@ -560,6 +560,33 @@ export const podcastFeed = [
     topic: "Property",
     url: "https://www.youtube.com/watch?v=E1FguH5Op68",
     image: "https://i.ytimg.com/vi/E1FguH5Op68/hqdefault.jpg"
+  },
+  {
+    id: "aiHuohwGnrU",
+    title: "Notary's insights: Bali Real Estate Explained",
+    description: "A BBC episode unpacking legal structure, transaction flow, and what notaries see most often in Bali deals.",
+    published: "1 year ago",
+    topic: "Property",
+    url: "https://www.youtube.com/watch?v=aiHuohwGnrU",
+    image: "https://i.ytimg.com/vi/aiHuohwGnrU/hqdefault.jpg"
+  },
+  {
+    id: "nKp94xADWdM",
+    title: "The Kedungu Fund Strategy: Bali Investment Redefined",
+    description: "A deeper look at the fund thesis, location timing, and how the investment strategy is positioned.",
+    published: "1 year ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=nKp94xADWdM",
+    image: "https://i.ytimg.com/vi/nKp94xADWdM/hqdefault.jpg"
+  },
+  {
+    id: "q48YXinbITk",
+    title: "Real Estate: How to 9x your investment and other Bali property tips",
+    description: "A high-upside property episode on strategy, leverage points, and practical Bali investing lessons.",
+    published: "1 year ago",
+    topic: "Investment",
+    url: "https://www.youtube.com/watch?v=q48YXinbITk",
+    image: "https://i.ytimg.com/vi/q48YXinbITk/hqdefault.jpg"
   }
 ] as const;
 
@@ -683,19 +710,22 @@ export const partnerBenefits = [
     name: "Voxpop Studio",
     offer: "10% off podcast studio online booking with code BBCMEMBER",
     button: "BOOK ONLINE",
-    url: "https://voxpopbali.com/"
+    url: "https://voxpopbali.com/",
+    logo: "/partners/voxpop-studio-white.png"
   },
   {
     name: "Legal Legends Indonesia",
     offer: "5% on visa, KITAS, and PT PMA creation",
     button: "CONTACT",
-    url: "https://legallegendsindonesia.com/contact-us/"
+    url: "https://legallegendsindonesia.com/contact-us/",
+    logo: "/partners/legal-legends-indonesia-white.png"
   },
   {
     name: "Bali Accounting Legends",
     offer: "5% discount on consulting",
     button: "CONTACT",
-    url: "https://wa.me/6281239091087"
+    url: "https://wa.me/6281239091087",
+    logo: "/partners/bali-accounting-legends-white.png"
   }
 ] as const;
 
@@ -729,22 +759,69 @@ export const dashboardUsers = [
     email: "made@balibusinessclub.com",
     phone: "+62 812 3456 7890",
     membership: "Founding Member",
-    joined: "2026-01-12"
+    joined: "2026-01-12",
+    ageRange: "25-34"
   },
   {
     name: "Sarah Collins",
     email: "sarah@balibusinessclub.com",
     phone: "+61 402 118 900",
     membership: "Investor",
-    joined: "2026-02-03"
+    joined: "2026-02-03",
+    ageRange: "35-44"
   },
   {
     name: "Julien Moreau",
     email: "julien@balibusinessclub.com",
     phone: "+33 6 12 34 56 78",
     membership: "Operator",
-    joined: "2026-02-18"
+    joined: "2026-02-18",
+    ageRange: "35-44"
   }
+] as const;
+
+export const adminAnalyticsCards = [
+  { value: "31", label: "People online", detail: "Active members in the dashboard right now." },
+  { value: "25-34", label: "Top age range", detail: "Largest active audience segment this week." },
+  { value: "Market Insights", label: "Most visited page", detail: "Highest traffic destination in the member dashboard." },
+  { value: "18 min", label: "Average session", detail: "Average time spent per active member session." }
+] as const;
+
+export const adminMessages = [
+  {
+    id: "msg-partner-1",
+    type: "Partnerships",
+    name: "Arkana Villas",
+    email: "hello@arkanavillas.com",
+    subject: "Partner application",
+    message: "We would like to offer a preferred management package for BBC members and discuss a formal partner feature.",
+    date: "April 20, 2026"
+  },
+  {
+    id: "msg-contact-1",
+    type: "Contacting us",
+    name: "James Walker",
+    email: "james@walkeradvisory.com",
+    subject: "Membership question",
+    message: "Can someone from the team explain how founder memberships differ from investor memberships?",
+    date: "April 19, 2026"
+  },
+  {
+    id: "msg-recommendation-1",
+    type: "Recommendations",
+    name: "Dina Hartono",
+    email: "dina@private.example",
+    subject: "Podcast recommendation",
+    message: "A deep dive on villa management performance in Kedungu would be a great future episode topic.",
+    date: "April 18, 2026"
+  }
+] as const;
+
+export const adminSettings = [
+  { label: "Hourly news refresh", value: "Active" },
+  { label: "Podcast auto-sync", value: "Active" },
+  { label: "Email verification required", value: "Active" },
+  { label: "Admin code login", value: "Enabled" }
 ] as const;
 
 export const socials = [

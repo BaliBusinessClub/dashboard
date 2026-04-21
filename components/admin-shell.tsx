@@ -3,20 +3,20 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BellRing, Database, Download, LogOut, RefreshCw, Settings, Users } from "lucide-react";
+import { BellRing, Database, Download, LogOut, MessageSquareText, RefreshCw, Settings, Users } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
-import { dashboardUsers } from "@/lib/mock-data";
+import { adminAnalyticsCards, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
 
 const adminTabs = [
-  { id: "analytics", label: "ANALYTICS", icon: Users },
-  { id: "reporting", label: "REPORTING", icon: RefreshCw },
-  { id: "database", label: "DATABASE", icon: Database },
-  { id: "settings", label: "SETTINGS", icon: Settings }
+  { id: "analytics", label: "Analytics", icon: Users },
+  { id: "reporting", label: "Reporting", icon: RefreshCw },
+  { id: "database", label: "Database", icon: Database },
+  { id: "settings", label: "Settings", icon: Settings }
 ] as const;
 
 type AdminTab = (typeof adminTabs)[number]["id"];
 
-const reportingTargets = ["market-insights", "news", "podcasts", "resources"];
+const reportingTargets = ["market-insights", "news", "podcasts", "resources", "partners"];
 
 export function AdminShell() {
   const router = useRouter();
@@ -40,11 +40,10 @@ export function AdminShell() {
   }, [ready, router, user]);
 
   async function refreshSection(section: string) {
-    setRefreshStatus(`REFRESHING ${section.toUpperCase()}...`);
-
+    setRefreshStatus(`Refreshing ${section}...`);
     const response = await fetch(`/api/refresh/${section}`, { method: "POST" });
     const result = (await response.json()) as { message?: string };
-    setRefreshStatus(result.message?.toUpperCase() ?? `REFRESH COMPLETED FOR ${section.toUpperCase()}.`);
+    setRefreshStatus(result.message ?? `Refresh completed for ${section}.`);
   }
 
   if (!ready || !user) {
@@ -58,11 +57,29 @@ export function AdminShell() {
           <Image
             src="/bali-business-club-logo-white.png"
             alt="Bali Business Club"
-            width={144}
-            height={26}
+            width={286}
+            height={94}
             className="header-logo-image left"
           />
         </div>
+
+        <nav className="bbc-tab-nav">
+          {adminTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                className={activeTab === tab.id ? "bbc-tab active" : "bbc-tab"}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <Icon size={15} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+
         <button
           type="button"
           className="profile-chip minimal"
@@ -71,45 +88,16 @@ export function AdminShell() {
             router.push("/");
           }}
         >
-          <LogOut size={16} />
-          LOGOUT
+          <LogOut size={14} />
+          <span>{user.name}</span>
         </button>
       </header>
 
-      <nav className="bbc-tab-nav">
-        {adminTabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              className={activeTab === tab.id ? "bbc-tab active" : "bbc-tab"}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <Icon size={15} />
-              {tab.label}
-            </button>
-          );
-        })}
-      </nav>
-
       <section className="bbc-panel">
-        <div className="panel-heading">
-          <div>
-            <p className="eyebrow">BBC BACKEND</p>
-            <h1>{activeTab}</h1>
-          </div>
-        </div>
-
         {activeTab === "analytics" ? (
           <section className="panel-stack">
             <div className="metric-grid compact">
-              {[
-                { value: "28", label: "PEOPLE ONLINE", detail: "LIVE MEMBERS IN DASHBOARD" },
-                { value: "25-34", label: "TOP AGE RANGE", detail: "MOST ACTIVE MEMBER GROUP" },
-                { value: "MARKET INSIGHTS", label: "MOST VISITED PAGE", detail: "TOP PAGE THIS WEEK" },
-                { value: "14 MIN", label: "AVG SESSION TIME", detail: "AVERAGE MEMBER ENGAGEMENT" }
-              ].map((card) => (
+              {adminAnalyticsCards.map((card) => (
                 <article key={card.label} className="metric-card">
                   <div className="metric-label">{card.label}</div>
                   <div className="metric-value">{card.value}</div>
@@ -117,6 +105,32 @@ export function AdminShell() {
                 </article>
               ))}
             </div>
+
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Incoming messages</h2>
+                  <p className="section-note compact">Everything sent from forms on the member dashboard is organized here by type.</p>
+                </div>
+              </div>
+
+              <div className="admin-message-list">
+                {adminMessages.map((message) => (
+                  <article key={message.id} className="admin-message-card">
+                    <div className="admin-message-top">
+                      <span className="news-cat">{message.type}</span>
+                      <small>{message.date}</small>
+                    </div>
+                    <strong>{message.subject}</strong>
+                    <p>{message.message}</p>
+                    <div className="admin-message-meta">
+                      <span>{message.name}</span>
+                      <span>{message.email}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </article>
           </section>
         ) : null}
 
@@ -125,8 +139,8 @@ export function AdminShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <p className="eyebrow">MANUAL CONTROLS</p>
-                  <h2>UPDATE DASHBOARD CONTENT</h2>
+                  <h2>Manual refresh controls</h2>
+                  <p className="section-note compact">Use these controls to pull a section manually before the scheduled auto-update runs.</p>
                 </div>
               </div>
 
@@ -134,7 +148,7 @@ export function AdminShell() {
                 {reportingTargets.map((target) => (
                   <button key={target} type="button" className="reporting-button" onClick={() => refreshSection(target)}>
                     <RefreshCw size={16} />
-                    REFRESH {target.toUpperCase()}
+                    Refresh {target.replace("-", " ")}
                   </button>
                 ))}
               </div>
@@ -149,12 +163,12 @@ export function AdminShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <p className="eyebrow">MEMBER DATABASE</p>
-                  <h2>USERS</h2>
+                  <h2>Member database</h2>
+                  <p className="section-note compact">Export the current user list to CSV or review the key member information here.</p>
                 </div>
                 <a href="/api/export/users" className="table-link-button">
                   <Download size={14} />
-                  EXPORT CSV
+                  Export CSV
                 </a>
               </div>
 
@@ -162,11 +176,12 @@ export function AdminShell() {
                 <table>
                   <thead>
                     <tr>
-                      <th>NAME</th>
-                      <th>EMAIL</th>
-                      <th>PHONE</th>
-                      <th>MEMBERSHIP</th>
-                      <th>JOINED</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Membership</th>
+                      <th>Age range</th>
+                      <th>Joined</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -176,6 +191,7 @@ export function AdminShell() {
                         <td>{member.email}</td>
                         <td>{member.phone}</td>
                         <td>{member.membership}</td>
+                        <td>{member.ageRange}</td>
                         <td>{member.joined}</td>
                       </tr>
                     ))}
@@ -191,29 +207,32 @@ export function AdminShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <p className="eyebrow">SYSTEM SETTINGS</p>
-                  <h2>CONFIGURATION</h2>
+                  <h2>Platform settings</h2>
+                  <p className="section-note compact">Control the live behavior of the dashboard and its admin notifications.</p>
                 </div>
               </div>
 
               <div className="settings-list clean">
+                {adminSettings.map((setting) => (
+                  <div key={setting.label} className="setting-row clean">
+                    <span>{setting.label}</span>
+                    <button type="button" className="filter-btn active">
+                      {setting.value}
+                    </button>
+                  </div>
+                ))}
                 <div className="setting-row clean">
-                  <span>HOURLY NEWS REFRESH</span>
-                  <button type="button" className="filter-btn active">ACTIVE</button>
-                </div>
-                <div className="setting-row clean">
-                  <span>PODCAST AUTO-SYNC</span>
-                  <button type="button" className="filter-btn active">ACTIVE</button>
-                </div>
-                <div className="setting-row clean">
-                  <span>EMAIL VERIFICATION REQUIRED</span>
-                  <button type="button" className="filter-btn active">ACTIVE</button>
-                </div>
-                <div className="setting-row clean">
-                  <span>ADMIN ALERTS</span>
+                  <span>Admin alerts</span>
                   <button type="button" className="filter-btn">
                     <BellRing size={14} />
-                    CONFIGURE
+                    Configure
+                  </button>
+                </div>
+                <div className="setting-row clean">
+                  <span>Inbox routing</span>
+                  <button type="button" className="filter-btn">
+                    <MessageSquareText size={14} />
+                    Review rules
                   </button>
                 </div>
               </div>

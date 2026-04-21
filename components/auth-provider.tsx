@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type UserRole = "admin" | "member";
+const ADMIN_EMAIL = "admin@balibusinessclub.com";
 
 export type SessionUser = {
   email: string;
@@ -63,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const sessionUser: SessionUser = {
       email: normalizedEmail,
       name: name?.trim() || normalizedEmail.split("@")[0].replace(/[._-]/g, " ").toUpperCase(),
-      role: normalizedEmail.includes("admin") ? "admin" : "member",
+      role: normalizedEmail === ADMIN_EMAIL ? "admin" : "member",
       picture: "",
       memberSince: new Date().toISOString().slice(0, 10)
     };

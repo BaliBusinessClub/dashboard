@@ -91,6 +91,61 @@ function formatMemberSince(date: string) {
   }).format(new Date(date));
 }
 
+function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
+  if (icon === "youtube") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8ZM9.6 15.5v-7L16 12l-6.4 3.5Z"
+        />
+      </svg>
+    );
+  }
+
+  if (icon === "spotify") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M12 1.5a10.5 10.5 0 1 0 10.5 10.5A10.5 10.5 0 0 0 12 1.5Zm4.8 15.2a.9.9 0 0 1-1.2.3 10.2 10.2 0 0 0-8.2-.9.9.9 0 0 1-.5-1.7 12 12 0 0 1 9.7 1.1.9.9 0 0 1 .2 1.2Zm1.5-3.1a1.1 1.1 0 0 1-1.4.4 12.7 12.7 0 0 0-10.1-1.1 1.1 1.1 0 0 1-.7-2 14.9 14.9 0 0 1 11.8 1.3 1.1 1.1 0 0 1 .4 1.4Zm.1-3.2a1.3 1.3 0 0 1-1.6.5 15.7 15.7 0 0 0-11.7-1.3 1.3 1.3 0 1 1-.8-2.5 18.3 18.3 0 0 1 13.6 1.5 1.3 1.3 0 0 1 .5 1.8Z"
+        />
+      </svg>
+    );
+  }
+
+  if (icon === "instagram") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M7.4 2h9.2A5.4 5.4 0 0 1 22 7.4v9.2a5.4 5.4 0 0 1-5.4 5.4H7.4A5.4 5.4 0 0 1 2 16.6V7.4A5.4 5.4 0 0 1 7.4 2Zm-.2 1.8A3.4 3.4 0 0 0 3.8 7.2v9.6a3.4 3.4 0 0 0 3.4 3.4h9.6a3.4 3.4 0 0 0 3.4-3.4V7.2a3.4 3.4 0 0 0-3.4-3.4H7.2Zm10.2 1.4a1.2 1.2 0 1 1-1.2 1.2 1.2 1.2 0 0 1 1.2-1.2ZM12 7a5 5 0 1 1-5 5 5 5 0 0 1 5-5Zm0 1.8A3.2 3.2 0 1 0 15.2 12 3.2 3.2 0 0 0 12 8.8Z"
+        />
+      </svg>
+    );
+  }
+
+  if (icon === "facebook") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M13.7 22v-8.2h2.8l.4-3.2h-3.2V8.5c0-.9.2-1.6 1.6-1.6h1.7V4.1a22.6 22.6 0 0 0-2.5-.1c-2.5 0-4.2 1.5-4.2 4.4v2.2H7.5v3.2h2.8V22h3.4Z"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M19.6 5.1a4.8 4.8 0 0 1-3.2-1.6h-2.4v13.1a2.7 2.7 0 1 1-2-2.6V11a6 6 0 1 0 4.7 5.8V9.9a7.1 7.1 0 0 0 4.1 1.3V8.8a4.5 4.5 0 0 1-1.2-.2Z"
+      />
+    </svg>
+  );
+}
+
 function InteractiveMarketGraph({
   values,
   activeIndex,
@@ -402,22 +457,6 @@ export function DashboardShell() {
     return favorites.some((favorite) => favorite.id === id);
   }
 
-  function renderSocialIcon(icon: (typeof socials)[number]["icon"]) {
-    if (icon === "youtube") {
-      return <Youtube size={18} />;
-    }
-    if (icon === "spotify") {
-      return <Music2 size={18} />;
-    }
-    if (icon === "instagram") {
-      return <Instagram size={18} />;
-    }
-    if (icon === "facebook") {
-      return <Facebook size={18} />;
-    }
-    return <MessagesSquare size={18} />;
-  }
-
   if (!ready || !user) {
     return <main className="bbc-shell" />;
   }
@@ -727,8 +766,11 @@ export function DashboardShell() {
                       <div className="episode-tag">{episode.topic}</div>
                       <strong>{episode.title}</strong>
                       <p>{episode.description}</p>
-                      <div className="episode-meta">
-                        <span>{episode.published}</span>
+                      <div className="episode-actions">
+                        <span className="watch-pill">
+                          <Youtube size={14} />
+                          Watch
+                        </span>
                         <button
                           type="button"
                           className="mini-action"
@@ -806,7 +848,10 @@ export function DashboardShell() {
               <div className="partner-list clean">
                 {partnerBenefits.map((partner) => (
                   <article key={partner.name} className="partner-card clean">
-                    <div>
+                    <div className="partner-copy">
+                      <div className="partner-logo-wrap">
+                        <Image src={partner.logo} alt={partner.name} width={260} height={88} className="partner-logo" />
+                      </div>
                       <strong>{partner.name}</strong>
                       <p>{partner.offer}</p>
                     </div>
@@ -912,7 +957,9 @@ export function DashboardShell() {
                   {socials.map((social) => (
                     <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
                       <div className="social-main">
-                        <div className="social-badge">{renderSocialIcon(social.icon)}</div>
+                        <div className="social-badge">
+                          <SocialLogo icon={social.icon} />
+                        </div>
                         <div>
                           <strong>{social.name}</strong>
                           <p>{social.handle}</p>

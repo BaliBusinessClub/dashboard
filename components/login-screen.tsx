@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Mail, ShieldCheck } from "lucide-react";
+import { LockKeyhole, Mail } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 
-type Mode = "signin" | "create" | "verify";
+type Mode = "signin" | "create" | "admin" | "verify";
 
 export function LoginScreen() {
   const router = useRouter();
@@ -14,7 +14,6 @@ export function LoginScreen() {
   const [mode, setMode] = useState<Mode>("signin");
   const [name, setName] = useState("Made Prasetya");
   const [email, setEmail] = useState("member@balibusinessclub.com");
-  const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [previewCode, setPreviewCode] = useState<string | null>(null);
@@ -28,7 +27,7 @@ export function LoginScreen() {
   }, [ready, router, user]);
 
   async function sendCode() {
-    setStatus("PREPARING BBC VERIFICATION EMAIL...");
+    setStatus(mode === "admin" ? "Preparing admin access code..." : "Preparing verification code...");
     setPreviewCode(null);
 
     const response = await fetch("/api/auth/send-code", {
@@ -40,17 +39,17 @@ export function LoginScreen() {
     const result = (await response.json()) as { ok?: boolean; message?: string; error?: string; code?: string };
 
     if (!response.ok) {
-      setStatus(result.error ?? "UNABLE TO GENERATE THE VERIFICATION CODE.");
+      setStatus(result.error ?? "Unable to generate the access code.");
       return;
     }
 
     setMode("verify");
     setPreviewCode(result.code ?? null);
-    setStatus(result.message?.toUpperCase() ?? "VERIFICATION EMAIL PREPARED.");
+    setStatus(mode === "admin" ? "Admin code ready." : "Verification code ready.");
   }
 
   async function verifyCode() {
-    setStatus("CHECKING YOUR VERIFICATION CODE...");
+    setStatus("Checking your code...");
 
     const response = await fetch("/api/auth/verify-code", {
       method: "POST",
@@ -61,19 +60,17 @@ export function LoginScreen() {
     const result = (await response.json()) as { ok?: boolean; error?: string };
 
     if (!response.ok) {
-      setStatus(result.error?.toUpperCase() ?? "VERIFICATION FAILED.");
+      setStatus(result.error ?? "Verification failed.");
       return;
     }
 
     const sessionUser = signInWithEmail(email, name);
-    setStatus("EMAIL VERIFIED. ACCESS GRANTED.");
     router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
   }
 
   function continueWithEmail() {
     if (mode === "signin") {
       const sessionUser = signInWithEmail(email, name);
-      setStatus(sessionUser.role === "admin" ? "ADMIN ACCESS GRANTED." : "MEMBER ACCESS GRANTED.");
       router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
       return;
     }
@@ -82,7 +79,7 @@ export function LoginScreen() {
   }
 
   function continueWithGoogle() {
-    setStatus("GOOGLE SIGN-IN NEEDS A GOOGLE CLIENT ID AND OAUTH SETUP TO WORK LIVE.");
+    setStatus("Google sign-in still needs real Google OAuth credentials to work live.");
   }
 
   if (!ready) {
@@ -91,107 +88,79 @@ export function LoginScreen() {
 
   return (
     <main className="auth-screen simple">
-      <section className="auth-center">
-        <div className="auth-card clean">
-          <div className="auth-logo-wrap">
-            <Image
-              src="/bali-business-club-logo-white.png"
-              alt="Bali Business Club"
-              width={286}
-              height={94}
-              className="login-logo-image"
-            />
-          </div>
+      <section className="auth-center auth-center-minimal">
+        <div className="auth-logo-wrap compact">
+          <Image
+            src="/bali-business-club-logo-white.png"
+            alt="Bali Business Club"
+            width={286}
+            height={94}
+            className="login-logo-image"
+          />
+        </div>
 
-          <div className="auth-card-intro">
-            <span className="eyebrow">Member access</span>
-            <h1 className="auth-main-title">Login</h1>
-            <p>Use your BBC account to access the dashboard.</p>
-          </div>
+        <div className="auth-switch compact">
+          <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
+            Sign in
+          </button>
+          <button type="button" className={mode === "create" ? "active" : ""} onClick={() => {
+            setMode("create");
+            setEmail("member@balibusinessclub.com");
+          }}>
+            Create account
+          </button>
+          <button type="button" className={mode === "admin" ? "active" : ""} onClick={() => {
+            setMode("admin");
+            setEmail("admin@balibusinessclub.com");
+          }}>
+            Admin
+          </button>
+        </div>
 
-          <div className="auth-tabs clean">
-            <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
-              SIGN IN
-            </button>
-            <button type="button" className={mode === "create" ? "active" : ""} onClick={() => setMode("create")}>
-              CREATE ACCOUNT
-            </button>
-            <button type="button" className={mode === "verify" ? "active" : ""} onClick={() => setMode("verify")}>
-              VERIFY EMAIL
-            </button>
-          </div>
-
+        <div className="auth-card clean minimal-login-card">
           {mode === "create" ? (
             <label>
-              FULL NAME
+              Name
               <input value={name} onChange={(event) => setName(event.target.value)} />
             </label>
           ) : null}
 
           <label>
-            EMAIL
+            Email
             <input value={email} onChange={(event) => setEmail(event.target.value)} />
           </label>
 
-          {mode !== "verify" ? (
+          {mode === "verify" ? (
             <label>
-              PASSWORD
-              <input
-                type="password"
-                value={password}
-                placeholder="MINIMUM 8 CHARACTERS"
-                onChange={(event) => setPassword(event.target.value)}
-              />
-            </label>
-          ) : (
-            <label>
-              6-DIGIT CODE
+              Code
               <input value={code} onChange={(event) => setCode(event.target.value)} />
             </label>
-          )}
+          ) : null}
 
           {mode === "verify" ? (
-            <>
+            <div className="minimal-login-actions">
               <button type="button" className="primary-button compact" onClick={verifyCode}>
-                <ShieldCheck size={14} />
-                VERIFY EMAIL
+                <LockKeyhole size={14} />
+                Continue
               </button>
-              <button type="button" className="ghost-button compact" onClick={() => void sendCode()}>
-                RESEND CODE
+              <button type="button" className="ghost-button compact" onClick={() => setMode(email.includes("admin") ? "admin" : "create")}>
+                Back
               </button>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="minimal-login-actions">
               <button type="button" className="primary-button compact" onClick={continueWithEmail}>
                 <Mail size={14} />
-                {mode === "create" ? "CREATE ACCOUNT" : "LOGIN"}
+                {mode === "signin" ? "Sign in" : mode === "admin" ? "Send admin code" : "Create account"}
               </button>
-              <button type="button" className="google-button" onClick={continueWithGoogle}>
-                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M21.8 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.5c-.2 1.2-.9 2.3-1.9 3l3.1 2.4c1.8-1.6 3.1-4 3.1-7.2Z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 22c2.7 0 4.9-.9 6.6-2.5l-3.1-2.4c-.9.6-2 1-3.5 1c-2.7 0-5-1.8-5.8-4.3H3v2.6A10 10 0 0 0 12 22Z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M6.2 13.8A6.1 6.1 0 0 1 5.9 12c0-.6.1-1.2.3-1.8V7.6H3A10 10 0 0 0 2 12c0 1.6.4 3.2 1 4.4l3.2-2.6Z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 5.9c1.5 0 2.8.5 3.9 1.5l2.9-2.9A10 10 0 0 0 3 7.6l3.2 2.6C7 7.7 9.3 5.9 12 5.9Z"
-                  />
-                </svg>
-                CONTINUE WITH GOOGLE
+              <button type="button" className="google-button compact-google" onClick={continueWithGoogle}>
+                Continue with Google
               </button>
-            </>
+            </div>
           )}
 
           {status ? <p className="status-banner">{status}</p> : null}
-          {previewCode ? <p className="preview-banner">PREVIEW CODE: {previewCode}</p> : null}
+          {previewCode ? <p className="preview-banner">Preview code: {previewCode}</p> : null}
         </div>
       </section>
     </main>
