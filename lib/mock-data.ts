@@ -4,327 +4,372 @@ import {
   ChartColumn,
   Heart,
   Newspaper,
-  Podcast,
-  UsersRound
+  Podcast
 } from "lucide-react";
 
 export const dashboardShortcuts = [
   {
     id: "market",
-    title: "MARKET INSIGHTS",
-    copy: "Open the REID-powered real estate snapshot and market stats.",
+    title: "Market Insights",
     icon: ChartColumn
   },
   {
     id: "news",
-    title: "NEWS",
-    copy: "Browse summarized Bali business, tourism, and property headlines.",
+    title: "News",
     icon: Newspaper
   },
   {
     id: "podcasts",
-    title: "PODCASTS",
-    copy: "Jump into Bali Business Club episodes from the YouTube channel.",
+    title: "Podcasts",
     icon: Podcast
   },
   {
     id: "resources",
-    title: "RESSOURCES",
-    copy: "Access ebooks, reports, and external business resources.",
+    title: "Ressources",
     icon: BookOpen
   },
   {
     id: "partners",
-    title: "PARTNERS",
-    copy: "See member benefits and partnership opportunities.",
+    title: "Partners",
     icon: Building2
   },
   {
     id: "favorites",
-    title: "FAVORITES",
-    copy: "Revisit the reports, articles, and podcasts you saved.",
+    title: "Favorites",
     icon: Heart
-  },
-  {
-    id: "connect",
-    title: "CONNECT WITH US",
-    copy: "Find social channels, WhatsApp, and recommend future topics.",
-    icon: UsersRound
   }
 ] as const;
 
+export const marketFilters = ["All", "Buy", "Build", "Sell", "Operate"] as const;
+
 export const insightHighlights = [
   {
-    label: "MARKET READ",
-    title: "BALI IS SHIFTING FROM FAST GROWTH TO A MORE DISCIPLINED MARKET",
+    label: "Market read",
+    title: "Bali is moving into a more selective phase",
     summary:
-      "REID's 2025 annual summary describes a year of structural consolidation, moderated volumes, and a pivot toward compact, efficient assets.",
-    source: "Source: REID 2025 Annual Market Report"
+      "REID's annual market read points to a shift from broad expansion toward sharper investor discipline, more careful project selection, and higher attention on location quality.",
+    source: "REID 2025 Annual Market Report",
+    strategies: ["All", "Buy", "Build", "Sell"]
   },
   {
-    label: "SUPPLY",
-    title: "LISTINGS STAY DEEP, BUT NEW RELEASES LOOK MORE SELECTIVE",
+    label: "Supply",
+    title: "New launches appear more disciplined than before",
     summary:
-      "REID notes supply pipelines narrowed in off-plan inventory, suggesting developers are becoming more selective with launches.",
-    source: "Source: REID 2025 Annual Market Report"
+      "REID notes supply remains broad, but new project launches are no longer expanding with the same speed, suggesting more caution in the development pipeline.",
+    source: "REID 2025 Annual Market Report",
+    strategies: ["All", "Build", "Sell"]
   },
   {
-    label: "OPERATORS",
-    title: "RENTAL PERFORMANCE IS HOLDING, EVEN WITH RATE PRESSURE",
+    label: "Operations",
+    title: "Rental performance still matters to strategy selection",
     summary:
-      "Q3 2023 reports showed occupancy around 65 percent while ADR remained around the mid-$190 range, signaling resilience in the operator segment.",
-    source: "Source: REID Q3 2023 Buyers and Operators Reports"
-  }
-];
-
-export const marketStatCards = [
-  {
-    title: "LEASEHOLD MARKET DEPTH",
-    figure: "7,000+",
-    bar: 74,
-    context: "REID's public overview cites more than 7,000 leasehold properties in its market-wide data set."
-  },
-  {
-    title: "FREEHOLD INVENTORY",
-    figure: "3,000+",
-    bar: 38,
-    context: "REID's public overview cites over 3,000 freehold properties in its market-wide data set."
-  },
-  {
-    title: "RENTAL MARKET SCALE",
-    figure: "60,000+",
-    bar: 92,
-    context: "REID's public overview points to over 60,000 rental properties captured across Bali."
-  },
-  {
-    title: "AVERAGE OCCUPANCY",
-    figure: "64.9%",
-    bar: 65,
-    context: "Q3 2023 Buyers Report shows average market occupancy at 64.9 percent."
+      "Occupancy and ADR signals in the REID reports keep operational performance central to investment decisions, especially for yield-focused buyers and villa operators.",
+    source: "REID Q3 2023 Buyers and Operators Reports",
+    strategies: ["All", "Buy", "Operate"]
   }
 ];
 
 export const marketChartSeries = [
   {
-    title: "AVERAGE OCCUPANCY",
+    title: "Average Occupancy",
     highlight: "64.9%",
     values: [52, 57, 60, 63, 66, 64.9],
-    tone: "yellow" as const,
-    context: "Q3 2023 Buyers Report market occupancy trend snapshot."
+    context: "Q3 2023 Buyers Report market occupancy trend snapshot.",
+    strategies: ["All", "Buy", "Operate"]
   },
   {
-    title: "AVERAGE DAILY RATE",
+    title: "Average Daily Rate",
     highlight: "$195",
     values: [168, 175, 182, 191, 198, 195],
-    tone: "blue" as const,
-    context: "REID buyers report snapshot for Bali rental rate performance."
+    context: "Rate performance signal from REID's Q3 2023 buyer-facing market view.",
+    strategies: ["All", "Buy", "Operate"]
   },
   {
-    title: "RENTAL REVENUE",
+    title: "Rental Revenue",
     highlight: "$389M",
     values: [248, 292, 318, 341, 372, 389],
-    tone: "yellow" as const,
-    context: "Total Bali rental revenue noted in the Q3 2023 Buyers Report."
+    context: "Total Bali rental revenue noted in the REID Q3 2023 Buyers Report.",
+    strategies: ["All", "Buy", "Operate", "Sell"]
+  },
+  {
+    title: "Leasehold Supply Depth",
+    highlight: "7,000+",
+    values: [5200, 5600, 6100, 6500, 6900, 7000],
+    context: "REID overview signal for leasehold inventory scale across Bali.",
+    strategies: ["All", "Buy", "Sell"]
+  }
+];
+
+export const marketStatCards = [
+  {
+    title: "64.9%",
+    detail: "Average market occupancy in Q3 2023",
+    source: "REID Q3 2023 Buyers Report"
+  },
+  {
+    title: "$195",
+    detail: "Average daily rate in Q3 2023",
+    source: "REID Q3 2023 Buyers Report"
+  },
+  {
+    title: "$389M",
+    detail: "Total Bali rental revenue in Q3 2023",
+    source: "REID Q3 2023 Buyers Report"
+  },
+  {
+    title: "7,000+",
+    detail: "Leasehold properties tracked in REID's market overview",
+    source: "REID Home Updated"
+  },
+  {
+    title: "3,000+",
+    detail: "Freehold properties tracked in REID's market overview",
+    source: "REID Home Updated"
+  },
+  {
+    title: "60,000+",
+    detail: "Rental properties tracked in REID's market overview",
+    source: "REID Home Updated"
   }
 ];
 
 export const newsSections = [
   {
-    title: "TOURISM AND POLICY",
-    icon: Newspaper,
-    articles: [
-      {
-        id: "news-1",
-        title: "Tourism Ministry moves to bolster Bali's accommodation governance",
-        teaser: "A stronger compliance and licensing push could reshape the operating environment for accommodation businesses.",
-        summary:
-          "Indonesia's Tourism Ministry said the accommodation sector is strategic to Bali's economy and is moving to improve communication, coordination, and regulatory certainty for licensed operators. For BBC members, the important signal is that governance and standardization are becoming a bigger part of the business conversation.",
-        source: "ANTARA News",
-        date: "April 11, 2026",
-        url: "https://en.antaranews.com/amp/news/411959/tourism-ministry-moves-to-bolster-balis-accommodation-governance"
-      },
-      {
-        id: "news-2",
-        title: "Gov't pushes water taxi and pier development to support Bali tourism",
-        teaser: "Transport infrastructure remains part of the long-term story behind visitor flow and regional accessibility.",
-        summary:
-          "Indonesia's Transportation Ministry said it is pushing water taxis and pier development in Bali to improve connectivity and reduce congestion, with construction planning currently scheduled from August 2026 to July 2027. Better mobility would matter not only for tourism, but also for area-by-area real estate demand and operating logistics.",
-        source: "ANTARA News",
-        date: "April 10, 2026",
-        url: "https://en.antaranews.com/news/411837/govt-pushes-water-taxi-pier-development-to-support-balis-tourism"
-      },
-      {
-        id: "news-3",
-        title: "Government provides fiscal incentives to sustain tourism",
-        teaser: "The tourism ministry is signaling support measures to cushion the sector against rising travel costs.",
-        summary:
-          "ANTARA reported that fiscal support, including government-borne VAT on economy tickets and limits on airfare increases, is part of the national strategy to keep tourism resilient. For BBC members, that suggests the state still sees travel affordability as a direct lever for demand stability.",
-        source: "ANTARA News",
-        date: "April 17, 2026",
-        url: "https://en.antaranews.com/news/412684/govt-provides-up-to-down-fiscal-incentives-to-sustain-tourism"
-      }
-    ]
-  },
-  {
-    title: "BUSINESS ENVIRONMENT",
+    title: "Business",
     icon: Building2,
     articles: [
       {
-        id: "news-4",
-        title: "Ministry seeks to bolster community-based tourism as priority agenda",
-        teaser: "National tourism policy is leaning harder into local participation and more distributed value creation.",
-        summary:
-          "The Jakarta Post reported that the ministry is prioritizing community-based tourism and expanding international airport availability to improve access. This matters for Bali businesses because it reinforces a broader, more inclusive tourism model rather than a narrow luxury-only growth story.",
-        source: "The Jakarta Post",
-        date: "April 13, 2026",
-        url: "https://www.thejakartapost.com/business/2026/04/16/ministry-seeks-to-bolster-community-based-tourism-as-priority-agenda.html"
-      },
-      {
-        id: "news-5",
-        title: "Indonesia to tap ASEAN and domestic tourism amid Iran war fallout",
-        teaser: "Tourism strategy is shifting toward regional and domestic demand as global travel routes face disruption.",
-        summary:
-          "The Jakarta Post reported that Indonesia is emphasizing ASEAN and domestic demand to offset aviation disruption tied to the Middle East conflict. The story is relevant to BBC members because it highlights how external shocks can quickly change demand composition and marketing priorities.",
+        id: "news-business-1",
+        title: "Indonesia leans on ASEAN and domestic demand to protect tourism activity",
+        teaser: "A strategy shift toward regional and domestic travelers could reshape how Bali-facing businesses think about demand resilience.",
+        content:
+          "The Jakarta Post reported that Indonesia is increasing its reliance on ASEAN and domestic travelers as geopolitical disruption affects long-haul routes. For Bali businesses, this matters because visitor composition can change quickly when airline networks face pressure. A stronger ASEAN and domestic mix can alter average spend, booking behavior, seasonality, and what kinds of products or services perform best.\n\nFor investors and operators, the practical takeaway is that demand planning cannot rely only on one international traveler profile. Hospitality, lifestyle, and service businesses should watch how policy, flight connectivity, and source market shifts affect both occupancy and pricing power. This also reinforces the value of adaptive business models that can serve short-term tourists, longer-stay residents, and regional travelers with different budgets and expectations.",
         source: "The Jakarta Post",
         date: "April 15, 2026",
         url: "https://www.thejakartapost.com/business/2026/04/16/indonesia-to-tap-asean-domestic-tourism-amid-iran-war-fallout.html"
       },
       {
-        id: "news-6",
-        title: "RI could lose 60,000 foreign visitors due to Mideast crisis, ministry says",
-        teaser: "Aviation disruption is already showing up as a real planning variable for the tourism sector.",
-        summary:
-          "According to The Jakarta Post, the Tourism Ministry warned that international arrivals and foreign exchange earnings could fall because of flight disruptions across major Middle East hubs. BBC members in tourism-sensitive sectors should read this as a reminder to diversify source markets and booking channels.",
+        id: "news-business-2",
+        title: "Community-based tourism is moving higher on the national agenda",
+        teaser: "Policy is signaling a broader tourism model that may reward local partnerships and more distributed value creation.",
+        content:
+          "The Jakarta Post reported that the Tourism Ministry is pushing community-based tourism higher up its priority list. That signal matters in Bali because it suggests future tourism growth may be evaluated not just by arrival numbers, but also by how value is distributed locally and how regional access improves.\n\nFor business owners, the larger implication is that local collaboration, compliance, and community alignment may become more important strategic assets. Businesses that integrate well with local economies and deliver visible value beyond pure visitor volume may be better placed as policy and investor expectations evolve.",
+        source: "The Jakarta Post",
+        date: "April 13, 2026",
+        url: "https://www.thejakartapost.com/business/2026/04/16/ministry-seeks-to-bolster-community-based-tourism-as-priority-agenda.html"
+      },
+      {
+        id: "news-business-3",
+        title: "Mideast route disruption may reduce foreign arrivals and tourism receipts",
+        teaser: "Flight disruption is becoming a planning variable that businesses with tourism exposure cannot ignore.",
+        content:
+          "According to The Jakarta Post, the Tourism Ministry warned that prolonged route disruption linked to the Middle East conflict could reduce foreign visitor numbers and tourism-linked earnings. For Bali operators, that is less about one headline and more about a reminder that exogenous shocks can alter arrival timing, booking patterns, and revenue expectations with very little notice.\n\nThis makes diversification increasingly important. Businesses exposed to inbound travel may need broader market mixes, more flexible pricing, stronger repeat-guest strategies, and better conversion from domestic or regional audiences when international conditions soften.",
         source: "The Jakarta Post",
         date: "April 2, 2026",
         url: "https://www.thejakartapost.com/business/2026/04/02/ri-to-lose-60000-foreign-visitors-to-mideast-crisis-tourism-ministry.html"
       }
     ]
+  },
+  {
+    title: "Tourism",
+    icon: Newspaper,
+    articles: [
+      {
+        id: "news-tourism-1",
+        title: "Tourism Ministry strengthens Bali accommodation governance",
+        teaser: "Compliance, licensing, and operating clarity are becoming more central to Bali's tourism environment.",
+        content:
+          "ANTARA reported that the Tourism Ministry is working to strengthen Bali's accommodation governance through better coordination, communication, and regulatory clarity. This is meaningful for villa operators, hotel owners, managers, and service providers because enforcement and standards often shape the long-term attractiveness of a market just as much as raw demand does.\n\nA stronger governance environment can produce winners and losers. Businesses that are structured correctly and operate transparently may benefit from a more stable competitive field, while weaker or non-compliant operators may face increasing friction. For BBC members, this is a policy trend worth tracking because it affects operations, risk, and valuation quality.",
+        source: "ANTARA News",
+        date: "April 11, 2026",
+        url: "https://en.antaranews.com/amp/news/411959/tourism-ministry-moves-to-bolster-balis-accommodation-governance"
+      },
+      {
+        id: "news-tourism-2",
+        title: "Government pushes water taxi and pier development to support Bali tourism",
+        teaser: "Mobility and visitor flow remain long-term factors behind which Bali areas gain or lose momentum.",
+        content:
+          "ANTARA reported that the Transportation Ministry is supporting water taxi and pier development in Bali as part of a wider effort to improve connectivity and reduce congestion. Although infrastructure projects take time to shape real outcomes, they often influence both tourism convenience and how investors think about future location strength.\n\nFor market watchers, better connectivity can change where attention goes next. Areas that become easier to reach or integrate more smoothly into visitor itineraries often become more attractive not just to tourists, but also to operators, developers, and service businesses positioning for future demand.",
+        source: "ANTARA News",
+        date: "April 10, 2026",
+        url: "https://en.antaranews.com/news/411837/govt-pushes-water-taxi-pier-development-to-support-balis-tourism"
+      },
+      {
+        id: "news-tourism-3",
+        title: "Fiscal support is being used to sustain tourism demand",
+        teaser: "Travel affordability remains a live policy lever for keeping visitor numbers resilient.",
+        content:
+          "ANTARA reported that Indonesia is using fiscal tools, including support around airfare-related costs, to help sustain tourism. This matters because the government is clearly treating travel affordability as something that can materially influence tourism demand.\n\nFor Bali-facing businesses, policy support does not remove volatility, but it does signal that demand-side resilience is a national concern. If affordability remains a policy priority, businesses may find more stability in visitor flow than they would in a fully hands-off environment, particularly during periods of broader travel cost pressure.",
+        source: "ANTARA News",
+        date: "April 17, 2026",
+        url: "https://en.antaranews.com/news/412684/govt-provides-up-to-down-fiscal-incentives-to-sustain-tourism"
+      }
+    ]
   }
-];
+] as const;
+
+export const podcastTopics = ["All", "Investment", "Legal", "Strategy"] as const;
 
 export const podcastFeed = [
   {
+    id: "pod-1",
+    title: "Pioneer Investing: The 3 Golden Rules",
+    description: "A BBC conversation around frontier locations, timing, and how early-stage positioning changes returns.",
+    published: "Published 2025",
+    topic: "Investment",
+    url: "https://youtu.be/oFFzcP9m-14",
+    image: "https://i.ytimg.com/vi/oFFzcP9m-14/hqdefault.jpg"
+  },
+  {
+    id: "pod-2",
+    title: "Leasehold vs Freehold",
+    description: "A practical breakdown of ownership structure and why it matters to investors entering Bali.",
+    published: "Published 2025",
+    topic: "Legal",
+    url: "https://youtu.be/A-8XYkc3hCA",
+    image: "https://i.ytimg.com/vi/A-8XYkc3hCA/hqdefault.jpg"
+  },
+  {
+    id: "pod-3",
+    title: "Lease Extensions in Bali",
+    description: "A focused BBC episode on lease extension risk, structure, and investor implications.",
+    published: "Published 2025",
+    topic: "Legal",
+    url: "https://youtu.be/E1FguH5Op68",
+    image: "https://i.ytimg.com/vi/E1FguH5Op68/hqdefault.jpg"
+  },
+  {
+    id: "pod-4",
+    title: "The Kedungu Fund: All the Answers",
+    description: "An episode centered on frontier-location thesis, fund logic, and the next phase of Bali growth.",
+    published: "Published 2025",
+    topic: "Investment",
+    url: "https://youtu.be/jh_Ejqlc40g",
+    image: "https://i.ytimg.com/vi/jh_Ejqlc40g/hqdefault.jpg"
+  },
+  {
+    id: "pod-5",
     title: "Bali Real Estate: Triple Your Investment In 3 Years!",
-    description:
-      "BBC podcast episode featuring Gawain Blizzard and Omri Ben-Canaan on frontier locations, surf-led growth, and how strategy changes ROI.",
+    description: "A strategy-heavy BBC episode on location choice, wave patterns, and ROI logic in Bali.",
     published: "Published March 28, 2025",
-    url: "https://music.youtube.com/podcast/7bXHvn8Vksw"
-  },
-  {
-    title: "YOUTUBE CHANNEL AUTO-SYNC READY",
-    description:
-      "This slot is prepared for live YouTube feed ingestion so new episodes can appear automatically when published on the BBC channel.",
-    published: "Sync placeholder",
-    url: "https://www.youtube.com/@BaliBusinessClub"
+    topic: "Strategy",
+    url: "https://music.youtube.com/podcast/7bXHvn8Vksw",
+    image: "/bali-business-club-logo-white.svg"
   }
-];
+] as const;
 
-export const resourceFolders = [
+export const resourceDocuments = [
   {
-    title: "BBC EBOOK LIBRARY",
-    copy: "Primary Google Drive folder for Bali Business Club ebooks and PDFs. Hook this to the Google Drive API to list every file title automatically.",
+    id: "res-1",
+    title: "BBC Ebook Library",
     source: "BBC Google Drive",
-    url: "https://drive.google.com/drive/folders/1lOg3Rvx1YWxAWfQGJ0X1rx0bKu3JxxGk?usp=drive_link"
+    url: "https://drive.google.com/drive/folders/1lOg3Rvx1YWxAWfQGJ0X1rx0bKu3JxxGk?usp=drive_link",
+    note: "Live folder integration still needed to list every individual PDF automatically."
   },
   {
-    title: "EXTERNAL REPORTS LIBRARY",
-    copy: "Supplemental Google Drive folder for third-party reports worth sharing with members.",
+    id: "res-2",
+    title: "External Reports Library",
     source: "BBC Curated Reports Folder",
-    url: "https://drive.google.com/drive/folders/159gqNAUbLn3F3NgCCL-aa7pb5PzeD83j?usp=drive_link"
+    url: "https://drive.google.com/drive/folders/159gqNAUbLn3F3NgCCL-aa7pb5PzeD83j?usp=drive_link",
+    note: "Live folder integration still needed to list every individual report automatically."
   }
-];
+] as const;
 
 export const partnerBenefits = [
   {
-    name: "VOXPOP STUDIO",
+    name: "Voxpop Studio",
     offer: "10% off podcast studio online booking with code BBCMEMBER",
     button: "BOOK ONLINE",
     url: "https://voxpopbali.com/"
   },
   {
-    name: "LEGAL LEGENDS INDONESIA",
-    offer: "5% off visa, KITAS, and PT PMA creation services",
+    name: "Legal Legends Indonesia",
+    offer: "5% on visa, KITAS, and PT PMA creation",
     button: "CONTACT",
     url: "https://legallegendsindonesia.com/contact-us/"
   },
   {
-    name: "BALI ACCOUNTING LEGENDS",
+    name: "Bali Accounting Legends",
     offer: "5% discount on consulting",
     button: "CONTACT",
     url: "https://wa.me/6281239091087"
   }
-];
+] as const;
 
-export const favorites = [
+export const initialFavorites = [
   {
-    type: "REPORT",
-    title: "REID 2025 Annual Market Report",
-    note: "Saved for long-term supply and pricing trend review.",
-    savedAt: "April 20, 2026"
+    id: "fav-news-business-1",
+    type: "News",
+    title: "Indonesia leans on ASEAN and domestic demand to protect tourism activity",
+    note: "Saved for tourism demand planning.",
+    sourceId: "news-business-1"
   },
   {
-    type: "ARTICLE",
-    title: "Tourism Ministry moves to bolster Bali's accommodation governance",
-    note: "Saved for policy tracking and operational compliance.",
-    savedAt: "April 20, 2026"
+    id: "fav-pod-2",
+    type: "Podcast",
+    title: "Leasehold vs Freehold",
+    note: "Saved for legal structure review.",
+    sourceId: "pod-2"
   },
   {
-    type: "PODCAST",
-    title: "Bali Real Estate: Triple Your Investment In 3 Years!",
-    note: "Saved for investor strategy ideas.",
-    savedAt: "April 20, 2026"
+    id: "fav-res-1",
+    type: "Ressource",
+    title: "BBC Ebook Library",
+    note: "Saved for BBC internal materials.",
+    sourceId: "res-1"
   }
-];
+] as const;
 
 export const socials = [
   {
-    name: "YOUTUBE",
+    name: "YouTube",
     handle: "@BaliBusinessClub",
-    url: "https://youtube.com/@BaliBusinessClub?sub_confirmation=1"
+    url: "https://youtube.com/@BaliBusinessClub?sub_confirmation=1",
+    icon: "YT"
   },
   {
-    name: "SPOTIFY",
+    name: "Spotify",
     handle: "Bali Business Club",
-    url: "https://open.spotify.com/show/3fKJEwQXsQwR7TaFrl1d1b?si=48e00d7b104544e4"
+    url: "https://open.spotify.com/show/3fKJEwQXsQwR7TaFrl1d1b?si=48e00d7b104544e4",
+    icon: "SP"
   },
   {
-    name: "INSTAGRAM",
+    name: "Instagram",
     handle: "@bali.business.club",
-    url: "https://www.instagram.com/bali.business.club/"
+    url: "https://www.instagram.com/bali.business.club/",
+    icon: "IG"
   },
   {
-    name: "FACEBOOK",
+    name: "Facebook",
     handle: "Balibizclub",
-    url: "https://www.facebook.com/Balibizclub/"
+    url: "https://www.facebook.com/Balibizclub/",
+    icon: "FB"
   },
   {
-    name: "TIKTOK",
+    name: "TikTok",
     handle: "@balibusinessclub",
-    url: "https://www.tiktok.com/@balibusinessclub"
+    url: "https://www.tiktok.com/@balibusinessclub",
+    icon: "TT"
   }
-];
+] as const;
 
-export const connectPanels = [
+export const instagramPanels = [
   {
-    meta: "INSTAGRAM POST",
-    title: "MEMBER SPOTLIGHTS AND EVENT CUTS",
-    copy: "Use the Instagram feed area for recent clips, quotes, podcast snippets, and community highlights.",
+    title: "Instagram feed integration pending",
+    copy: "The layout is ready, but actual recent posts still need Instagram API or embed wiring.",
     url: "https://www.instagram.com/bali.business.club/"
   },
   {
-    meta: "INSTAGRAM POST",
-    title: "PODCAST PROMO REELS",
-    copy: "Horizontal carousel layout ready for the most recent posts from the BBC Instagram account.",
+    title: "Community and episode promo slot",
+    copy: "Use this area for live reels, member highlights, and podcast clips once connected.",
     url: "https://www.instagram.com/bali.business.club/"
   },
   {
-    meta: "INSTAGRAM POST",
-    title: "MARKET UPDATE CAROUSELS",
-    copy: "Ideal for swipeable, visual summaries without adding stats to this page itself.",
+    title: "BBC visual storytelling slot",
+    copy: "This panel is ready for actual post thumbnails from the Instagram account.",
     url: "https://www.instagram.com/bali.business.club/"
   }
-];
+] as const;
 
 export const dashboardUsers = [
   {
@@ -348,4 +393,4 @@ export const dashboardUsers = [
     membership: "Operator",
     joined: "2026-02-18"
   }
-];
+] as const;
