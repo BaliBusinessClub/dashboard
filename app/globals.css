@@ -170,9 +170,9 @@ label {
   position: sticky;
   top: 0;
   z-index: 20;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: 18px;
   padding: 18px 32px;
   background: rgba(7, 7, 7, 0.88);
@@ -229,10 +229,11 @@ label {
   display: flex;
   align-items: center;
   gap: 10px;
-  max-width: var(--bbc-max-width);
-  margin: 0 auto;
-  padding: 18px 32px 0;
-  background: #000;
+  justify-content: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0 10px;
+  background: transparent;
   overflow-x: auto;
 }
 
@@ -242,7 +243,7 @@ label {
   gap: 8px;
   padding: 12px 18px;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 999px;
+  border-radius: 14px;
   background: rgba(13, 13, 13, 0.92);
   color: var(--bbc-muted);
   cursor: pointer;
@@ -262,11 +263,7 @@ label {
 .bbc-panel {
   max-width: var(--bbc-max-width);
   margin: 0 auto;
-  padding: 28px 32px 56px;
-}
-
-.panel-heading {
-  margin-bottom: 28px;
+  padding: 30px 32px 56px;
 }
 
 .panel-stack,
@@ -384,7 +381,7 @@ label {
   min-height: 38px;
   padding: 0 14px;
   border: 1px solid var(--bbc-border-strong);
-  border-radius: 999px;
+  border-radius: 12px;
   background: rgba(18, 18, 18, 0.96);
   color: #d5d5d5;
   cursor: pointer;
@@ -433,6 +430,18 @@ label {
   height: 22px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.profile-chip-fallback {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bbc-yellow);
+  color: #000;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .profile-menu {
@@ -750,6 +759,22 @@ label {
   stroke: #fff5bf;
 }
 
+.market-tooltip-box {
+  fill: rgba(14, 14, 15, 0.96);
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.market-tooltip-label {
+  fill: #9d9d96;
+  font-size: 11px;
+}
+
+.market-tooltip-value {
+  fill: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
 .market-point-picker {
   display: flex;
   flex-wrap: wrap;
@@ -764,7 +789,7 @@ label {
   min-height: 38px;
   padding: 0 14px;
   border: 1px solid var(--bbc-border-strong);
-  border-radius: 999px;
+  border-radius: 12px;
   background: #111;
   color: #f0efeb;
   font-size: 0.85rem;
@@ -780,14 +805,6 @@ label {
   border-color: rgba(255, 216, 0, 0.4);
   color: #fff;
   transform: translateY(-1px);
-}
-
-.chart-caption span {
-  color: var(--bbc-muted);
-}
-
-.chart-caption strong {
-  color: #fff;
 }
 
 .stat-rectangle-grid {
@@ -853,7 +870,7 @@ tbody td {
   gap: 8px;
   min-height: 46px;
   padding: 0 18px;
-  border-radius: 999px;
+  border-radius: 14px;
   transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -891,10 +908,6 @@ tbody td {
   display: grid;
   gap: 14px;
   box-shadow: var(--bbc-shadow-soft);
-}
-
-.news-card.clean.expanded {
-  border-color: #3c3c3c;
 }
 
 .news-toggle {
@@ -1077,6 +1090,31 @@ tbody td {
   grid-template-columns: repeat(3, minmax(240px, 1fr));
   gap: 16px;
   overflow-x: auto;
+}
+
+.news-modal {
+  width: min(760px, calc(100vw - 32px));
+  display: grid;
+  gap: 18px;
+}
+
+.news-modal-headline {
+  display: grid;
+  gap: 12px;
+}
+
+.news-modal-body {
+  display: grid;
+  gap: 24px;
+}
+
+.news-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bbc-border);
 }
 
 .connect-shell {
@@ -1286,8 +1324,8 @@ tbody td {
 
   .bbc-header {
     position: static;
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr;
+    justify-items: start;
   }
 
   .bbc-header-right,
@@ -1321,10 +1359,16 @@ tbody td {
   }
 
   .bbc-tab-nav {
-    padding-top: 14px;
+    justify-content: flex-start;
+    padding: 4px 0 0;
   }
 
   .whatsapp-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .news-modal-footer {
     flex-direction: column;
     align-items: flex-start;
   }

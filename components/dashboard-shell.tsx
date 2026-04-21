@@ -21,7 +21,6 @@ import {
   PencilLine,
   Podcast,
   Save,
-  SlidersHorizontal,
   Trash2,
   Youtube,
   X
@@ -63,6 +62,10 @@ type FavoriteItem = {
   title: string;
   note: string;
   sourceId: string;
+};
+
+type NewsArticleView = (typeof newsSections)[number]["articles"][number] & {
+  topic: string;
 };
 
 function formatMetricValue(value: number) {
@@ -170,12 +173,26 @@ function InteractiveMarketGraph({
                 cy={point.y}
                 r={activeIndex === index ? 7 : 5}
                 className={activeIndex === index ? "market-point active" : "market-point"}
+                onMouseEnter={() => onSelect(index)}
+                onFocus={() => onSelect(index)}
               />
               <text x={point.x} y={height - 18} textAnchor="middle" className="market-axis-copy market-axis-label">
                 {point.label}
               </text>
             </g>
           ))}
+
+          {points[activeIndex] ? (
+            <g transform={`translate(${Math.min(points[activeIndex].x + 12, width - 190)}, ${Math.max(points[activeIndex].y - 78, 18)})`}>
+              <rect width="176" height="58" rx="14" className="market-tooltip-box" />
+              <text x="14" y="22" className="market-tooltip-label">
+                {points[activeIndex].label}
+              </text>
+              <text x="14" y="42" className="market-tooltip-value">
+                {formatChartValue(points[activeIndex].value, unit)}
+              </text>
+            </g>
+          ) : null}
         </svg>
       </div>
 
@@ -289,9 +306,9 @@ export function DashboardShell() {
   const [marketMetric, setMarketMetric] = useState<string>(marketReports[0].metrics[0].id);
   const [chartSelection, setChartSelection] = useState<Record<string, number>>({});
   const [newsTopic, setNewsTopic] = useState<NewsTopic>("All");
-  const [expandedArticles, setExpandedArticles] = useState<string[]>([]);
   const [podcastTopic, setPodcastTopic] = useState<PodcastTopic>("All");
   const [favorites, setFavorites] = useState<FavoriteItem[]>([...initialFavorites]);
+  const [activeArticle, setActiveArticle] = useState<NewsArticleView | null>(null);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -326,11 +343,6 @@ export function DashboardShell() {
 
     return () => window.removeEventListener("mousedown", handleClick);
   }, [profileOpen]);
-
-  const activeTitle = useMemo(
-    () => dashboardTabs.find((tab) => tab.id === activeTab)?.label ?? "Home",
-    [activeTab]
-  );
 
   const filteredCharts = useMemo(
     () => marketReports.find((item) => item.report === marketFilter) ?? marketReports[0],
@@ -378,12 +390,6 @@ export function DashboardShell() {
     [allNewsArticles, newsTopic]
   );
 
-  function toggleArticle(articleId: string) {
-    setExpandedArticles((current) =>
-      current.includes(articleId) ? current.filter((item) => item !== articleId) : [...current, articleId]
-    );
-  }
-
   function toggleFavorite(item: FavoriteItem) {
     setFavorites((current) =>
       current.some((favorite) => favorite.id === item.id)
@@ -429,12 +435,35 @@ export function DashboardShell() {
           />
         </div>
 
+        <nav className="bbc-tab-nav">
+          {dashboardTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                className={activeTab === tab.id ? "bbc-tab active" : "bbc-tab"}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <Icon size={15} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+
         <div className="bbc-header-right">
           <div className="bali-time-chip">
             <BaliTime />
           </div>
           <div className="profile-menu-wrap" ref={profileMenuRef}>
             <button type="button" className="profile-chip minimal" onClick={() => setProfileOpen((open) => !open)}>
+              {user.picture ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.picture} alt={user.name} className="profile-chip-image" />
+              ) : (
+                <div className="profile-chip-fallback">{user.name.charAt(0).toUpperCase()}</div>
+              )}
               <span>{user.name}</span>
               <ChevronDown size={14} />
             </button>
@@ -466,36 +495,11 @@ export function DashboardShell() {
         </div>
       </header>
 
-      <nav className="bbc-tab-nav">
-        {dashboardTabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              className={activeTab === tab.id ? "bbc-tab active" : "bbc-tab"}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <Icon size={15} />
-              {tab.label}
-            </button>
-          );
-        })}
-      </nav>
-
       <section className="bbc-panel">
-        <div className="panel-heading">
-          <div>
-            <span className="eyebrow">BBC section</span>
-            <h1>{activeTitle}</h1>
-          </div>
-        </div>
-
         {activeTab === "home" ? (
           <section className="panel-stack">
             <div className="home-intro">
               <div>
-                <span className="eyebrow">Welcome</span>
                 <h2>Hello {user.name}</h2>
               </div>
               <p>Everything you need for Bali Business Club in one place.</p>
@@ -527,7 +531,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">Powered by REID</span>
                   <h2>What is happening in Bali real estate right now?</h2>
                   <p className="section-note compact">
                     Switch the report and metric filters to redraw the chart from the REID report data that could be extracted reliably.
@@ -552,10 +555,6 @@ export function DashboardShell() {
                 <article className="chart-card clean chart-card-featured">
                   <div className="chart-card-head">
                     <div>
-                      <span className="eyebrow small-pill">
-                        <SlidersHorizontal size={12} />
-                        Active view
-                      </span>
                       <div className="metric-label">{selectedMarketSeries.title}</div>
                       <div className="metric-value">{selectedMarketSeries.highlight}</div>
                     </div>
@@ -589,17 +588,6 @@ export function DashboardShell() {
                     }
                   />
 
-                  <div className="chart-caption">
-                    <span>Selected point</span>
-                    <strong>
-                      {selectedMarketSeries.labels[chartSelection[selectedMarketSeries.title] ?? 0]}:{" "}
-                      {formatChartValue(
-                        selectedMarketSeries.values[chartSelection[selectedMarketSeries.title] ?? 0],
-                        selectedMarketSeries.unit
-                      )}
-                    </strong>
-                  </div>
-
                   <p>{selectedMarketSeries.context}</p>
                   <small>{selectedMarketSeries.source}</small>
                 </article>
@@ -609,7 +597,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">Top report stats</span>
                   <h2>Interesting figures from the REID reports</h2>
                 </div>
               </div>
@@ -631,7 +618,6 @@ export function DashboardShell() {
           <section className="panel-stack news-panel-plain">
             <div className="news-toolbar">
               <div>
-                <span className="eyebrow">Daily news</span>
                 <h2>Relevant news by topic</h2>
               </div>
               <div className="filter-bar">
@@ -661,7 +647,6 @@ export function DashboardShell() {
 
             <div className="news-grid clean">
               {visibleNewsArticles.map((article) => {
-                  const expanded = expandedArticles.includes(article.id);
                   const favorite: FavoriteItem = {
                     id: `fav-${article.id}`,
                     type: "News",
@@ -671,16 +656,18 @@ export function DashboardShell() {
                   };
 
                   return (
-                    <article key={article.id} className={expanded ? "news-card clean expanded" : "news-card clean"}>
-                      <button type="button" className="news-toggle" onClick={() => toggleArticle(article.id)}>
+                    <article key={article.id} className="news-card clean">
+                      <button
+                        type="button"
+                        className="news-toggle"
+                        onClick={() => setActiveArticle(article)}
+                      >
                         <div className="news-meta">
                           <span className="news-cat">{article.topic}</span>
                         </div>
                         <div className="news-title">{article.title}</div>
                         <div className="news-summary">{article.teaser}</div>
                       </button>
-
-                      {expanded ? <div className="news-expanded-copy">{article.content}</div> : null}
 
                       <div className="news-footer">
                         <small>{article.date}</small>
@@ -689,12 +676,7 @@ export function DashboardShell() {
                             <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
-                          {expanded ? (
-                            <a href={article.url} target="_blank" rel="noreferrer" className="news-source-link">
-                              Source
-                              <ExternalLink size={13} />
-                            </a>
-                          ) : null}
+                          <span className="news-source-link">Open article</span>
                         </div>
                       </div>
                     </article>
@@ -709,7 +691,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">BBC podcast library</span>
                   <h2>Episodes by topic</h2>
                 </div>
               </div>
@@ -774,7 +755,6 @@ export function DashboardShell() {
               <article key={section} className="section-card clean">
                 <div className="section-heading">
                   <div>
-                    <span className="eyebrow">{section === "Ebooks" ? "BBC library" : "External reports"}</span>
                     <h2>{section}</h2>
                   </div>
                 </div>
@@ -819,7 +799,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">Member discounts</span>
                   <h2>Partner benefits</h2>
                 </div>
               </div>
@@ -842,7 +821,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">Partnership form</span>
                   <h2>Become a partner</h2>
                 </div>
               </div>
@@ -877,7 +855,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">Saved items</span>
                   <h2>Favorites</h2>
                 </div>
               </div>
@@ -922,7 +899,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">Stay connected</span>
                   <h2>Follow Bali Business Club</h2>
                 </div>
               </div>
@@ -950,7 +926,6 @@ export function DashboardShell() {
                 <div className="connect-feed">
                   <div className="section-heading">
                     <div>
-                      <span className="eyebrow">Instagram</span>
                       <h2>Recent content</h2>
                     </div>
                   </div>
@@ -958,7 +933,6 @@ export function DashboardShell() {
                   <div className="carousel-row clean">
                     {instagramPanels.map((panel) => (
                       <a key={panel.title} href={panel.url} target="_blank" rel="noreferrer" className="carousel-card clean">
-                        <span className="eyebrow small-pill">Instagram</span>
                         <strong>{panel.title}</strong>
                         <p>{panel.copy}</p>
                       </a>
@@ -971,7 +945,6 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <span className="eyebrow">Recommend a topic</span>
                   <h2>Suggest future podcast ideas</h2>
                 </div>
               </div>
@@ -1025,6 +998,37 @@ export function DashboardShell() {
             setProfileOpen(false);
           }}
         />
+      ) : null}
+
+      {activeArticle ? (
+        <div className="modal-overlay open">
+          <div className="modal-card news-modal">
+            <div className="modal-head">
+              <div className="news-modal-headline">
+                <span className="news-cat">{activeArticle.topic}</span>
+                <h2>{activeArticle.title}</h2>
+              </div>
+              <button type="button" className="icon-button" onClick={() => setActiveArticle(null)}>
+                <X size={16} />
+              </button>
+            </div>
+            <div className="news-modal-body">
+              <p className="news-expanded-copy">{activeArticle.content}</p>
+              <div className="news-modal-footer">
+                <small>{activeArticle.date}</small>
+                <div className="news-actions">
+                  <button type="button" className="ghost-button compact" onClick={() => setActiveArticle(null)}>
+                    Back
+                  </button>
+                  <a href={activeArticle.url} target="_blank" rel="noreferrer" className="table-link-button">
+                    Source
+                    <ExternalLink size={14} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       ) : null}
     </main>
   );
