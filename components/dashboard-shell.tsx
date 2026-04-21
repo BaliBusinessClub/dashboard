@@ -6,10 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   Building2,
-  ChartNoAxesColumn,
   ChartColumn,
   ChevronDown,
-  CircleUserRound,
   ExternalLink,
   Facebook,
   Heart,
@@ -23,6 +21,7 @@ import {
   PencilLine,
   Podcast,
   Save,
+  SlidersHorizontal,
   Trash2,
   Youtube,
   X
@@ -55,7 +54,7 @@ const dashboardTabs = [
 ] as const;
 
 type DashboardTab = (typeof dashboardTabs)[number]["id"];
-type NewsTopic = (typeof newsSections)[number]["title"];
+type NewsTopic = "All" | (typeof newsSections)[number]["title"];
 type PodcastTopic = (typeof podcastTopics)[number];
 type MarketReport = (typeof marketReports)[number]["report"];
 type FavoriteItem = {
@@ -82,43 +81,113 @@ function formatChartValue(value: number, unit: "percent" | "currency" | "change"
   return `${value}%`;
 }
 
-function InteractiveBarChart({
+function formatMemberSince(date: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric"
+  }).format(new Date(date));
+}
+
+function InteractiveMarketGraph({
   values,
   activeIndex,
   onSelect,
   labels,
-  unit
+  unit,
+  title
 }: {
   values: readonly number[];
   activeIndex: number;
   onSelect: (index: number) => void;
   labels: readonly string[];
   unit: "percent" | "currency" | "change";
+  title: string;
 }) {
   const max = Math.max(...values);
+  const min = Math.min(...values);
+  const width = 860;
+  const height = 300;
+  const paddingX = 42;
+  const paddingTop = 28;
+  const paddingBottom = 52;
+  const usableHeight = height - paddingTop - paddingBottom;
+  const usableWidth = width - paddingX * 2;
+  const range = max - min || max || 1;
+
+  const points = values.map((value, index) => {
+    const x = paddingX + (usableWidth / Math.max(values.length - 1, 1)) * index;
+    const normalized = (value - min) / range;
+    const y = paddingTop + (1 - normalized) * usableHeight;
+    return { x, y, value, label: labels[index] };
+  });
+
+  const linePath = points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
+  const areaPath = `${linePath} L ${points[points.length - 1]?.x ?? paddingX} ${height - paddingBottom} L ${
+    points[0]?.x ?? paddingX
+  } ${height - paddingBottom} Z`;
+
+  const yTicks = [0, 0.5, 1].map((step) => {
+    const value = min + (1 - step) * range;
+    const y = paddingTop + step * usableHeight;
+    return { value, y };
+  });
 
   return (
-    <div className="interactive-chart bars">
-      <div className="bar-chart">
-        {values.map((value, index) => (
+    <div className="market-graph-shell">
+      <div className="market-graph-frame">
+        <svg viewBox={`0 0 ${width} ${height}`} className="market-graph-svg" role="img" aria-label={title}>
+          <defs>
+            <linearGradient id="bbcMarketArea" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#ffd800" stopOpacity="0.32" />
+              <stop offset="100%" stopColor="#ffd800" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+
+          {yTicks.map((tick) => (
+            <g key={tick.y}>
+              <line
+                x1={paddingX}
+                x2={width - paddingX}
+                y1={tick.y}
+                y2={tick.y}
+                className="market-grid-line"
+              />
+              <text x={12} y={tick.y + 4} className="market-axis-copy">
+                {formatChartValue(Math.round(tick.value * 10) / 10, unit)}
+              </text>
+            </g>
+          ))}
+
+          <path d={areaPath} className="market-area-path" />
+          <path d={linePath} className="market-line-path" />
+
+          {points.map((point, index) => (
+            <g key={point.label}>
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r={activeIndex === index ? 7 : 5}
+                className={activeIndex === index ? "market-point active" : "market-point"}
+              />
+              <text x={point.x} y={height - 18} textAnchor="middle" className="market-axis-copy market-axis-label">
+                {point.label}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </div>
+
+      <div className="market-point-picker">
+        {points.map((point, index) => (
           <button
-            key={labels[index] ?? index}
+            key={point.label}
             type="button"
-            className={index === activeIndex ? "bar-row active" : "bar-row"}
+            className={index === activeIndex ? "point-pill active" : "point-pill"}
             onClick={() => onSelect(index)}
           >
-            <div className="bar-row-head">
-              <span>{labels[index]}</span>
-              <strong>{formatChartValue(value, unit)}</strong>
-            </div>
-            <div className="bar-track">
-              <div
-                className="bar-fill"
-                style={{
-                  width: `${max === 0 ? 0 : (value / max) * 100}%`
-                }}
-              />
-            </div>
+            {point.label}
           </button>
         ))}
       </div>
@@ -219,7 +288,7 @@ export function DashboardShell() {
   const [marketFilter, setMarketFilter] = useState<MarketReport>(marketReports[0].report);
   const [marketMetric, setMarketMetric] = useState<string>(marketReports[0].metrics[0].id);
   const [chartSelection, setChartSelection] = useState<Record<string, number>>({});
-  const [newsTopic, setNewsTopic] = useState<NewsTopic>(newsSections[0].title);
+  const [newsTopic, setNewsTopic] = useState<NewsTopic>("All");
   const [expandedArticles, setExpandedArticles] = useState<string[]>([]);
   const [podcastTopic, setPodcastTopic] = useState<PodcastTopic>("All");
   const [favorites, setFavorites] = useState<FavoriteItem[]>([...initialFavorites]);
@@ -293,9 +362,20 @@ export function DashboardShell() {
     [podcastTopic]
   );
 
-  const activeNewsSection = useMemo(
-    () => newsSections.find((section) => section.title === newsTopic) ?? newsSections[0],
-    [newsTopic]
+  const allNewsArticles = useMemo(
+    () =>
+      newsSections.flatMap((section) =>
+        section.articles.map((article) => ({
+          ...article,
+          topic: section.title
+        }))
+      ),
+    []
+  );
+
+  const visibleNewsArticles = useMemo(
+    () => allNewsArticles.filter((article) => newsTopic === "All" || article.topic === newsTopic),
+    [allNewsArticles, newsTopic]
   );
 
   function toggleArticle(articleId: string) {
@@ -355,29 +435,15 @@ export function DashboardShell() {
           </div>
           <div className="profile-menu-wrap" ref={profileMenuRef}>
             <button type="button" className="profile-chip minimal" onClick={() => setProfileOpen((open) => !open)}>
-              {user.picture ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={user.picture} alt={user.name} className="profile-chip-image" />
-              ) : (
-                <CircleUserRound size={18} />
-              )}
               <span>{user.name}</span>
               <ChevronDown size={14} />
             </button>
             {profileOpen ? (
               <div className="profile-menu">
                 <div className="profile-menu-head">
-                  <div className="profile-avatar">
-                    {user.picture ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={user.picture} alt={user.name} />
-                    ) : (
-                      <span>{user.name.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
                   <div className="profile-menu-copy">
                     <strong>{user.name}</strong>
-                    <span>{user.email}</span>
+                    <span>Member since {formatMemberSince(user.memberSince)}</span>
                   </div>
                 </div>
                 <button type="button" onClick={() => setEditOpen(true)}>
@@ -427,13 +493,13 @@ export function DashboardShell() {
 
         {activeTab === "home" ? (
           <section className="panel-stack">
-            <article className="hero-compact minimal-home premium-hero">
+            <div className="home-intro">
               <div>
                 <span className="eyebrow">Welcome</span>
                 <h2>Hello {user.name}</h2>
               </div>
-              <p>Choose where you want to go.</p>
-            </article>
+              <p>Everything you need for Bali Business Club in one place.</p>
+            </div>
 
             <div className="shortcut-grid clean large-home">
               {dashboardShortcuts.map((shortcut) => {
@@ -447,7 +513,7 @@ export function DashboardShell() {
                     </div>
                     <div className="shortcut-copy">
                       <strong>{shortcut.title}</strong>
-                      <span>Explore</span>
+                      <span>{shortcut.description}</span>
                     </div>
                   </button>
                 );
@@ -463,6 +529,9 @@ export function DashboardShell() {
                 <div>
                   <span className="eyebrow">Powered by REID</span>
                   <h2>What is happening in Bali real estate right now?</h2>
+                  <p className="section-note compact">
+                    Switch the report and metric filters to redraw the chart from the REID report data that could be extracted reliably.
+                  </p>
                 </div>
               </div>
 
@@ -483,11 +552,14 @@ export function DashboardShell() {
                 <article className="chart-card clean chart-card-featured">
                   <div className="chart-card-head">
                     <div>
-                      <span className="eyebrow small-pill">Report view</span>
+                      <span className="eyebrow small-pill">
+                        <SlidersHorizontal size={12} />
+                        Active view
+                      </span>
                       <div className="metric-label">{selectedMarketSeries.title}</div>
                       <div className="metric-value">{selectedMarketSeries.highlight}</div>
                     </div>
-                    <ChartNoAxesColumn size={18} />
+                    <div className="graph-focus-pill">{filteredCharts.report}</div>
                   </div>
 
                   <div className="filter-bar market-metric-bar">
@@ -503,11 +575,12 @@ export function DashboardShell() {
                     ))}
                   </div>
 
-                  <InteractiveBarChart
+                  <InteractiveMarketGraph
                     values={selectedMarketSeries.values}
                     activeIndex={chartSelection[selectedMarketSeries.title] ?? 0}
                     labels={selectedMarketSeries.labels}
                     unit={selectedMarketSeries.unit}
+                    title={selectedMarketSeries.title}
                     onSelect={(index) =>
                       setChartSelection((current) => ({
                         ...current,
@@ -555,30 +628,39 @@ export function DashboardShell() {
         ) : null}
 
         {activeTab === "news" ? (
-          <section className="panel-stack">
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <span className="eyebrow">Daily news</span>
-                  <h2>Relevant news by topic</h2>
-                </div>
+          <section className="panel-stack news-panel-plain">
+            <div className="news-toolbar">
+              <div>
+                <span className="eyebrow">Daily news</span>
+                <h2>Relevant news by topic</h2>
               </div>
-
               <div className="filter-bar">
-                {newsSections.map((section) => (
-                  <button
-                    key={section.title}
-                    type="button"
-                    className={newsTopic === section.title ? "filter-btn active" : "filter-btn"}
-                    onClick={() => setNewsTopic(section.title)}
-                  >
-                    {section.title}
-                  </button>
-                ))}
+                <button
+                  type="button"
+                  className={newsTopic === "All" ? "filter-btn active" : "filter-btn"}
+                  onClick={() => setNewsTopic("All")}
+                >
+                  All topics
+                </button>
+                {newsSections.map((section) => {
+                  const Icon = section.icon;
+                  return (
+                    <button
+                      key={section.title}
+                      type="button"
+                      className={newsTopic === section.title ? "filter-btn active" : "filter-btn"}
+                      onClick={() => setNewsTopic(section.title)}
+                    >
+                      <Icon size={14} />
+                      {section.title}
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              <div className="news-grid clean">
-                {activeNewsSection.articles.map((article) => {
+            <div className="news-grid clean">
+              {visibleNewsArticles.map((article) => {
                   const expanded = expandedArticles.includes(article.id);
                   const favorite: FavoriteItem = {
                     id: `fav-${article.id}`,
@@ -592,7 +674,7 @@ export function DashboardShell() {
                     <article key={article.id} className={expanded ? "news-card clean expanded" : "news-card clean"}>
                       <button type="button" className="news-toggle" onClick={() => toggleArticle(article.id)}>
                         <div className="news-meta">
-                          <span className="news-cat">{activeNewsSection.title}</span>
+                          <span className="news-cat">{article.topic}</span>
                         </div>
                         <div className="news-title">{article.title}</div>
                         <div className="news-summary">{article.teaser}</div>
@@ -618,8 +700,7 @@ export function DashboardShell() {
                     </article>
                   );
                 })}
-              </div>
-            </article>
+            </div>
           </section>
         ) : null}
 
@@ -847,42 +928,43 @@ export function DashboardShell() {
               </div>
 
               <p className="section-note">
-                Stay close to the BBC ecosystem through our socials, podcast channels, and WhatsApp. This tab is designed
-                as the clean contact point for community updates and future content suggestions.
+                Stay close to the BBC ecosystem through our social channels, podcast links, and direct WhatsApp contact.
               </p>
 
-              <div className="social-list">
-                {socials.map((social) => (
-                  <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
-                    <div className="social-main">
-                      <div className="social-badge">{renderSocialIcon(social.icon)}</div>
-                      <div>
-                        <strong>{social.name}</strong>
-                        <p>{social.handle}</p>
+              <div className="connect-shell">
+                <div className="social-list">
+                  {socials.map((social) => (
+                    <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
+                      <div className="social-main">
+                        <div className="social-badge">{renderSocialIcon(social.icon)}</div>
+                        <div>
+                          <strong>{social.name}</strong>
+                          <p>{social.handle}</p>
+                        </div>
                       </div>
-                    </div>
-                    <ExternalLink size={16} />
-                  </a>
-                ))}
-              </div>
-            </article>
-
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <span className="eyebrow">Instagram</span>
-                  <h2>Recent content</h2>
+                      <ExternalLink size={16} />
+                    </a>
+                  ))}
                 </div>
-              </div>
 
-              <div className="carousel-row clean">
-                {instagramPanels.map((panel) => (
-                  <a key={panel.title} href={panel.url} target="_blank" rel="noreferrer" className="carousel-card clean">
-                    <span className="eyebrow small-pill">Instagram</span>
-                    <strong>{panel.title}</strong>
-                    <p>{panel.copy}</p>
-                  </a>
-                ))}
+                <div className="connect-feed">
+                  <div className="section-heading">
+                    <div>
+                      <span className="eyebrow">Instagram</span>
+                      <h2>Recent content</h2>
+                    </div>
+                  </div>
+
+                  <div className="carousel-row clean">
+                    {instagramPanels.map((panel) => (
+                      <a key={panel.title} href={panel.url} target="_blank" rel="noreferrer" className="carousel-card clean">
+                        <span className="eyebrow small-pill">Instagram</span>
+                        <strong>{panel.title}</strong>
+                        <p>{panel.copy}</p>
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
             </article>
 
@@ -911,17 +993,25 @@ export function DashboardShell() {
                   Details
                   <textarea rows={5} placeholder="Share the angle, guest idea, or question you want BBC to explore." />
                 </label>
-                <div className="connect-actions">
-                  <button type="button" className="primary-button compact">
-                    Send suggestion
-                  </button>
-                  <a href="https://wa.link/zg5xw8" target="_blank" rel="noreferrer" className="ghost-button compact">
-                    <MessageCircleMore size={14} />
-                    WhatsApp us
-                  </a>
-                </div>
+                <button type="button" className="primary-button compact">
+                  Send suggestion
+                </button>
               </form>
             </article>
+
+            <a href="https://wa.link/zg5xw8" target="_blank" rel="noreferrer" className="whatsapp-banner">
+              <div className="whatsapp-banner-copy">
+                <MessageCircleMore size={16} />
+                <div>
+                  <strong>Questions for the BBC team?</strong>
+                  <span>Message us directly on WhatsApp.</span>
+                </div>
+              </div>
+              <span className="whatsapp-banner-link">
+                Open chat
+                <ExternalLink size={14} />
+              </span>
+            </a>
           </section>
         ) : null}
       </section>

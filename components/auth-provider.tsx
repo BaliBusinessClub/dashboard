@@ -9,6 +9,7 @@ export type SessionUser = {
   name: string;
   role: UserRole;
   picture?: string;
+  memberSince: string;
 };
 
 type AuthContextValue = {
@@ -31,7 +32,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
       try {
-        setUser(JSON.parse(raw) as SessionUser);
+        const parsed = JSON.parse(raw) as Partial<SessionUser>;
+        const nextUser: SessionUser = {
+          email: parsed.email ?? "",
+          name: parsed.name ?? "",
+          role: parsed.role === "admin" ? "admin" : "member",
+          picture: parsed.picture ?? "",
+          memberSince: parsed.memberSince ?? new Date().toISOString().slice(0, 10)
+        };
+        setUser(nextUser);
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
       } catch {
         window.localStorage.removeItem(STORAGE_KEY);
       }
@@ -54,7 +64,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: normalizedEmail,
       name: name?.trim() || normalizedEmail.split("@")[0].replace(/[._-]/g, " ").toUpperCase(),
       role: normalizedEmail.includes("admin") ? "admin" : "member",
-      picture: ""
+      picture: "",
+      memberSince: new Date().toISOString().slice(0, 10)
     };
     persist(sessionUser);
     return sessionUser;

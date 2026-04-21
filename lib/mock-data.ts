@@ -12,37 +12,38 @@ export const dashboardShortcuts = [
   {
     id: "market",
     title: "Market Insights",
+    description: "Track the REID-backed data, filters, and market signals shaping Bali real estate right now.",
     icon: ChartColumn
   },
   {
     id: "news",
     title: "News",
+    description: "Read the latest business, tourism, infrastructure, and policy updates relevant to Bali.",
     icon: Newspaper
   },
   {
     id: "podcasts",
     title: "Podcasts",
+    description: "Browse every Bali Business Club episode by theme and jump straight to the full conversation.",
     icon: Podcast
   },
   {
     id: "resources",
     title: "Ressources",
+    description: "Access the full BBC ebook library and curated reports in one downloadable archive.",
     icon: BookOpen
   },
   {
     id: "partners",
     title: "Partners",
+    description: "See current member offers and apply to become a Bali Business Club partner.",
     icon: Building2
   },
   {
     id: "favorites",
     title: "Favorites",
+    description: "Keep the news, episodes, and resources you want to come back to later.",
     icon: Heart
-  },
-  {
-    id: "connect",
-    title: "Connect",
-    icon: MessagesSquare
   }
 ] as const;
 
@@ -276,6 +277,68 @@ export const newsSections = [
         url: "https://en.antaranews.com/news/412684/govt-provides-up-to-down-fiscal-incentives-to-sustain-tourism"
       }
     ]
+  },
+  {
+    title: "Infrastructure",
+    icon: MessagesSquare,
+    articles: [
+      {
+        id: "news-infrastructure-1",
+        title: "Government pushes water taxi and pier development to support Bali tourism",
+        teaser: "Transport connectivity is becoming a more visible part of Bali’s long-term visitor experience and location logic.",
+        content:
+          "ANTARA reported that the Transportation Ministry is accelerating work on water taxi and pier development in Bali. While these projects take time to materialize, they matter because they can gradually reshape how visitors move across the island and how congestion-heavy corridors are perceived.\n\nFor investors, developers, and hospitality operators, connectivity has strategic value. Improved movement between air, land, and sea transport can shift where demand strengthens next, particularly in areas that become easier to reach or better integrated into tourist itineraries.",
+        source: "ANTARA News",
+        date: "April 10, 2026",
+        url: "https://en.antaranews.com/amp/news/411837/govt-pushes-water-taxi-pier-development-to-support-balis-tourism"
+      },
+      {
+        id: "news-infrastructure-2",
+        title: "Ticket discounts help cushion Bali’s tourism low season",
+        teaser: "Transport pricing support is feeding directly into retail optimism and travel resilience in Bali.",
+        content:
+          "ANTARA reported that Bank Indonesia’s Bali office sees transportation ticket discounts as a meaningful buffer during Bali’s low season. The signal here is bigger than airfare: mobility cost is a real lever for keeping travel demand active, especially in softer seasonal periods.\n\nFor business owners, that matters because lower friction on travel can support occupancy, footfall, and consumer spending in periods that would otherwise be more vulnerable. It is another reminder that tourism performance is tied not just to destination appeal, but also to how affordable and easy Bali is to access.",
+        source: "ANTARA News",
+        date: "March 14, 2026",
+        url: "https://en.antaranews.com/news/408422/homepage-v2.html"
+      }
+    ]
+  },
+  {
+    title: "Policy",
+    icon: MessagesSquare,
+    articles: [
+      {
+        id: "news-policy-1",
+        title: "Indonesia shifts tourism focus to Asia and Oceania amid Middle East tensions",
+        teaser: "Source-market strategy is changing, which may alter the visitor mix many Bali businesses depend on.",
+        content:
+          "ANTARA reported that Indonesia is refocusing tourism promotion toward Asia and Oceania as geopolitical tensions disrupt longer-haul travel patterns. For Bali businesses, this could influence the composition of visitors more than total demand alone.\n\nA stronger emphasis on shorter-haul markets may change booking windows, price sensitivity, length of stay, and the kinds of products that perform best. Operators who understand changing traveler profiles will likely adapt faster than those relying on one familiar international audience.",
+        source: "ANTARA News",
+        date: "April 17, 2026",
+        url: "https://en.antaranews.com/news/412669/homepage-v2.html"
+      },
+      {
+        id: "news-policy-2",
+        title: "Bali tightens security after violent crimes linked to international groups",
+        teaser: "Security and compliance are increasingly part of the operational context for tourism-facing businesses.",
+        content:
+          "The Jakarta Post reported that Bali has tightened security measures after a series of violent crimes linked to international groups. Patrols have been increased in core tourism areas, and accommodation providers face stronger expectations around guest reporting and foreigner oversight.\n\nFor BBC members, this is a practical operating issue as much as a public-safety story. Compliance, reporting systems, and risk protocols are becoming more important for accommodation businesses and service operators, especially those dealing with international guests at scale.",
+        source: "The Jakarta Post",
+        date: "April 15, 2026",
+        url: "https://www.thejakartapost.com/indonesia/2026/04/15/bali-tightens-security-after-violent-crimes-linked-to-international-groups.html"
+      },
+      {
+        id: "news-policy-3",
+        title: "New circular sets safety protocols for the 2026 Eid holiday season",
+        teaser: "Government is leaning into destination readiness, service standards, and safety discipline before major travel peaks.",
+        content:
+          "ANTARA reported that the Tourism Ministry has issued a new circular covering safety and service expectations for the 2026 Eid holiday period. The focus includes readiness, cleanliness, health, and environmental standards across tourism destinations.\n\nThe underlying signal is that destination management and risk readiness are staying high on the policy agenda. Businesses that can demonstrate strong operating standards are likely to be better positioned as public-sector expectations keep rising.",
+        source: "ANTARA News",
+        date: "March 15, 2026",
+        url: "https://en.antaranews.com/amp/news/408550/new-circular-sets-safety-protocols-for-2026-eid-holiday-season"
+      }
+    ]
   }
 ] as const;
 
@@ -284,9 +347,9 @@ export const podcastTopics = ["All", "Property", "Investment", "Business", "Mark
 export const podcastFeed = [
   {
     id: "x5iGqCEj1og",
-    title: "Dubai vs Bali Property: Returns, Risks, and the truth",
+    title: "Membangun di Bali: Apa yang Perlu Diketahui Setiap Pengembang dan Investor",
     description: "A current BBC conversation comparing return logic, downside risk, and market positioning across Dubai and Bali.",
-    published: "7 days ago",
+    published: "3 weeks ago",
     topic: "Investment",
     url: "https://www.youtube.com/watch?v=x5iGqCEj1og",
     image: "https://i.ytimg.com/vi/x5iGqCEj1og/hqdefault.jpg"
@@ -311,7 +374,7 @@ export const podcastFeed = [
   },
   {
     id: "Ayb4THzSjE0",
-    title: "From marketing to brokering and development: Inside GEONET's Real Estate Machine",
+    title: "From marketing to brokering and development: Inside GEONETs Real Estate Machine",
     description: "An inside look at how brokerage, development, and positioning come together in Bali real estate.",
     published: "3 months ago",
     topic: "Property",
@@ -356,7 +419,7 @@ export const podcastFeed = [
   },
   {
     id: "0cMjvf1lb3g",
-    title: "The Kedungu Fund's $10M Milestone: A Look Ahead",
+    title: "The Kedungu Funds $10M Milestone: A Look Ahead",
     description: "A milestone review focused on fund growth, thesis validation, and the next phase.",
     published: "9 months ago",
     topic: "Investment",
@@ -374,7 +437,7 @@ export const podcastFeed = [
   },
   {
     id: "bfHu20vi2g8",
-    title: "The Secret Growth Formula Content Creators Must Know!",
+    title: "The Secret Growth Formula Content Creators MustKnow!",
     description: "A BBC episode on distribution, audience-building, and creator-led business growth.",
     published: "1 year ago",
     topic: "Marketing",
@@ -392,7 +455,7 @@ export const podcastFeed = [
   },
   {
     id: "7bXHvn8Vksw",
-    title: "When Is the BEST Time to Invest in Bali? ROI Cycles Explained!",
+    title: "When Is the BEST Time to Invest in Bali? ROI CyclesExplained!",
     description: "Timing, cycle awareness, and how investors can interpret momentum in Bali.",
     published: "1 year ago",
     topic: "Investment",
@@ -428,7 +491,7 @@ export const podcastFeed = [
   },
   {
     id: "jh_Ejqlc40g",
-    title: "How To Sell More, Marketing Funnels: How And Why They Work",
+    title: "How To Sell More, Marketing Funnels: How AndWhyTheyWork",
     description: "A funnel-focused episode for brands and operators who want clearer conversion systems.",
     published: "1 year ago",
     topic: "Marketing",
@@ -719,18 +782,18 @@ export const socials = [
 
 export const instagramPanels = [
   {
-    title: "Market commentary and clips",
-    copy: "Follow Bali Business Club for short market updates, new episode clips, and member-focused commentary.",
+    title: "12K followers",
+    copy: "Our public Instagram profile currently shows 12K followers and 118 posts. Use it as the quickest way to see the newest BBC content.",
     url: "https://www.instagram.com/bali.business.club/"
   },
   {
-    title: "Recent podcast moments",
-    copy: "This section can hold recent podcast teasers and speaker highlights once the Instagram feed is connected live.",
+    title: "118 posts",
+    copy: "Open the BBC Instagram profile to browse the latest reels, podcast clips, and community highlights directly from the source feed.",
     url: "https://www.instagram.com/bali.business.club/"
   },
   {
-    title: "Community stories",
-    copy: "Use this space for event visuals, founder spotlights, and the latest updates from the BBC community.",
+    title: "Open the live profile",
+    copy: "Instagram limits reliable public post extraction here, so this card takes members straight to the live profile where the latest posts always stay current.",
     url: "https://www.instagram.com/bali.business.club/"
   }
 ] as const;
