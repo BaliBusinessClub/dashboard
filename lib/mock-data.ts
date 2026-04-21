@@ -3,6 +3,7 @@ import {
   Building2,
   ChartColumn,
   Heart,
+  MessagesSquare,
   Newspaper,
   Podcast
 } from "lucide-react";
@@ -37,74 +38,169 @@ export const dashboardShortcuts = [
     id: "favorites",
     title: "Favorites",
     icon: Heart
+  },
+  {
+    id: "connect",
+    title: "Connect",
+    icon: MessagesSquare
   }
 ] as const;
 
-export const marketFilters = ["Land Rights", "Permitted Use", "Market Scale"] as const;
-
-export const marketChartSeries = [
+export const marketReports = [
   {
-    title: "Land rights split",
-    highlight: "91% leasehold",
-    values: [91, 9],
-    labels: ["Leasehold", "Freehold"],
-    context:
-      "Mirra Centre's July 2025 review of villas under construction shows a market still overwhelmingly structured around leasehold supply, with freehold representing a much smaller slice of live projects.",
-    source: "Analytical Review of the Market for Villas Under Construction in Bali 2025, Mirra Centre",
-    strategies: ["Land Rights"]
+    report: "2025 Annual",
+    source: "REID Bali Real Estate Market Annual Report 2025",
+    metrics: [
+      {
+        id: "contract-type",
+        title: "Supply by contract type",
+        highlight: "80.6% leasehold",
+        values: [80.6, 19.4],
+        labels: ["Leasehold", "Freehold"],
+        unit: "percent",
+        context:
+          "Leasehold remained the dominant transaction structure in 2025, reinforcing how foreign-buyer access and local market practice continue to shape supply.",
+        source: "REID Bali Real Estate Market Annual Report 2025"
+      },
+      {
+        id: "regional-supply",
+        title: "Supply by region",
+        highlight: "34.9% North Badung",
+        values: [34.9, 21.6, 17.2, 8.8, 7.1, 6.8, 3.6],
+        labels: ["North Badung", "South Badung", "Mengwi", "Gianyar", "Central Badung", "Tabanan", "Denpasar"],
+        unit: "percent",
+        context:
+          "North Badung still holds the deepest supply pool, but the report points to South Badung as the clearer growth corridor as inventory rotates toward newer demand pockets.",
+        source: "REID Bali Real Estate Market Annual Report 2025"
+      },
+      {
+        id: "sales-bedroom",
+        title: "Sales volume by bedroom",
+        highlight: "31.9% two-bedroom sales",
+        values: [20.8, 31.9, 26.4, 13.2, 6.2, 1.5],
+        labels: ["1 Bed", "2 Bed", "3 Bed", "4 Bed", "5 Bed", "6 Bed"],
+        unit: "percent",
+        context:
+          "Two-bedroom properties led 2025 sales activity, while one- and two-bedroom formats together made up 53% of all transactions, confirming the market's move toward compact stock.",
+        source: "REID Bali Real Estate Market Annual Report 2025"
+      },
+      {
+        id: "rental-region",
+        title: "Rental supply by region",
+        highlight: "46.9% North Badung",
+        values: [46.9, 17, 12.2, 10.8, 6.2, 4.1, 2.7],
+        labels: ["North Badung", "South Badung", "Gianyar", "Central Badung", "Denpasar", "Mengwi", "Tabanan"],
+        unit: "percent",
+        context:
+          "Rental stock remains heavily concentrated in North Badung, with South Badung and Gianyar making up the strongest secondary clusters for short-stay supply.",
+        source: "REID Bali Real Estate Market Annual Report 2025"
+      },
+      {
+        id: "price-per-sqm",
+        title: "Average price per sqm",
+        highlight: "$3,400 apartments",
+        values: [2210, 3400],
+        labels: ["Villa", "Apartment"],
+        unit: "currency",
+        context:
+          "REID's 2025 report shows villa pricing per square metre holding firm while apartment pricing sits materially higher, even as vertical formats face more competition.",
+        source: "REID Bali Real Estate Market Annual Report 2025"
+      }
+    ]
   },
   {
-    title: "Permitted land use",
-    highlight: "68% commercial",
-    values: [68, 26, 3, 3],
-    labels: ["Commercial", "Residential", "Farm", "No data"],
-    context:
-      "Commercial-zoned developments dominate the active villa pipeline, while residential projects still hold a meaningful secondary share. Limited or missing zoning data is a smaller but relevant risk pocket to watch.",
-    source: "Analytical Review of the Market for Villas Under Construction in Bali 2025, Mirra Centre",
-    strategies: ["Permitted Use"]
-  },
-  {
-    title: "Tracked market scale",
-    highlight: "3,900 villas",
-    values: [3900, 200, 300],
-    labels: ["Villas", "Active projects", "Tracked projects"],
-    context:
-      "Mirra Centre's live database snapshot gives a sense of current market depth: thousands of villas, hundreds of active construction projects, and a broader tracked universe that extends beyond the active villa pipeline.",
-    source: "Analytical Review of the Market for Villas Under Construction in Bali 2025, Mirra Centre",
-    strategies: ["Market Scale"]
+    report: "2024 Annual",
+    source: "REID 2024 Annual Market Report",
+    metrics: [
+      {
+        id: "contract-type",
+        title: "Contract type share",
+        highlight: "77.7% leasehold",
+        values: [77.7, 22.3],
+        labels: ["Leasehold", "Freehold"],
+        unit: "percent",
+        context:
+          "Across 2024, leasehold expanded from 72.9% in 2023 to 77.7%, showing a continued market preference for leasehold product.",
+        source: "REID 2024 Annual Market Report"
+      },
+      {
+        id: "off-plan-share",
+        title: "Off-plan share by segment",
+        highlight: "36% overall off-plan",
+        values: [36, 30, 50],
+        labels: ["Overall", "Villas", "Apartments"],
+        unit: "percent",
+        context:
+          "Supply in 2024 carried a meaningful off-plan component, with apartments remaining the more development-heavy segment and villas staying comparatively stable.",
+        source: "REID 2024 Annual Market Report"
+      },
+      {
+        id: "sales-shift",
+        title: "Sales shift by bedroom",
+        highlight: "+37% one-bedroom sales",
+        values: [37, 12, -16],
+        labels: ["1 Bed", "2 Bed", "3 Bed"],
+        unit: "change",
+        context:
+          "Demand in 2024 shifted decisively toward smaller assets: one-bedroom sales rose 37%, two-bedroom sales rose 12%, and three-bedroom sales fell 16%.",
+        source: "REID 2024 Annual Market Report"
+      },
+      {
+        id: "pricing-change",
+        title: "Price change by market",
+        highlight: "+13% freehold",
+        values: [4.9, 3, 13],
+        labels: ["Market", "Leasehold", "Freehold"],
+        unit: "change",
+        context:
+          "Overall market pricing rose 4.9% in 2024, with freehold clearly outperforming leasehold on annual price growth.",
+        source: "REID 2024 Annual Market Report"
+      },
+      {
+        id: "rental-performance",
+        title: "Rental performance change",
+        highlight: "+60% managed daily rates",
+        values: [-4.5, 6, 60],
+        labels: ["Overall occupancy", "Managed occupancy", "Managed daily rates"],
+        unit: "change",
+        context:
+          "The broader rental market softened in 2024, but professionally managed properties materially outperformed on both occupancy and daily rates.",
+        source: "REID 2024 Annual Market Report"
+      }
+    ]
   }
 ] as const;
 
 export const marketStatCards = [
   {
-    title: "3,900",
-    detail: "Villas included in Mirra Centre's Bali construction database.",
-    source: "Mirra Centre, July 2025"
+    title: "12,300",
+    detail: "Available properties tracked in REID's 2025 annual market report.",
+    source: "REID Bali Real Estate Market Annual Report 2025"
   },
   {
-    title: "200",
-    detail: "Active villa construction projects tracked across Bali.",
-    source: "Mirra Centre, July 2025"
+    title: "4,800",
+    detail: "Total 2025 sales volume, with transactions easing 5% year on year.",
+    source: "REID Bali Real Estate Market Annual Report 2025"
   },
   {
-    title: "91%",
-    detail: "Share of tracked projects structured as leasehold.",
-    source: "Mirra Centre, July 2025"
+    title: "80.6%",
+    detail: "2025 leasehold share of total supply by contract type.",
+    source: "REID Bali Real Estate Market Annual Report 2025"
   },
   {
-    title: "68%",
-    detail: "Projects located on commercially designated land.",
-    source: "Mirra Centre, July 2025"
+    title: "53%",
+    detail: "Share of 2025 transactions coming from one- and two-bedroom assets.",
+    source: "REID Bali Real Estate Market Annual Report 2025"
   },
   {
-    title: "7M+",
-    detail: "Tourists welcomed by Bali in 2024 according to the report.",
-    source: "Mirra Centre, 2025 market overview"
+    title: "83%",
+    detail: "Average floor space ratio in 2025, up 3% year on year.",
+    source: "REID Bali Real Estate Market Annual Report 2025"
   },
   {
-    title: "10-15%",
-    detail: "Projected annual growth range for 2025-2026 in the report outlook.",
-    source: "Mirra Centre, 2025 market outlook"
+    title: "-4.5%",
+    detail: "Relative decline in 2024 short-term rental occupancy across the wider market.",
+    source: "REID 2024 Annual Market Report"
   }
 ] as const;
 
@@ -585,5 +681,56 @@ export const dashboardUsers = [
     phone: "+33 6 12 34 56 78",
     membership: "Operator",
     joined: "2026-02-18"
+  }
+] as const;
+
+export const socials = [
+  {
+    name: "YouTube",
+    handle: "@BaliBusinessClub",
+    url: "https://youtube.com/@BaliBusinessClub?sub_confirmation=1",
+    icon: "youtube"
+  },
+  {
+    name: "Spotify",
+    handle: "Bali Business Club",
+    url: "https://open.spotify.com/show/3fKJEwQXsQwR7TaFrl1d1b?si=48e00d7b104544e4",
+    icon: "spotify"
+  },
+  {
+    name: "Instagram",
+    handle: "@bali.business.club",
+    url: "https://www.instagram.com/bali.business.club/",
+    icon: "instagram"
+  },
+  {
+    name: "Facebook",
+    handle: "Balibizclub",
+    url: "https://www.facebook.com/Balibizclub/",
+    icon: "facebook"
+  },
+  {
+    name: "TikTok",
+    handle: "@balibusinessclub",
+    url: "https://www.tiktok.com/@balibusinessclub",
+    icon: "tiktok"
+  }
+] as const;
+
+export const instagramPanels = [
+  {
+    title: "Market commentary and clips",
+    copy: "Follow Bali Business Club for short market updates, new episode clips, and member-focused commentary.",
+    url: "https://www.instagram.com/bali.business.club/"
+  },
+  {
+    title: "Recent podcast moments",
+    copy: "This section can hold recent podcast teasers and speaker highlights once the Instagram feed is connected live.",
+    url: "https://www.instagram.com/bali.business.club/"
+  },
+  {
+    title: "Community stories",
+    copy: "Use this space for event visuals, founder spotlights, and the latest updates from the BBC community.",
+    url: "https://www.instagram.com/bali.business.club/"
   }
 ] as const;

@@ -11,14 +11,20 @@ import {
   ChevronDown,
   CircleUserRound,
   ExternalLink,
+  Facebook,
   Heart,
   House,
+  Instagram,
   LogOut,
+  MessageCircleMore,
+  MessagesSquare,
+  Music2,
   Newspaper,
   PencilLine,
   Podcast,
   Save,
   Trash2,
+  Youtube,
   X
 } from "lucide-react";
 import { SessionUser, useAuth } from "@/components/auth-provider";
@@ -26,14 +32,15 @@ import { BaliTime } from "@/components/bali-time";
 import {
   dashboardShortcuts,
   initialFavorites,
-  marketChartSeries,
-  marketFilters,
+  instagramPanels,
+  marketReports,
   marketStatCards,
   newsSections,
   partnerBenefits,
   podcastFeed,
   podcastTopics,
-  resourceDocuments
+  resourceDocuments,
+  socials
 } from "@/lib/mock-data";
 
 const dashboardTabs = [
@@ -43,13 +50,14 @@ const dashboardTabs = [
   { id: "podcasts", label: "Podcasts", icon: Podcast },
   { id: "resources", label: "Ressources", icon: BookOpen },
   { id: "partners", label: "Partners", icon: Building2 },
-  { id: "favorites", label: "Favorites", icon: Heart }
+  { id: "favorites", label: "Favorites", icon: Heart },
+  { id: "connect", label: "Connect", icon: MessagesSquare }
 ] as const;
 
 type DashboardTab = (typeof dashboardTabs)[number]["id"];
-type MarketFilter = (typeof marketFilters)[number];
 type NewsTopic = (typeof newsSections)[number]["title"];
 type PodcastTopic = (typeof podcastTopics)[number];
+type MarketReport = (typeof marketReports)[number]["report"];
 type FavoriteItem = {
   id: string;
   type: "News" | "Podcast" | "Ressource";
@@ -62,16 +70,30 @@ function formatMetricValue(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
+function formatChartValue(value: number, unit: "percent" | "currency" | "change") {
+  if (unit === "currency") {
+    return `$${formatMetricValue(value)}`;
+  }
+
+  if (unit === "change") {
+    return `${value > 0 ? "+" : ""}${value}%`;
+  }
+
+  return `${value}%`;
+}
+
 function InteractiveBarChart({
   values,
   activeIndex,
   onSelect,
-  labels
+  labels,
+  unit
 }: {
   values: readonly number[];
   activeIndex: number;
   onSelect: (index: number) => void;
   labels: readonly string[];
+  unit: "percent" | "currency" | "change";
 }) {
   const max = Math.max(...values);
 
@@ -87,7 +109,7 @@ function InteractiveBarChart({
           >
             <div className="bar-row-head">
               <span>{labels[index]}</span>
-              <strong>{formatMetricValue(value)}</strong>
+              <strong>{formatChartValue(value, unit)}</strong>
             </div>
             <div className="bar-track">
               <div
@@ -194,7 +216,8 @@ export function DashboardShell() {
   const [activeTab, setActiveTab] = useState<DashboardTab>("home");
   const [profileOpen, setProfileOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [marketFilter, setMarketFilter] = useState<MarketFilter>(marketFilters[0]);
+  const [marketFilter, setMarketFilter] = useState<MarketReport>(marketReports[0].report);
+  const [marketMetric, setMarketMetric] = useState<string>(marketReports[0].metrics[0].id);
   const [chartSelection, setChartSelection] = useState<Record<string, number>>({});
   const [newsTopic, setNewsTopic] = useState<NewsTopic>(newsSections[0].title);
   const [expandedArticles, setExpandedArticles] = useState<string[]>([]);
@@ -241,11 +264,17 @@ export function DashboardShell() {
   );
 
   const filteredCharts = useMemo(
-    () => marketChartSeries.filter((item) => item.strategies[0] === marketFilter),
+    () => marketReports.find((item) => item.report === marketFilter) ?? marketReports[0],
     [marketFilter]
   );
 
-  const selectedMarketSeries = filteredCharts[0];
+  useEffect(() => {
+    if (!filteredCharts.metrics.some((item) => item.id === marketMetric)) {
+      setMarketMetric(filteredCharts.metrics[0].id);
+    }
+  }, [filteredCharts, marketMetric]);
+
+  const selectedMarketSeries = filteredCharts.metrics.find((item) => item.id === marketMetric) ?? filteredCharts.metrics[0];
 
   const groupedResources = useMemo(
     () =>
@@ -285,6 +314,22 @@ export function DashboardShell() {
 
   function isFavorite(id: string) {
     return favorites.some((favorite) => favorite.id === id);
+  }
+
+  function renderSocialIcon(icon: (typeof socials)[number]["icon"]) {
+    if (icon === "youtube") {
+      return <Youtube size={18} />;
+    }
+    if (icon === "spotify") {
+      return <Music2 size={18} />;
+    }
+    if (icon === "instagram") {
+      return <Instagram size={18} />;
+    }
+    if (icon === "facebook") {
+      return <Facebook size={18} />;
+    }
+    return <MessagesSquare size={18} />;
   }
 
   if (!ready || !user) {
@@ -422,14 +467,14 @@ export function DashboardShell() {
               </div>
 
               <div className="filter-bar market-filter-bar">
-                {marketFilters.map((filter) => (
+                {marketReports.map((filter) => (
                   <button
-                    key={filter}
+                    key={filter.report}
                     type="button"
-                    className={marketFilter === filter ? "filter-btn active" : "filter-btn"}
-                    onClick={() => setMarketFilter(filter)}
+                    className={marketFilter === filter.report ? "filter-btn active" : "filter-btn"}
+                    onClick={() => setMarketFilter(filter.report)}
                   >
-                    {filter}
+                    {filter.report}
                   </button>
                 ))}
               </div>
@@ -445,10 +490,24 @@ export function DashboardShell() {
                     <ChartNoAxesColumn size={18} />
                   </div>
 
+                  <div className="filter-bar market-metric-bar">
+                    {filteredCharts.metrics.map((metric) => (
+                      <button
+                        key={metric.id}
+                        type="button"
+                        className={marketMetric === metric.id ? "filter-btn active" : "filter-btn"}
+                        onClick={() => setMarketMetric(metric.id)}
+                      >
+                        {metric.title}
+                      </button>
+                    ))}
+                  </div>
+
                   <InteractiveBarChart
                     values={selectedMarketSeries.values}
                     activeIndex={chartSelection[selectedMarketSeries.title] ?? 0}
                     labels={selectedMarketSeries.labels}
+                    unit={selectedMarketSeries.unit}
                     onSelect={(index) =>
                       setChartSelection((current) => ({
                         ...current,
@@ -461,7 +520,10 @@ export function DashboardShell() {
                     <span>Selected point</span>
                     <strong>
                       {selectedMarketSeries.labels[chartSelection[selectedMarketSeries.title] ?? 0]}:{" "}
-                      {formatMetricValue(selectedMarketSeries.values[chartSelection[selectedMarketSeries.title] ?? 0])}
+                      {formatChartValue(
+                        selectedMarketSeries.values[chartSelection[selectedMarketSeries.title] ?? 0],
+                        selectedMarketSeries.unit
+                      )}
                     </strong>
                   </div>
 
@@ -770,6 +832,95 @@ export function DashboardShell() {
                   );
                 })}
               </div>
+            </article>
+          </section>
+        ) : null}
+
+        {activeTab === "connect" ? (
+          <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">Stay connected</span>
+                  <h2>Follow Bali Business Club</h2>
+                </div>
+              </div>
+
+              <p className="section-note">
+                Stay close to the BBC ecosystem through our socials, podcast channels, and WhatsApp. This tab is designed
+                as the clean contact point for community updates and future content suggestions.
+              </p>
+
+              <div className="social-list">
+                {socials.map((social) => (
+                  <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
+                    <div className="social-main">
+                      <div className="social-badge">{renderSocialIcon(social.icon)}</div>
+                      <div>
+                        <strong>{social.name}</strong>
+                        <p>{social.handle}</p>
+                      </div>
+                    </div>
+                    <ExternalLink size={16} />
+                  </a>
+                ))}
+              </div>
+            </article>
+
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">Instagram</span>
+                  <h2>Recent content</h2>
+                </div>
+              </div>
+
+              <div className="carousel-row clean">
+                {instagramPanels.map((panel) => (
+                  <a key={panel.title} href={panel.url} target="_blank" rel="noreferrer" className="carousel-card clean">
+                    <span className="eyebrow small-pill">Instagram</span>
+                    <strong>{panel.title}</strong>
+                    <p>{panel.copy}</p>
+                  </a>
+                ))}
+              </div>
+            </article>
+
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">Recommend a topic</span>
+                  <h2>Suggest future podcast ideas</h2>
+                </div>
+              </div>
+
+              <form className="form-grid clean">
+                <label>
+                  Name
+                  <input placeholder="Your name" />
+                </label>
+                <label>
+                  Email
+                  <input placeholder="you@example.com" />
+                </label>
+                <label>
+                  Topic suggestion
+                  <input placeholder="What should we cover next?" />
+                </label>
+                <label>
+                  Details
+                  <textarea rows={5} placeholder="Share the angle, guest idea, or question you want BBC to explore." />
+                </label>
+                <div className="connect-actions">
+                  <button type="button" className="primary-button compact">
+                    Send suggestion
+                  </button>
+                  <a href="https://wa.link/zg5xw8" target="_blank" rel="noreferrer" className="ghost-button compact">
+                    <MessageCircleMore size={14} />
+                    WhatsApp us
+                  </a>
+                </div>
+              </form>
             </article>
           </section>
         ) : null}
