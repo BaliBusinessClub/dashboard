@@ -2,27 +2,77 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BellRing, Database, Download, LogOut, MessageSquareText, RefreshCw, Settings, Users } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
-import { adminAnalyticsCards, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
+import { adminAnalyticsCards, adminAnalyticsCharts, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
 
 const adminTabs = [
   { id: "analytics", label: "Analytics", icon: Users },
+  { id: "messages", label: "Messages", icon: MessageSquareText },
   { id: "reporting", label: "Reporting", icon: RefreshCw },
   { id: "database", label: "Database", icon: Database },
   { id: "settings", label: "Settings", icon: Settings }
 ] as const;
 
 type AdminTab = (typeof adminTabs)[number]["id"];
-
 const reportingTargets = ["market-insights", "news", "podcasts", "resources", "partners"];
+
+function MiniBarChart({
+  title,
+  data
+}: {
+  title: string;
+  data: readonly { label: string; value: number }[];
+}) {
+  const max = Math.max(...data.map((item) => item.value));
+
+  return (
+    <article className="section-card clean">
+      <div className="section-heading">
+        <div>
+          <h2>{title}</h2>
+        </div>
+      </div>
+      <div className="admin-chart-list">
+        {data.map((item) => (
+          <div key={item.label} className="admin-chart-row">
+            <div className="admin-chart-copy">
+              <strong>{item.label}</strong>
+              <span>{item.value}</span>
+            </div>
+            <div className="admin-chart-track">
+              <div className="admin-chart-fill" style={{ width: `${(item.value / max) * 100}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </article>
+  );
+}
 
 export function AdminShell() {
   const router = useRouter();
   const { user, ready, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
   const [refreshStatus, setRefreshStatus] = useState<string | null>(null);
+  const [settingsState, setSettingsState] = useState(
+    adminSettings.map((setting) => ({
+      ...setting,
+      enabled: setting.value === "Active" || setting.value === "Enabled"
+    }))
+  );
+  const groupedMessages = useMemo(
+    () =>
+      adminMessages.reduce<Record<string, Array<(typeof adminMessages)[number]>>>((groups, message) => {
+        if (!groups[message.type]) {
+          groups[message.type] = [];
+        }
+        groups[message.type].push(message);
+        return groups;
+      }, {}),
+    []
+  );
 
   useEffect(() => {
     if (!ready) {
@@ -96,7 +146,7 @@ export function AdminShell() {
       <section className="bbc-panel">
         {activeTab === "analytics" ? (
           <section className="panel-stack">
-            <div className="metric-grid compact">
+            <div className="metric-grid compact admin-metric-grid">
               {adminAnalyticsCards.map((card) => (
                 <article key={card.label} className="metric-card">
                   <div className="metric-label">{card.label}</div>
@@ -106,31 +156,41 @@ export function AdminShell() {
               ))}
             </div>
 
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <h2>Incoming messages</h2>
-                  <p className="section-note compact">Everything sent from forms on the member dashboard is organized here by type.</p>
-                </div>
-              </div>
+            <div className="two-col-grid">
+              <MiniBarChart title="Most visited pages" data={adminAnalyticsCharts.pageVisits} />
+              <MiniBarChart title="Member age ranges" data={adminAnalyticsCharts.ageRanges} />
+            </div>
+          </section>
+        ) : null}
 
-              <div className="admin-message-list">
-                {adminMessages.map((message) => (
-                  <article key={message.id} className="admin-message-card">
-                    <div className="admin-message-top">
-                      <span className="news-cat">{message.type}</span>
-                      <small>{message.date}</small>
-                    </div>
-                    <strong>{message.subject}</strong>
-                    <p>{message.message}</p>
-                    <div className="admin-message-meta">
-                      <span>{message.name}</span>
-                      <span>{message.email}</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </article>
+        {activeTab === "messages" ? (
+          <section className="panel-stack">
+            {Object.entries(groupedMessages).map(([group, items]) => (
+              <article key={group} className="section-card clean">
+                <div className="section-heading">
+                  <div>
+                    <h2>{group}</h2>
+                    <p className="section-note compact">{items.length} incoming message{items.length > 1 ? "s" : ""} in this category.</p>
+                  </div>
+                </div>
+
+                <div className="admin-message-list">
+                  {items.map((message) => (
+                    <article key={message.id} className="admin-message-card">
+                      <div className="admin-message-top">
+                        <strong>{message.subject}</strong>
+                        <small>{message.date}</small>
+                      </div>
+                      <p>{message.message}</p>
+                      <div className="admin-message-meta">
+                        <span>{message.name}</span>
+                        <span>{message.email}</span>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </article>
+            ))}
           </section>
         ) : null}
 
@@ -140,7 +200,7 @@ export function AdminShell() {
               <div className="section-heading">
                 <div>
                   <h2>Manual refresh controls</h2>
-                  <p className="section-note compact">Use these controls to pull a section manually before the scheduled auto-update runs.</p>
+                  <p className="section-note compact">Pull a section manually before the scheduled auto-update runs.</p>
                 </div>
               </div>
 
@@ -164,7 +224,7 @@ export function AdminShell() {
               <div className="section-heading">
                 <div>
                   <h2>Member database</h2>
-                  <p className="section-note compact">Export the current user list to CSV or review the key member information here.</p>
+                  <p className="section-note compact">Export the current user list to CSV or review key member information here.</p>
                 </div>
                 <a href="/api/export/users" className="table-link-button">
                   <Download size={14} />
@@ -208,31 +268,40 @@ export function AdminShell() {
               <div className="section-heading">
                 <div>
                   <h2>Platform settings</h2>
-                  <p className="section-note compact">Control the live behavior of the dashboard and its admin notifications.</p>
+                  <p className="section-note compact">Control refreshes, verification, routing, and admin notifications from one place.</p>
                 </div>
               </div>
 
               <div className="settings-list clean">
-                {adminSettings.map((setting) => (
+                {settingsState.map((setting, index) => (
                   <div key={setting.label} className="setting-row clean">
-                    <span>{setting.label}</span>
-                    <button type="button" className="filter-btn active">
-                      {setting.value}
+                    <div>
+                      <strong>{setting.label}</strong>
+                      <p>{setting.enabled ? "Enabled and running" : "Currently switched off"}</p>
+                    </div>
+                    <button
+                      type="button"
+                      className={setting.enabled ? "filter-btn active" : "filter-btn"}
+                      onClick={() =>
+                        setSettingsState((current) =>
+                          current.map((item, itemIndex) =>
+                            itemIndex === index ? { ...item, enabled: !item.enabled } : item
+                          )
+                        )
+                      }
+                    >
+                      {setting.enabled ? "Active" : "Paused"}
                     </button>
                   </div>
                 ))}
                 <div className="setting-row clean">
-                  <span>Admin alerts</span>
+                  <div>
+                    <strong>Admin alerts</strong>
+                    <p>Set notification behavior for dashboard and inbox activity.</p>
+                  </div>
                   <button type="button" className="filter-btn">
                     <BellRing size={14} />
                     Configure
-                  </button>
-                </div>
-                <div className="setting-row clean">
-                  <span>Inbox routing</span>
-                  <button type="button" className="filter-btn">
-                    <MessageSquareText size={14} />
-                    Review rules
                   </button>
                 </div>
               </div>

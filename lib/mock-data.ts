@@ -784,8 +784,27 @@ export const adminAnalyticsCards = [
   { value: "31", label: "People online", detail: "Active members in the dashboard right now." },
   { value: "25-34", label: "Top age range", detail: "Largest active audience segment this week." },
   { value: "Market Insights", label: "Most visited page", detail: "Highest traffic destination in the member dashboard." },
-  { value: "18 min", label: "Average session", detail: "Average time spent per active member session." }
+  { value: "18 min", label: "Average session", detail: "Average time spent per active member session." },
+  { value: "42%", label: "Returning users", detail: "Members who came back more than once this week." },
+  { value: "67", label: "Saved items", detail: "Favorites added across articles, podcasts, and resources." }
 ] as const;
+
+export const adminAnalyticsCharts = {
+  pageVisits: [
+    { label: "Market", value: 72 },
+    { label: "News", value: 58 },
+    { label: "Podcasts", value: 41 },
+    { label: "Resources", value: 36 },
+    { label: "Partners", value: 19 }
+  ],
+  ageRanges: [
+    { label: "18-24", value: 12 },
+    { label: "25-34", value: 38 },
+    { label: "35-44", value: 29 },
+    { label: "45-54", value: 14 },
+    { label: "55+", value: 7 }
+  ]
+} as const;
 
 export const adminMessages = [
   {

@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LockKeyhole, Mail } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 
-type Mode = "signin" | "create" | "admin" | "verify";
+type Mode = "signin" | "create" | "verify";
+const ADMIN_EMAIL = "admin@balibusinessclub.com";
 
 export function LoginScreen() {
   const router = useRouter();
@@ -15,8 +16,11 @@ export function LoginScreen() {
   const [name, setName] = useState("Made Prasetya");
   const [email, setEmail] = useState("member@balibusinessclub.com");
   const [code, setCode] = useState("");
+  const [ageRange, setAgeRange] = useState("25-34");
+  const [memberType, setMemberType] = useState("Business owner");
   const [status, setStatus] = useState<string | null>(null);
   const [previewCode, setPreviewCode] = useState<string | null>(null);
+  const isAdminAttempt = useMemo(() => email.trim().toLowerCase() === ADMIN_EMAIL, [email]);
 
   useEffect(() => {
     if (!ready || !user) {
@@ -27,7 +31,7 @@ export function LoginScreen() {
   }, [ready, router, user]);
 
   async function sendCode() {
-    setStatus(mode === "admin" ? "Preparing admin access code..." : "Preparing verification code...");
+    setStatus(isAdminAttempt ? "Preparing admin access code..." : "Preparing verification code...");
     setPreviewCode(null);
 
     const response = await fetch("/api/auth/send-code", {
@@ -45,7 +49,7 @@ export function LoginScreen() {
 
     setMode("verify");
     setPreviewCode(result.code ?? null);
-    setStatus(mode === "admin" ? "Admin code ready." : "Verification code ready.");
+    setStatus(isAdminAttempt ? "Admin code ready." : "Verification code ready.");
   }
 
   async function verifyCode() {
@@ -64,12 +68,12 @@ export function LoginScreen() {
       return;
     }
 
-    const sessionUser = signInWithEmail(email, name);
+    const sessionUser = signInWithEmail(email, name, { ageRange, memberType });
     router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
   }
 
   function continueWithEmail() {
-    if (mode === "signin") {
+    if (mode === "signin" && !isAdminAttempt) {
       const sessionUser = signInWithEmail(email, name);
       router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
       return;
@@ -103,26 +107,39 @@ export function LoginScreen() {
           <button type="button" className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>
             Sign in
           </button>
-          <button type="button" className={mode === "create" ? "active" : ""} onClick={() => {
-            setMode("create");
-            setEmail("member@balibusinessclub.com");
-          }}>
+          <button type="button" className={mode === "create" ? "active" : ""} onClick={() => setMode("create")}>
             Create account
-          </button>
-          <button type="button" className={mode === "admin" ? "active" : ""} onClick={() => {
-            setMode("admin");
-            setEmail("admin@balibusinessclub.com");
-          }}>
-            Admin
           </button>
         </div>
 
         <div className="auth-card clean minimal-login-card">
           {mode === "create" ? (
-            <label>
-              Name
-              <input value={name} onChange={(event) => setName(event.target.value)} />
-            </label>
+            <>
+              <label>
+                Name
+                <input value={name} onChange={(event) => setName(event.target.value)} />
+              </label>
+              <label>
+                Age range
+                <select value={ageRange} onChange={(event) => setAgeRange(event.target.value)}>
+                  <option>18-24</option>
+                  <option>25-34</option>
+                  <option>35-44</option>
+                  <option>45-54</option>
+                  <option>55+</option>
+                </select>
+              </label>
+              <label>
+                What best describes you?
+                <select value={memberType} onChange={(event) => setMemberType(event.target.value)}>
+                  <option>Business owner</option>
+                  <option>Investor</option>
+                  <option>Developer</option>
+                  <option>Operator</option>
+                  <option>Consultant</option>
+                </select>
+              </label>
+            </>
           ) : null}
 
           <label>
@@ -143,7 +160,7 @@ export function LoginScreen() {
                 <LockKeyhole size={14} />
                 Continue
               </button>
-              <button type="button" className="ghost-button compact" onClick={() => setMode(email.includes("admin") ? "admin" : "create")}>
+              <button type="button" className="ghost-button compact" onClick={() => setMode("signin")}>
                 Back
               </button>
             </div>
@@ -151,7 +168,7 @@ export function LoginScreen() {
             <div className="minimal-login-actions">
               <button type="button" className="primary-button compact" onClick={continueWithEmail}>
                 <Mail size={14} />
-                {mode === "signin" ? "Sign in" : mode === "admin" ? "Send admin code" : "Create account"}
+                {mode === "signin" ? (isAdminAttempt ? "Send access code" : "Sign in") : "Create account"}
               </button>
               <button type="button" className="google-button compact-google" onClick={continueWithGoogle}>
                 Continue with Google

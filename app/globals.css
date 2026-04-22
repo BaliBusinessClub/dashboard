@@ -53,7 +53,8 @@ button {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   padding: 13px 14px;
   border: 1px solid var(--bbc-border-strong);
@@ -65,7 +66,8 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   border-color: var(--bbc-yellow);
   background: #121212;
 }
@@ -1186,6 +1188,37 @@ tbody td {
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
+}
+
+.admin-chart-list {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-chart-row {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-chart-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.admin-chart-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #1b1b1c;
+  overflow: hidden;
+}
+
+.admin-chart-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--bbc-yellow);
 }
 
 .connect-shell {

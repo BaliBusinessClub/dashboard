@@ -11,12 +11,14 @@ export type SessionUser = {
   role: UserRole;
   picture?: string;
   memberSince: string;
+  ageRange?: string;
+  memberType?: string;
 };
 
 type AuthContextValue = {
   user: SessionUser | null;
   ready: boolean;
-  signInWithEmail: (email: string, name?: string) => SessionUser;
+  signInWithEmail: (email: string, name?: string, profile?: Pick<SessionUser, "ageRange" | "memberType">) => SessionUser;
   signOut: () => void;
   updateProfile: (updates: Partial<SessionUser>) => void;
 };
@@ -39,7 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: parsed.name ?? "",
           role: parsed.role === "admin" ? "admin" : "member",
           picture: parsed.picture ?? "",
-          memberSince: parsed.memberSince ?? new Date().toISOString().slice(0, 10)
+          memberSince: parsed.memberSince ?? new Date().toISOString().slice(0, 10),
+          ageRange: parsed.ageRange ?? "",
+          memberType: parsed.memberType ?? ""
         };
         setUser(nextUser);
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
@@ -59,14 +63,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  function signInWithEmail(email: string, name?: string) {
+  function signInWithEmail(email: string, name?: string, profile?: Pick<SessionUser, "ageRange" | "memberType">) {
     const normalizedEmail = email.trim().toLowerCase();
     const sessionUser: SessionUser = {
       email: normalizedEmail,
       name: name?.trim() || normalizedEmail.split("@")[0].replace(/[._-]/g, " ").toUpperCase(),
       role: normalizedEmail === ADMIN_EMAIL ? "admin" : "member",
       picture: "",
-      memberSince: new Date().toISOString().slice(0, 10)
+      memberSince: new Date().toISOString().slice(0, 10),
+      ageRange: profile?.ageRange ?? "",
+      memberType: profile?.memberType ?? ""
     };
     persist(sessionUser);
     return sessionUser;

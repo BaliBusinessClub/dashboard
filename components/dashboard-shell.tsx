@@ -9,14 +9,11 @@ import {
   ChartColumn,
   ChevronDown,
   ExternalLink,
-  Facebook,
   Heart,
   House,
-  Instagram,
   LogOut,
   MessageCircleMore,
   MessagesSquare,
-  Music2,
   Newspaper,
   PencilLine,
   Podcast,
@@ -30,7 +27,6 @@ import { BaliTime } from "@/components/bali-time";
 import {
   dashboardShortcuts,
   initialFavorites,
-  instagramPanels,
   marketReports,
   marketStatCards,
   newsSections,
@@ -89,6 +85,17 @@ function formatMemberSince(date: string) {
     month: "long",
     year: "numeric"
   }).format(new Date(date));
+}
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    return "Good morning";
+  }
+  if (hour < 18) {
+    return "Good afternoon";
+  }
+  return "Good evening";
 }
 
 function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
@@ -337,7 +344,7 @@ function ProfileModal({
                 name,
                 email,
                 picture,
-                role: email.toLowerCase().includes("admin") ? "admin" : "member"
+                role: email.toLowerCase() === "admin@balibusinessclub.com" ? "admin" : "member"
               });
               onClose();
             }}
@@ -364,6 +371,7 @@ export function DashboardShell() {
   const [podcastTopic, setPodcastTopic] = useState<PodcastTopic>("All");
   const [favorites, setFavorites] = useState<FavoriteItem[]>([...initialFavorites]);
   const [activeArticle, setActiveArticle] = useState<NewsArticleView | null>(null);
+  const [greeting, setGreeting] = useState(getGreeting());
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -398,6 +406,11 @@ export function DashboardShell() {
 
     return () => window.removeEventListener("mousedown", handleClick);
   }, [profileOpen]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setGreeting(getGreeting()), 1000 * 60 * 15);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const filteredCharts = useMemo(
     () => marketReports.find((item) => item.report === marketFilter) ?? marketReports[0],
@@ -455,6 +468,32 @@ export function DashboardShell() {
 
   function isFavorite(id: string) {
     return favorites.some((favorite) => favorite.id === id);
+  }
+
+  function openFavorite(item: FavoriteItem) {
+    if (item.type === "News") {
+      const match = allNewsArticles.find((article) => article.id === item.sourceId);
+      if (match) {
+        setActiveTab("news");
+        setActiveArticle(match);
+      }
+      return;
+    }
+
+    if (item.type === "Podcast") {
+      const match = podcastFeed.find((episode) => episode.id === item.sourceId);
+      if (match) {
+        setActiveTab("podcasts");
+        window.open(match.url, "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
+
+    const match = resourceDocuments.find((resource) => resource.id === item.sourceId);
+    if (match) {
+      setActiveTab("resources");
+      window.open(match.url, "_blank", "noopener,noreferrer");
+    }
   }
 
   if (!ready || !user) {
@@ -539,7 +578,9 @@ export function DashboardShell() {
           <section className="panel-stack">
             <div className="home-intro">
               <div>
-                <h2>Hello {user.name}</h2>
+                <h2>
+                  {greeting} {user.name}
+                </h2>
               </div>
               <p>Everything you need for Bali Business Club in one place.</p>
             </div>
@@ -711,11 +752,13 @@ export function DashboardShell() {
                       <div className="news-footer">
                         <small>{article.date}</small>
                         <div className="news-actions">
+                          <button type="button" className="table-link-button" onClick={() => setActiveArticle(article)}>
+                            Open article
+                          </button>
                           <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
                             <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
-                          <span className="news-source-link">Open article</span>
                         </div>
                       </div>
                     </article>
@@ -815,7 +858,6 @@ export function DashboardShell() {
                       <article key={resource.id} className="resource-row">
                         <div className="resource-copy">
                           <div className="table-main">{resource.title}</div>
-                          <div className="table-sub">{resource.note}</div>
                           <small>{resource.source}</small>
                         </div>
                         <div className="resource-actions">
@@ -917,6 +959,9 @@ export function DashboardShell() {
                               <div className="favorite-label">{item.type}</div>
                               <strong>{item.title}</strong>
                               <p>{item.note}</p>
+                              <button type="button" className="table-link-button" onClick={() => openFavorite(item)}>
+                                Open
+                              </button>
                               <button
                                 type="button"
                                 className="mini-action danger"
@@ -952,40 +997,21 @@ export function DashboardShell() {
                 Stay close to the BBC ecosystem through our social channels, podcast links, and direct WhatsApp contact.
               </p>
 
-              <div className="connect-shell">
-                <div className="social-list">
-                  {socials.map((social) => (
-                    <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
-                      <div className="social-main">
-                        <div className="social-badge">
-                          <SocialLogo icon={social.icon} />
-                        </div>
-                        <div>
-                          <strong>{social.name}</strong>
-                          <p>{social.handle}</p>
-                        </div>
+              <div className="social-list">
+                {socials.map((social) => (
+                  <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
+                    <div className="social-main">
+                      <div className="social-badge">
+                        <SocialLogo icon={social.icon} />
                       </div>
-                      <ExternalLink size={16} />
-                    </a>
-                  ))}
-                </div>
-
-                <div className="connect-feed">
-                  <div className="section-heading">
-                    <div>
-                      <h2>Recent content</h2>
+                      <div>
+                        <strong>{social.name}</strong>
+                        <p>{social.handle}</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="carousel-row clean">
-                    {instagramPanels.map((panel) => (
-                      <a key={panel.title} href={panel.url} target="_blank" rel="noreferrer" className="carousel-card clean">
-                        <strong>{panel.title}</strong>
-                        <p>{panel.copy}</p>
-                      </a>
-                    ))}
-                  </div>
-                </div>
+                    <ExternalLink size={16} />
+                  </a>
+                ))}
               </div>
             </article>
 
@@ -1019,7 +1045,7 @@ export function DashboardShell() {
               </form>
             </article>
 
-            <a href="https://wa.link/zg5xw8" target="_blank" rel="noreferrer" className="whatsapp-banner">
+            <div className="whatsapp-banner">
               <div className="whatsapp-banner-copy">
                 <MessageCircleMore size={16} />
                 <div>
@@ -1027,11 +1053,10 @@ export function DashboardShell() {
                   <span>Message us directly on WhatsApp.</span>
                 </div>
               </div>
-              <span className="whatsapp-banner-link">
+              <a href="https://wa.link/zg5xw8" target="_blank" rel="noreferrer" className="table-link-button">
                 Open chat
-                <ExternalLink size={14} />
-              </span>
-            </a>
+              </a>
+            </div>
           </section>
         ) : null}
       </section>
