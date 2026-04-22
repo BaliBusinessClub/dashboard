@@ -6,13 +6,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   Building2,
+  CalendarDays,
   CalendarRange,
   ChartColumn,
   ChevronDown,
-  ExternalLink,
   Heart,
   House,
   LogOut,
+  MapPin,
   MessageCircleMore,
   MessagesSquare,
   Newspaper,
@@ -59,7 +60,7 @@ type PodcastTopic = (typeof podcastTopics)[number];
 type MarketReport = (typeof marketReports)[number]["report"];
 type FavoriteItem = {
   id: string;
-  type: "News" | "Podcast" | "Ressource";
+  type: "News" | "Podcast" | "Ressource" | "Event";
   title: string;
   note: string;
   sourceId: string;
@@ -398,6 +399,14 @@ export function DashboardShell() {
     website: "",
     offer: ""
   });
+  const [eventNotice, setEventNotice] = useState("");
+  const [partnerNotice, setPartnerNotice] = useState("");
+  const [connectNotice, setConnectNotice] = useState("");
+  const [suggestionForm, setSuggestionForm] = useState({
+    name: user?.name ?? "",
+    topic: "",
+    details: ""
+  });
   const [greeting, setGreeting] = useState(getGreeting());
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -438,6 +447,16 @@ export function DashboardShell() {
     const timer = window.setInterval(() => setGreeting(getGreeting()), 1000 * 60 * 15);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!user?.name) {
+      return;
+    }
+    setSuggestionForm((current) => ({
+      ...current,
+      name: current.name || user.name
+    }));
+  }, [user?.name]);
 
   useEffect(() => {
     setApprovedEvents([
@@ -569,10 +588,26 @@ export function DashboardShell() {
       return;
     }
 
-    const match = resourceDocuments.find((resource) => resource.id === item.sourceId);
-    if (match) {
+    if (item.type === "Event") {
+      const match = approvedEvents.find((event) => event.id === item.sourceId);
+      if (match) {
+        setActiveTab("events");
+        window.open(match.signupUrl, "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
+
+    const resourceMatch = resourceDocuments.find((resource) => resource.id === item.sourceId);
+    if (resourceMatch) {
       setActiveTab("resources");
-      window.open(match.url, "_blank", "noopener,noreferrer");
+      window.open(resourceMatch.url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    const reportMatch = reidReports.find((report) => report.id === item.sourceId);
+    if (reportMatch) {
+      setActiveTab("market");
+      window.open(reportMatch.url, "_blank", "noopener,noreferrer");
     }
   }
 
@@ -591,6 +626,7 @@ export function DashboardShell() {
       whatsappUrl: eventForm.whatsappUrl || undefined,
       source: "BBC community submission"
     });
+    setEventNotice("Event received. We will review it shortly before it appears on the dashboard.");
 
     setEventForm({
       title: "",
@@ -610,6 +646,7 @@ export function DashboardShell() {
     if (!partnerForm.company || !partnerForm.whatsapp || !partnerForm.website || !partnerForm.offer) {
       return;
     }
+    setPartnerNotice("Application sent. We will review it and get back to you shortly.");
     setPartnerForm({
       company: "",
       whatsapp: "",
@@ -617,6 +654,18 @@ export function DashboardShell() {
       offer: ""
     });
     setPartnerFormOpen(false);
+  }
+
+  function handleSuggestionSubmit() {
+    if (!suggestionForm.name || !suggestionForm.topic || !suggestionForm.details) {
+      return;
+    }
+    setConnectNotice("Thanks, we received your suggestion and the team will review it.");
+    setSuggestionForm({
+      name: user?.name ?? "",
+      topic: "",
+      details: ""
+    });
   }
 
   if (!ready || !user) {
@@ -819,18 +868,44 @@ export function DashboardShell() {
               <div className="section-heading">
                 <div>
                   <h2>Download the REID reports</h2>
-                  <p className="section-note compact">All attached REID reports are available here for direct download.</p>
+                  <p className="section-note compact">Browse every attached REID report in a horizontal library with quick save and download actions.</p>
                 </div>
               </div>
 
-              <div className="resource-list">
+              <div className="reid-carousel">
                 {reidReports.map((report) => (
-                  <article key={report.id} className="resource-row">
-                    <div className="resource-copy">
+                  <article key={report.id} className="resource-card-visual reid-card">
+                    <div className="resource-preview clean-cover">
+                      <iframe
+                        title={report.title}
+                        src={`${report.url}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
+                        scrolling="no"
+                      />
+                    </div>
+                    <div className="resource-copy visual">
                       <div className="table-main">{report.title}</div>
                       <small>{report.source}</small>
                     </div>
-                    <div className="resource-actions">
+                    <div className="resource-actions visual">
+                      <button
+                        type="button"
+                        className="mini-action"
+                        onClick={() =>
+                          toggleFavorite({
+                            id: `fav-${report.id}`,
+                            type: "Ressource",
+                            title: report.title,
+                            note: report.source,
+                            sourceId: report.id
+                          })
+                        }
+                      >
+                        <Heart
+                          size={14}
+                          fill={isFavorite(`fav-${report.id}`) ? "currentColor" : "none"}
+                        />
+                        {isFavorite(`fav-${report.id}`) ? "Saved" : "Save"}
+                      </button>
                       <a href={report.url} download className="table-link-button">
                         Download
                       </a>
@@ -921,11 +996,11 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <h2>Events happening in Bali now</h2>
+                  <h2>Upcoming events in Bali</h2>
                   <p className="section-note compact">Discover upcoming Bali events by category and jump straight to registration.</p>
                 </div>
-                <button type="button" className="table-link-button" onClick={() => setEventFormOpen((open) => !open)}>
-                  {eventFormOpen ? "Close form" : "Add an event"}
+                <button type="button" className="outline-yellow-button" onClick={() => setEventFormOpen(true)}>
+                  Add an event
                 </button>
               </div>
 
@@ -943,86 +1018,48 @@ export function DashboardShell() {
               </div>
 
               <div className="event-grid">
-                {visibleEvents.map((event) => (
-                  <article key={event.id} className="event-card">
-                    <div className="event-card-top">
-                      <span className="news-cat">{event.category}</span>
-                      <small>{event.source}</small>
-                    </div>
-                    <strong>{event.title}</strong>
-                    <p>{event.description}</p>
-                    <div className="event-meta">
-                      <span>{event.date}</span>
-                      <span>{event.location}</span>
-                    </div>
-                    <div className="event-actions">
-                      <a href={event.signupUrl} target="_blank" rel="noreferrer" className="table-link-button">
-                        Sign up
-                      </a>
-                    </div>
-                  </article>
-                ))}
+                {visibleEvents.map((event) => {
+                  const favorite: FavoriteItem = {
+                    id: `fav-${event.id}`,
+                    type: "Event",
+                    title: event.title,
+                    note: `${event.category} · ${event.date}`,
+                    sourceId: event.id
+                  };
+
+                  return (
+                    <article key={event.id} className="event-card">
+                      <div className="event-card-top">
+                        <span className="news-cat">{event.category}</span>
+                        <small>{event.source}</small>
+                      </div>
+                      <strong>{event.title}</strong>
+                      <p>{event.description}</p>
+                      <div className="event-meta clean">
+                        <span>
+                          <CalendarDays size={14} />
+                          {event.date}
+                        </span>
+                        <span>
+                          <MapPin size={14} />
+                          {event.location}
+                        </span>
+                      </div>
+                      <div className="event-actions">
+                        <a href={event.signupUrl} target="_blank" rel="noreferrer" className="table-link-button">
+                          Sign up
+                        </a>
+                        <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
+                          <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                          {isFavorite(favorite.id) ? "Saved" : "Save"}
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             </article>
-
-            {eventFormOpen ? <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <h2>Add an event</h2>
-                  <p className="section-note compact">Submit a Bali event and the BBC admin team can review it before it appears on the dashboard.</p>
-                </div>
-              </div>
-
-              <form className="form-grid clean">
-                <label>
-                  Event name
-                  <input required value={eventForm.title} onChange={(event) => setEventForm((current) => ({ ...current, title: event.target.value }))} />
-                </label>
-                <label>
-                  Date
-                  <input type="date" required value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} />
-                </label>
-                <label>
-                  Time
-                  <input type="time" required value={eventForm.time} onChange={(event) => setEventForm((current) => ({ ...current, time: event.target.value }))} />
-                </label>
-                <label>
-                  Location
-                  <input required value={eventForm.location} onChange={(event) => setEventForm((current) => ({ ...current, location: event.target.value }))} placeholder="Venue in Bali" />
-                </label>
-                <label>
-                  Category
-                  <select required value={eventForm.category} onChange={(event) => setEventForm((current) => ({ ...current, category: event.target.value as DashboardEvent["category"] }))}>
-                    <option>Networking</option>
-                    <option>Business</option>
-                    <option>Wellness & Sport</option>
-                    <option>Music & Culture</option>
-                    <option>Other</option>
-                  </select>
-                </label>
-                {eventForm.category === "Other" ? (
-                  <label>
-                    Custom category
-                    <input required value={eventForm.customCategory} onChange={(event) => setEventForm((current) => ({ ...current, customCategory: event.target.value }))} placeholder="Write the event category" />
-                  </label>
-                ) : null}
-                <label>
-                  Website to sign up
-                  <input required value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
-                </label>
-                <label>
-                  WhatsApp link
-                  <input value={eventForm.whatsappUrl} onChange={(event) => setEventForm((current) => ({ ...current, whatsappUrl: event.target.value }))} />
-                </label>
-                <label>
-                  Description
-                  <textarea required rows={5} value={eventForm.description} onChange={(event) => setEventForm((current) => ({ ...current, description: event.target.value }))} placeholder="What is this event about?" />
-                </label>
-                <button type="button" className="primary-button compact" onClick={handleEventSubmit}>
-                  Send event
-                </button>
-              </form>
-            </article> : null}
+            {eventNotice ? <div className="status-banner success">{eventNotice}</div> : null}
           </section>
         ) : null}
 
@@ -1031,7 +1068,7 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <h2>Episodes by topic</h2>
+                  <h2>Episodes</h2>
                 </div>
               </div>
 
@@ -1113,7 +1150,7 @@ export function DashboardShell() {
 
                     return (
                       <article key={resource.id} className="resource-card-visual">
-                        <div className="resource-preview">
+                        <div className="resource-preview clean-cover">
                           <iframe
                             title={resource.title}
                             src={`${resource.url}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
@@ -1147,10 +1184,10 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <h2>Partner benefits</h2>
+                  <h2>Our Partners</h2>
                 </div>
-                <button type="button" className="table-link-button" onClick={() => setPartnerFormOpen((open) => !open)}>
-                  {partnerFormOpen ? "Close form" : "Become a partner"}
+                <button type="button" className="outline-yellow-button" onClick={() => setPartnerFormOpen(true)}>
+                  Become a partner
                 </button>
               </div>
 
@@ -1171,36 +1208,7 @@ export function DashboardShell() {
                 ))}
               </div>
             </article>
-
-            {partnerFormOpen ? <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <h2>Become a partner</h2>
-                </div>
-              </div>
-
-              <form className="form-grid clean">
-                <label>
-                  Company name
-                  <input required placeholder="Your company name" value={partnerForm.company} onChange={(event) => setPartnerForm((current) => ({ ...current, company: event.target.value }))} />
-                </label>
-                <label>
-                  WhatsApp number
-                  <input required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: event.target.value }))} />
-                </label>
-                <label>
-                  Website
-                  <input required placeholder="https://..." value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
-                </label>
-                <label>
-                  What would you like to offer?
-                  <textarea required rows={5} placeholder="Describe the offer for BBC members." value={partnerForm.offer} onChange={(event) => setPartnerForm((current) => ({ ...current, offer: event.target.value }))} />
-                </label>
-                <button type="button" className="primary-button compact" onClick={handlePartnerSubmit}>
-                  Send application
-                </button>
-              </form>
-            </article> : null}
+            {partnerNotice ? <div className="status-banner success">{partnerNotice}</div> : null}
           </section>
         ) : null}
 
@@ -1214,7 +1222,7 @@ export function DashboardShell() {
               </div>
 
               <div className="favorites-groups">
-                {(["News", "Podcast", "Ressource"] as const).map((type) => {
+                {(["News", "Podcast", "Ressource", "Event"] as const).map((type) => {
                   const items = favorites.filter((favorite) => favorite.type === type);
                   return (
                     <div key={type} className="favorites-group">
@@ -1226,17 +1234,19 @@ export function DashboardShell() {
                               <div className="favorite-label">{item.type}</div>
                               <strong>{item.title}</strong>
                               <p>{item.note}</p>
-                              <button type="button" className="table-link-button" onClick={() => openFavorite(item)}>
-                                Open
-                              </button>
-                              <button
-                                type="button"
-                                className="mini-action danger"
-                                onClick={() => setFavorites((current) => current.filter((favorite) => favorite.id !== item.id))}
-                              >
-                                <Trash2 size={14} />
-                                Remove
-                              </button>
+                              <div className="favorite-actions">
+                                <button type="button" className="table-link-button" onClick={() => openFavorite(item)}>
+                                  Open
+                                </button>
+                                <button
+                                  type="button"
+                                  className="mini-action danger"
+                                  onClick={() => setFavorites((current) => current.filter((favorite) => favorite.id !== item.id))}
+                                >
+                                  <Trash2 size={14} />
+                                  Remove
+                                </button>
+                              </div>
                             </article>
                           ))}
                         </div>
@@ -1260,7 +1270,7 @@ export function DashboardShell() {
                 </div>
               </div>
 
-              <div className="social-grid">
+              <div className="social-grid social-grid-inline">
                 {socials.map((social) => (
                   <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
                     <div className="social-main">
@@ -1272,6 +1282,32 @@ export function DashboardShell() {
                   </a>
                 ))}
               </div>
+            </article>
+
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Podcast suggestions</h2>
+                </div>
+              </div>
+              <form className="form-grid clean">
+                <label>
+                  Your name
+                  <input value={suggestionForm.name} onChange={(event) => setSuggestionForm((current) => ({ ...current, name: event.target.value }))} />
+                </label>
+                <label>
+                  Topic idea
+                  <input value={suggestionForm.topic} onChange={(event) => setSuggestionForm((current) => ({ ...current, topic: event.target.value }))} placeholder="What should we cover next?" />
+                </label>
+                <label>
+                  Details
+                  <textarea rows={5} value={suggestionForm.details} onChange={(event) => setSuggestionForm((current) => ({ ...current, details: event.target.value }))} placeholder="Share guest ideas, angles, or questions." />
+                </label>
+                <button type="button" className="primary-button compact" onClick={handleSuggestionSubmit}>
+                  Send suggestion
+                </button>
+                {connectNotice ? <div className="status-banner success">{connectNotice}</div> : null}
+              </form>
             </article>
 
             <div className="whatsapp-banner">
@@ -1323,11 +1359,116 @@ export function DashboardShell() {
                   </button>
                   <a href={activeArticle.url} target="_blank" rel="noreferrer" className="table-link-button">
                     Source
-                    <ExternalLink size={14} />
                   </a>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {eventFormOpen ? (
+        <div className="modal-overlay open">
+          <div className="modal-card">
+            <div className="modal-head">
+              <div>
+                <h2>Add an event</h2>
+                <p className="section-note compact">Submit an upcoming Bali event and we will review it before it appears on the dashboard.</p>
+              </div>
+              <button type="button" className="icon-button" onClick={() => setEventFormOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <form className="form-grid clean">
+              <label>
+                Event name
+                <input required value={eventForm.title} onChange={(event) => setEventForm((current) => ({ ...current, title: event.target.value }))} />
+              </label>
+              <div className="two-col-grid">
+                <label>
+                  Date
+                  <input type="date" required value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} />
+                </label>
+                <label>
+                  Time
+                  <input type="time" required value={eventForm.time} onChange={(event) => setEventForm((current) => ({ ...current, time: event.target.value }))} />
+                </label>
+              </div>
+              <label>
+                Location
+                <input required value={eventForm.location} onChange={(event) => setEventForm((current) => ({ ...current, location: event.target.value }))} placeholder="Venue in Bali" />
+              </label>
+              <label>
+                Category
+                <select required value={eventForm.category} onChange={(event) => setEventForm((current) => ({ ...current, category: event.target.value as DashboardEvent["category"] }))}>
+                  <option>Networking</option>
+                  <option>Business</option>
+                  <option>Wellness & Sport</option>
+                  <option>Music & Culture</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              {eventForm.category === "Other" ? (
+                <label>
+                  Custom category
+                  <input required value={eventForm.customCategory} onChange={(event) => setEventForm((current) => ({ ...current, customCategory: event.target.value }))} placeholder="Write the event category" />
+                </label>
+              ) : null}
+              <label>
+                Website to sign up
+                <input required value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
+              </label>
+              <label>
+                WhatsApp link (optional)
+                <input value={eventForm.whatsappUrl} onChange={(event) => setEventForm((current) => ({ ...current, whatsappUrl: event.target.value }))} placeholder="https://wa.me/..." />
+              </label>
+              <label>
+                Description
+                <textarea required rows={5} value={eventForm.description} onChange={(event) => setEventForm((current) => ({ ...current, description: event.target.value }))} placeholder="What is this event about?" />
+              </label>
+              <button type="button" className="primary-button compact" onClick={handleEventSubmit}>
+                Create Event
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
+      {partnerFormOpen ? (
+        <div className="modal-overlay open">
+          <div className="modal-card">
+            <div className="modal-head">
+              <div>
+                <h2>Become a partner</h2>
+                <p className="section-note compact">Send your offer and the BBC team will review it before it is shared with members.</p>
+              </div>
+              <button type="button" className="icon-button" onClick={() => setPartnerFormOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <form className="form-grid clean">
+              <label>
+                Company name
+                <input required placeholder="Your company name" value={partnerForm.company} onChange={(event) => setPartnerForm((current) => ({ ...current, company: event.target.value }))} />
+              </label>
+              <label>
+                WhatsApp number
+                <input required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: event.target.value }))} />
+              </label>
+              <label>
+                Website
+                <input required placeholder="https://..." value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
+              </label>
+              <label>
+                What would you like to offer?
+                <textarea required rows={5} placeholder="Describe the offer for BBC members." value={partnerForm.offer} onChange={(event) => setPartnerForm((current) => ({ ...current, offer: event.target.value }))} />
+              </label>
+              <button type="button" className="primary-button compact" onClick={handlePartnerSubmit}>
+                Send application
+              </button>
+            </form>
           </div>
         </div>
       ) : null}
