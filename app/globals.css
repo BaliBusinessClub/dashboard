@@ -1082,6 +1082,7 @@ tbody td {
   height: 100%;
   border: 0;
   background: #fff;
+  pointer-events: none;
 }
 
 .resource-row {
@@ -1169,13 +1170,16 @@ tbody td {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 76px;
+  min-height: 120px;
+  padding: 22px;
+  border-radius: 18px;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
 .social-main {
-  display: flex;
-  align-items: center;
+  display: grid;
   gap: 12px;
+  justify-items: start;
 }
 
 .social-badge {
@@ -1192,6 +1196,18 @@ tbody td {
 .social-badge svg {
   width: 18px;
   height: 18px;
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.social-row:hover {
+  border-color: rgba(255, 216, 0, 0.45);
+  background: #131313;
+  transform: translateY(-2px);
 }
 
 .carousel-row.clean {
@@ -1339,9 +1355,22 @@ tbody td {
 }
 
 .reporting-button {
-  min-height: 128px;
+  min-height: 180px;
   padding: 24px;
   color: var(--bbc-text);
+  display: grid;
+  align-content: space-between;
+  justify-items: start;
+  gap: 16px;
+}
+
+.reporting-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.reporting-copy span {
+  color: var(--bbc-muted);
 }
 
 .auth-screen.simple {
@@ -1459,6 +1488,14 @@ tbody td {
   color: #d8e4ff;
 }
 
+.status-banner.success {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(45, 163, 78, 0.18);
+  color: #c7f3d5;
+}
+
 .preview-banner {
   background: rgba(255, 216, 0, 0.12);
   color: var(--bbc-yellow);
@@ -1505,6 +1542,12 @@ tbody td {
   gap: 16px;
 }
 
+.analytics-date-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  gap: 16px;
+}
+
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
@@ -1528,6 +1571,7 @@ tbody td {
   .episode-grid.covers,
   .event-grid,
   .resource-visual-grid,
+  .social-grid,
   .favorites-grid.clean,
   .metric-grid.compact,
   .reporting-grid,
@@ -1573,6 +1617,7 @@ tbody td {
   .episode-grid.covers,
   .event-grid,
   .resource-visual-grid,
+  .social-grid,
   .favorites-grid.clean,
   .metric-grid.compact,
   .reporting-grid,

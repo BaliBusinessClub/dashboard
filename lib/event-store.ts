@@ -1,6 +1,6 @@
 "use client";
 
-export type EventCategory = "Networking" | "Business" | "Wellness & Sport" | "Music & Culture";
+export type EventCategory = string;
 
 export type DashboardEvent = {
   id: string;

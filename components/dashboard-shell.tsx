@@ -379,14 +379,24 @@ export function DashboardShell() {
   const [activeArticle, setActiveArticle] = useState<NewsArticleView | null>(null);
   const [eventTopic, setEventTopic] = useState<DashboardEvent["category"] | "All">("All");
   const [approvedEvents, setApprovedEvents] = useState<DashboardEvent[]>([]);
+  const [eventFormOpen, setEventFormOpen] = useState(false);
+  const [partnerFormOpen, setPartnerFormOpen] = useState(false);
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
+    time: "",
     location: "",
     signupUrl: "",
     whatsappUrl: "https://wa.link/zg5xw8",
     category: "Networking" as DashboardEvent["category"],
+    customCategory: "",
     description: ""
+  });
+  const [partnerForm, setPartnerForm] = useState({
+    company: "",
+    whatsapp: "",
+    website: "",
+    offer: ""
   });
   const [greeting, setGreeting] = useState(getGreeting());
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
@@ -462,7 +472,43 @@ export function DashboardShell() {
   );
 
   const visiblePodcastFeed = useMemo(
-    () => podcastFeed.filter((episode) => podcastTopic === "All" || episode.topic === podcastTopic),
+    () => {
+      const homepageTitleOverrides: Record<string, string> = {
+        PG2TFBF0uY8: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
+        Ayb4THzSjE0: "Bali Real Estate Market in 2026: What the Data Really Shows",
+        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONET’s Real Estate Machine",
+        "4jIi_bXuUSU": "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
+        KScozjNYu9Q: "How Bali Business Founders Can Attract Investors from the Middle East",
+        UNaQQiIjoCk: "Bali Property Made Simple: The 9-Step Process Explained",
+        "0cMjvf1lb3g": "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
+        yxJwNl3n3t4: "The Kedungu Fund’s $10M Milestone: A Look Ahead",
+        bfHu20vi2g8: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
+        G1lT0E2nSGQ: "The Secret Growth Formula Content Creators Must Know!",
+        "7bXHvn8Vksw": "BALI REAL ESTATE: HOW TO TRIPLE YOUR INVESTMENT RETURNS!",
+        "9LNXudhoxO0": "The ROI Property Cycle in Bali No One Talks About!",
+        fGuiCmtcOKo: "Short-Term Rentals in Crisis: Why You Should Opt For Long-Term",
+        SPFp95YSETE: "Beware! Why We NEVER Invest in Uluwatu!",
+        jh_Ejqlc40g: "The Kedungu Fund: All the Answers",
+        qDP46lfSpaI: "HOW TO SELL MORE MARKETING FUNNELS: HOW AND WHY THEY WORK",
+        CfgZ7lqMhS8: "BALI BEACH GLAMPING : THE JOURNEY TO SUCCESS",
+        "DHIQD-7YkTo": "7 Key Tips to Know Before Buying a Bali Property",
+        "oFFzcP9m-14": "The 3 Golden Rules",
+        "A-8XYkc3hCA": "BALI LEASEHOLD VS FREEHOLD!",
+        BhrlhfO1hz4: "A Fashion Success Story",
+        E1FguH5Op68: "Leasehold Extensions in Bali",
+        aiHuohwGnrU: "Building in Bali",
+        nKp94xADWdM: "Bali Real Estate explained",
+        _viN8MqKMcQ: "How to 9x your investment"
+      };
+
+      return podcastFeed
+        .filter((episode) => !["x5iGqCEj1og", "vyL_5E7htbo"].includes(episode.id))
+        .map((episode) => ({
+          ...episode,
+          title: homepageTitleOverrides[episode.id] ?? episode.title
+        }))
+        .filter((episode) => podcastTopic === "All" || episode.topic === podcastTopic);
+    },
     [podcastTopic]
   );
 
@@ -485,6 +531,11 @@ export function DashboardShell() {
   const visibleEvents = useMemo(
     () => approvedEvents.filter((event) => eventTopic === "All" || event.category === eventTopic),
     [approvedEvents, eventTopic]
+  );
+
+  const eventCategories = useMemo(
+    () => ["All", ...Array.from(new Set(approvedEvents.map((event) => event.category)))],
+    [approvedEvents]
   );
 
   function toggleFavorite(item: FavoriteItem) {
@@ -526,26 +577,46 @@ export function DashboardShell() {
   }
 
   function handleEventSubmit() {
-    const submission = submitEvent({
+    const finalCategory = eventForm.category === "Other" ? eventForm.customCategory.trim() : eventForm.category;
+    if (!eventForm.title || !eventForm.date || !eventForm.time || !eventForm.location || !eventForm.signupUrl || !eventForm.description || !finalCategory) {
+      return;
+    }
+    submitEvent({
       title: eventForm.title,
-      category: eventForm.category,
-      date: eventForm.date,
+      category: finalCategory,
+      date: `${eventForm.date} · ${eventForm.time}`,
       location: eventForm.location,
       description: eventForm.description,
       signupUrl: eventForm.signupUrl,
-      whatsappUrl: eventForm.whatsappUrl,
+      whatsappUrl: eventForm.whatsappUrl || undefined,
       source: "BBC community submission"
     });
 
     setEventForm({
       title: "",
       date: "",
+      time: "",
       location: "",
       signupUrl: "",
-      whatsappUrl: "https://wa.link/zg5xw8",
+      whatsappUrl: "",
       category: "Networking",
+      customCategory: "",
       description: ""
     });
+    setEventFormOpen(false);
+  }
+
+  function handlePartnerSubmit() {
+    if (!partnerForm.company || !partnerForm.whatsapp || !partnerForm.website || !partnerForm.offer) {
+      return;
+    }
+    setPartnerForm({
+      company: "",
+      whatsapp: "",
+      website: "",
+      offer: ""
+    });
+    setPartnerFormOpen(false);
   }
 
   if (!ready || !user) {
@@ -830,7 +901,7 @@ export function DashboardShell() {
                         <small>{article.date}</small>
                         <div className="news-actions">
                           <button type="button" className="table-link-button" onClick={() => setActiveArticle(article)}>
-                            Open article
+                            Read more
                           </button>
                           <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
                             <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
@@ -853,15 +924,18 @@ export function DashboardShell() {
                   <h2>Events happening in Bali now</h2>
                   <p className="section-note compact">Discover upcoming Bali events by category and jump straight to registration.</p>
                 </div>
+                <button type="button" className="table-link-button" onClick={() => setEventFormOpen((open) => !open)}>
+                  {eventFormOpen ? "Close form" : "Add an event"}
+                </button>
               </div>
 
               <div className="filter-bar">
-                {(["All", "Networking", "Business", "Wellness & Sport", "Music & Culture"] as const).map((category) => (
+                {eventCategories.map((category) => (
                   <button
                     key={category}
                     type="button"
                     className={eventTopic === category ? "filter-btn active" : "filter-btn"}
-                    onClick={() => setEventTopic(category)}
+                    onClick={() => setEventTopic(category as DashboardEvent["category"] | "All")}
                   >
                     {category}
                   </button>
@@ -885,18 +959,13 @@ export function DashboardShell() {
                       <a href={event.signupUrl} target="_blank" rel="noreferrer" className="table-link-button">
                         Sign up
                       </a>
-                      {event.whatsappUrl ? (
-                        <a href={event.whatsappUrl} target="_blank" rel="noreferrer" className="ghost-button compact">
-                          WhatsApp
-                        </a>
-                      ) : null}
                     </div>
                   </article>
                 ))}
               </div>
             </article>
 
-            <article className="section-card clean">
+            {eventFormOpen ? <article className="section-card clean">
               <div className="section-heading">
                 <div>
                   <h2>Add an event</h2>
@@ -907,28 +976,39 @@ export function DashboardShell() {
               <form className="form-grid clean">
                 <label>
                   Event name
-                  <input value={eventForm.title} onChange={(event) => setEventForm((current) => ({ ...current, title: event.target.value }))} />
+                  <input required value={eventForm.title} onChange={(event) => setEventForm((current) => ({ ...current, title: event.target.value }))} />
                 </label>
                 <label>
-                  Date and time
-                  <input value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} placeholder="April 28, 2026 · 8:30 AM" />
+                  Date
+                  <input type="date" required value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} />
+                </label>
+                <label>
+                  Time
+                  <input type="time" required value={eventForm.time} onChange={(event) => setEventForm((current) => ({ ...current, time: event.target.value }))} />
                 </label>
                 <label>
                   Location
-                  <input value={eventForm.location} onChange={(event) => setEventForm((current) => ({ ...current, location: event.target.value }))} placeholder="Venue in Bali" />
+                  <input required value={eventForm.location} onChange={(event) => setEventForm((current) => ({ ...current, location: event.target.value }))} placeholder="Venue in Bali" />
                 </label>
                 <label>
                   Category
-                  <select value={eventForm.category} onChange={(event) => setEventForm((current) => ({ ...current, category: event.target.value as DashboardEvent["category"] }))}>
+                  <select required value={eventForm.category} onChange={(event) => setEventForm((current) => ({ ...current, category: event.target.value as DashboardEvent["category"] }))}>
                     <option>Networking</option>
                     <option>Business</option>
                     <option>Wellness & Sport</option>
                     <option>Music & Culture</option>
+                    <option>Other</option>
                   </select>
                 </label>
+                {eventForm.category === "Other" ? (
+                  <label>
+                    Custom category
+                    <input required value={eventForm.customCategory} onChange={(event) => setEventForm((current) => ({ ...current, customCategory: event.target.value }))} placeholder="Write the event category" />
+                  </label>
+                ) : null}
                 <label>
                   Website to sign up
-                  <input value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
+                  <input required value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
                 </label>
                 <label>
                   WhatsApp link
@@ -936,13 +1016,13 @@ export function DashboardShell() {
                 </label>
                 <label>
                   Description
-                  <textarea rows={5} value={eventForm.description} onChange={(event) => setEventForm((current) => ({ ...current, description: event.target.value }))} placeholder="What is this event about?" />
+                  <textarea required rows={5} value={eventForm.description} onChange={(event) => setEventForm((current) => ({ ...current, description: event.target.value }))} placeholder="What is this event about?" />
                 </label>
                 <button type="button" className="primary-button compact" onClick={handleEventSubmit}>
                   Send event
                 </button>
               </form>
-            </article>
+            </article> : null}
           </section>
         ) : null}
 
@@ -1034,7 +1114,11 @@ export function DashboardShell() {
                     return (
                       <article key={resource.id} className="resource-card-visual">
                         <div className="resource-preview">
-                          <iframe title={resource.title} src={`${resource.url}#toolbar=0&navpanes=0&scrollbar=0&page=1`} />
+                          <iframe
+                            title={resource.title}
+                            src={`${resource.url}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
+                            scrolling="no"
+                          />
                         </div>
                         <div className="resource-copy visual">
                           <div className="table-main">{resource.title}</div>
@@ -1065,6 +1149,9 @@ export function DashboardShell() {
                 <div>
                   <h2>Partner benefits</h2>
                 </div>
+                <button type="button" className="table-link-button" onClick={() => setPartnerFormOpen((open) => !open)}>
+                  {partnerFormOpen ? "Close form" : "Become a partner"}
+                </button>
               </div>
 
               <div className="partner-list clean">
@@ -1085,7 +1172,7 @@ export function DashboardShell() {
               </div>
             </article>
 
-            <article className="section-card clean">
+            {partnerFormOpen ? <article className="section-card clean">
               <div className="section-heading">
                 <div>
                   <h2>Become a partner</h2>
@@ -1095,25 +1182,25 @@ export function DashboardShell() {
               <form className="form-grid clean">
                 <label>
                   Company name
-                  <input placeholder="Your company name" />
+                  <input required placeholder="Your company name" value={partnerForm.company} onChange={(event) => setPartnerForm((current) => ({ ...current, company: event.target.value }))} />
                 </label>
                 <label>
                   WhatsApp number
-                  <input placeholder="+62..." />
+                  <input required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: event.target.value }))} />
                 </label>
                 <label>
                   Website
-                  <input placeholder="https://..." />
+                  <input required placeholder="https://..." value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
                 </label>
                 <label>
                   What would you like to offer?
-                  <textarea rows={5} placeholder="Describe the offer for BBC members." />
+                  <textarea required rows={5} placeholder="Describe the offer for BBC members." value={partnerForm.offer} onChange={(event) => setPartnerForm((current) => ({ ...current, offer: event.target.value }))} />
                 </label>
-                <button type="button" className="primary-button compact">
+                <button type="button" className="primary-button compact" onClick={handlePartnerSubmit}>
                   Send application
                 </button>
               </form>
-            </article>
+            </article> : null}
           </section>
         ) : null}
 
@@ -1173,7 +1260,7 @@ export function DashboardShell() {
                 </div>
               </div>
 
-              <div className="social-list">
+              <div className="social-grid">
                 {socials.map((social) => (
                   <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
                     <div className="social-main">
@@ -1182,7 +1269,6 @@ export function DashboardShell() {
                       </div>
                       <strong>{social.name}</strong>
                     </div>
-                    <ExternalLink size={16} />
                   </a>
                 ))}
               </div>

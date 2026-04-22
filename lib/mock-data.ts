@@ -891,6 +891,17 @@ export const adminSettings = [
 
 export const baliEvents = [
   {
+    id: "event-bitcoin-house-bali",
+    title: "Aaron van Wirdum Live in Bali: The Genesis of Bitcoin",
+    category: "Networking",
+    date: "April 21, 2026 · 5:00 PM",
+    location: "Bitcoin House Bali, Kuta Utara",
+    description: "Talk, networking, live Q&A, and book signing with Aaron van Wirdum at Bitcoin House Bali.",
+    signupUrl: "https://www.eventbrite.com/e/aaron-van-wirdum-live-in-bali-the-genesis-of-bitcoin-talk-book-signing-tickets-859907836487?aff=ebdssbcategorybrowse",
+    source: "Eventbrite",
+    status: "approved"
+  },
+  {
     id: "event-biamc-workshop",
     title: "Workshop Construction & Engineering Arbitration #1",
     category: "Business",
@@ -898,20 +909,18 @@ export const baliEvents = [
     location: "Jalan Cemara, Denpasar Selatan",
     description: "A full-day workshop focused on construction and engineering arbitration with BIAMC speakers and networking.",
     signupUrl: "https://www.eventbrite.com/e/workshop-construction-engineering-arbitration-1-tickets-1986393521495",
-    whatsappUrl: "https://wa.link/zg5xw8",
     source: "Eventbrite",
     status: "approved"
   },
   {
-    id: "event-bali-spirit-festival",
-    title: "BaliSpirit Festival 2026",
-    category: "Wellness & Sport",
-    date: "April 22, 2026 · 9:00 AM",
-    location: "Ubud, Bali",
-    description: "A multi-day Bali festival centred on yoga, movement, music, wellness, and global community in Ubud.",
-    signupUrl: "https://www.balispiritfestival.com/",
-    whatsappUrl: "https://wa.link/zg5xw8",
-    source: "BaliSpirit Festival",
+    id: "event-awakened-dreamers",
+    title: "Awakened Dreamers - Bohemian Blossom at The Jungle Club",
+    category: "Music & Culture",
+    date: "April 25, 2026 · 5:00 PM",
+    location: "The Jungle Club Ubud",
+    description: "Season opening live set with Pippi Ciez and a Bali community crowd gathering at The Jungle Club.",
+    signupUrl: "https://www.eventbrite.com/e/awakened-dreamers-bohemian-blossom-pippi-ciez-live-at-the-jungle-club-tickets-1985884964387?aff=erelexpmlt",
+    source: "Eventbrite",
     status: "approved"
   },
   {
@@ -922,8 +931,18 @@ export const baliEvents = [
     location: "Bali Nusa Dua Convention Center",
     description: "A hospitality and tourism exhibition bringing together suppliers, operators, owners, and investors across Bali.",
     signupUrl: "https://allevents.in/nusa-dua/fht-bali-food-hotel-and-tourism-bali-2026/3700027815332305",
-    whatsappUrl: "https://wa.link/zg5xw8",
     source: "AllEvents",
+    status: "approved"
+  },
+  {
+    id: "event-bali-spirit-festival",
+    title: "BaliSpirit Festival 2026",
+    category: "Wellness & Sport",
+    date: "April 22, 2026 · 9:00 AM",
+    location: "Ubud, Bali",
+    description: "A multi-day Bali festival centred on yoga, movement, music, wellness, and global community in Ubud.",
+    signupUrl: "https://www.balispiritfestival.com/",
+    source: "BaliSpirit Festival",
     status: "approved"
   },
   {
@@ -934,7 +953,6 @@ export const baliEvents = [
     location: "Semarapura, Klungkung",
     description: "A city festival with stage performances, local culture, and public celebrations in Klungkung.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
-    whatsappUrl: "https://wa.link/zg5xw8",
     source: "Bali.live",
     status: "approved"
   }
