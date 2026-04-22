@@ -10,6 +10,8 @@ import {
   CalendarRange,
   ChartColumn,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Heart,
   House,
   LogOut,
@@ -41,6 +43,8 @@ import {
   socials
 } from "@/lib/mock-data";
 import { DashboardEvent, getReviewedEvents, submitEvent } from "@/lib/event-store";
+import { submitMessage } from "@/lib/message-store";
+import { getApprovedPartners, submitPartnerApplication } from "@/lib/partner-store";
 
 const dashboardTabs = [
   { id: "home", label: "Home", icon: House },
@@ -92,6 +96,11 @@ function formatMemberSince(date: string) {
     year: "numeric"
   }).format(new Date(date));
 }
+
+const dailyQuote = {
+  quote: "Bali rewards the people who stay informed, move early, and build long-term relationships.",
+  source: "Bali Business Club"
+};
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -397,8 +406,10 @@ export function DashboardShell() {
     company: "",
     whatsapp: "",
     website: "",
-    offer: ""
+    offer: "",
+    logo: ""
   });
+  const [partnerLogoInputKey, setPartnerLogoInputKey] = useState(0);
   const [eventNotice, setEventNotice] = useState("");
   const [partnerNotice, setPartnerNotice] = useState("");
   const [connectNotice, setConnectNotice] = useState("");
@@ -408,7 +419,9 @@ export function DashboardShell() {
     details: ""
   });
   const [greeting, setGreeting] = useState(getGreeting());
+  const [dynamicPartners, setDynamicPartners] = useState(getApprovedPartners());
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
+  const reidCarouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!ready) {
@@ -463,6 +476,7 @@ export function DashboardShell() {
       ...baliEvents,
       ...getReviewedEvents().filter((item) => item.status === "approved")
     ]);
+    setDynamicPartners(getApprovedPartners());
   }, []);
 
   const filteredCharts = useMemo(
@@ -646,13 +660,30 @@ export function DashboardShell() {
     if (!partnerForm.company || !partnerForm.whatsapp || !partnerForm.website || !partnerForm.offer) {
       return;
     }
+    submitPartnerApplication({
+      name: partnerForm.company,
+      whatsapp: partnerForm.whatsapp,
+      url: partnerForm.website,
+      offer: partnerForm.offer,
+      logo: partnerForm.logo
+    });
+    submitMessage({
+      type: "Partnerships",
+      name: partnerForm.company,
+      email: partnerForm.website,
+      whatsapp: partnerForm.whatsapp,
+      subject: "Partner application",
+      message: partnerForm.offer
+    });
     setPartnerNotice("Application sent. We will review it and get back to you shortly.");
     setPartnerForm({
       company: "",
       whatsapp: "",
       website: "",
-      offer: ""
+      offer: "",
+      logo: ""
     });
+    setPartnerLogoInputKey((current) => current + 1);
     setPartnerFormOpen(false);
   }
 
@@ -660,6 +691,13 @@ export function DashboardShell() {
     if (!suggestionForm.name || !suggestionForm.topic || !suggestionForm.details) {
       return;
     }
+    submitMessage({
+      type: "Recommendations",
+      name: suggestionForm.name,
+      email: user?.email ?? "member@balibusinessclub.com",
+      subject: suggestionForm.topic,
+      message: suggestionForm.details
+    });
     setConnectNotice("Thanks, we received your suggestion and the team will review it.");
     setSuggestionForm({
       name: user?.name ?? "",
@@ -750,11 +788,10 @@ export function DashboardShell() {
           <section className="panel-stack">
             <div className="home-intro">
               <div>
-                <h2>
-                  {greeting} {user.name}
-                </h2>
+                <h2>{greeting}</h2>
+                <strong className="home-name">{user.name}</strong>
               </div>
-              <p>Everything you need for Bali Business Club in one place.</p>
+              <p>Everything you need to know what&apos;s happening in Bali.</p>
             </div>
 
             <div className="shortcut-grid clean large-home">
@@ -775,6 +812,12 @@ export function DashboardShell() {
                 );
               })}
             </div>
+
+            <article className="section-card clean quote-card">
+              <div className="quote-card-label">Quote of the day</div>
+              <blockquote>&ldquo;{dailyQuote.quote}&rdquo;</blockquote>
+              <small>{dailyQuote.source}</small>
+            </article>
           </section>
         ) : null}
 
@@ -870,17 +913,30 @@ export function DashboardShell() {
                   <h2>Download the REID reports</h2>
                   <p className="section-note compact">Browse every attached REID report in a horizontal library with quick save and download actions.</p>
                 </div>
+                <div className="carousel-controls">
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={() => reidCarouselRef.current?.scrollBy({ left: -320, behavior: "smooth" })}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={() => reidCarouselRef.current?.scrollBy({ left: 320, behavior: "smooth" })}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
 
-              <div className="reid-carousel">
+              <div className="reid-carousel" ref={reidCarouselRef}>
                 {reidReports.map((report) => (
                   <article key={report.id} className="resource-card-visual reid-card">
-                    <div className="resource-preview clean-cover">
-                      <iframe
-                        title={report.title}
-                        src={`${report.url}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
-                        scrolling="no"
-                      />
+                    <div className="report-cover-card">
+                      <span>REID</span>
+                      <strong>{report.title}</strong>
                     </div>
                     <div className="resource-copy visual">
                       <div className="table-main">{report.title}</div>
@@ -1101,7 +1157,7 @@ export function DashboardShell() {
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={episode.image} alt={episode.title} className="episode-cover-image" />
                         </div>
-                        <div className="episode-tag">{episode.topic}</div>
+                        <div className="episode-tag topic-pill-wide">{episode.topic}</div>
                         <strong>{episode.title}</strong>
                         <p>{episode.description}</p>
                         <div className="episode-actions">
@@ -1192,7 +1248,13 @@ export function DashboardShell() {
               </div>
 
               <div className="partner-list clean">
-                {partnerBenefits.map((partner) => (
+                {[...partnerBenefits, ...dynamicPartners.map((partner) => ({
+                  name: partner.name,
+                  offer: partner.offer,
+                  button: "CONTACT",
+                  url: partner.url,
+                  logo: partner.logo || "/bali-business-club-logo-white.png"
+                }))].map((partner) => (
                   <article key={partner.name} className="partner-card clean">
                     <div className="partner-copy">
                       <div className="partner-logo-wrap">
@@ -1228,9 +1290,9 @@ export function DashboardShell() {
                     <div key={type} className="favorites-group">
                       <h3>{type}</h3>
                       {items.length ? (
-                        <div className="favorites-grid clean">
+                        <div className={items.length === 1 ? "favorites-grid clean single" : "favorites-grid clean"}>
                           {items.map((item) => (
-                            <article key={item.id} className="favorite-card clean">
+                            <article key={item.id} className={items.length === 1 ? "favorite-card clean horizontal" : "favorite-card clean"}>
                               <div className="favorite-label">{item.type}</div>
                               <strong>{item.title}</strong>
                               <p>{item.note}</p>
@@ -1278,6 +1340,7 @@ export function DashboardShell() {
                         <SocialLogo icon={social.icon} />
                       </div>
                       <strong>{social.name}</strong>
+                      <span>{social.handle}</span>
                     </div>
                   </a>
                 ))}
@@ -1460,6 +1523,24 @@ export function DashboardShell() {
               <label>
                 Website
                 <input required placeholder="https://..." value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
+              </label>
+              <label>
+                Company logo
+                <input
+                  key={partnerLogoInputKey}
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) {
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = () =>
+                      setPartnerForm((current) => ({ ...current, logo: String(reader.result ?? "") }));
+                    reader.readAsDataURL(file);
+                  }}
+                />
               </label>
               <label>
                 What would you like to offer?

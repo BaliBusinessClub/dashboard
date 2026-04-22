@@ -8,8 +8,11 @@ import {
   BellRing,
   CalendarDays,
   CheckCircle2,
+  CheckCheck,
+  Copy,
   Database,
   Download,
+  Eye,
   Inbox,
   LogOut,
   MessageSquareText,
@@ -17,11 +20,14 @@ import {
   RotateCcw,
   Settings,
   SlidersHorizontal,
+  X,
   Users
 } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { adminAnalyticsCards, adminAnalyticsCharts, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
 import { DashboardEvent, getPendingEvents, reviewEvent } from "@/lib/event-store";
+import { getStoredMessages, InboxMessage, updateMessageStatus } from "@/lib/message-store";
+import { getPendingPartners, reviewPartnerApplication, PartnerApplication } from "@/lib/partner-store";
 
 const adminTabs = [
   { id: "analytics", label: "Analytics", icon: Users },
@@ -33,7 +39,7 @@ const adminTabs = [
 
 const reportingTargets = ["market-insights", "news", "events", "podcasts", "resources", "partners"] as const;
 type AdminTab = (typeof adminTabs)[number]["id"];
-type MessageItem = (typeof adminMessages)[number];
+type MessageItem = (typeof adminMessages)[number] | InboxMessage;
 
 function MiniBarChart({
   title,
@@ -86,9 +92,11 @@ export function AdminShell() {
   const { user, ready, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
   const [eventSubmissions, setEventSubmissions] = useState<DashboardEvent[]>([]);
-  const [messageView, setMessageView] = useState<"inbox" | "archived">("inbox");
-  const [inboxMessages, setInboxMessages] = useState<MessageItem[]>([...adminMessages]);
-  const [archivedMessages, setArchivedMessages] = useState<MessageItem[]>([]);
+  const [partnerSubmissions, setPartnerSubmissions] = useState<PartnerApplication[]>([]);
+  const [messageView, setMessageView] = useState<"inbox" | "replied" | "archived">("inbox");
+  const [selectedMessage, setSelectedMessage] = useState<MessageItem | null>(null);
+  const [allMessages, setAllMessages] = useState<MessageItem[]>([...adminMessages]);
+  const [analyticsSection, setAnalyticsSection] = useState<"overview" | "audience" | "behavior">("overview");
   const [analyticsView, setAnalyticsView] = useState<"pages" | "ages">("pages");
   const [analyticsRange, setAnalyticsRange] = useState("7d");
   const [dateFrom, setDateFrom] = useState("2026-04-15");
@@ -102,8 +110,12 @@ export function AdminShell() {
   const [preferenceState, setPreferenceState] = useState({
     defaultRole: "Member approval required",
     newsCadence: "Daily curated update",
-    reportingEmail: "admin@balibusinessclub.com"
+    reportingEmail: "admin@balibusinessclub.com",
+    newsPadding: "60",
+    eventsPadding: "120",
+    podcastsPadding: "240"
   });
+  const [memberFilter, setMemberFilter] = useState("All");
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [reportingState, setReportingState] = useState<Record<string, { status: "idle" | "loading" | "success"; message: string; updatedAt: string | null }>>(
     Object.fromEntries(
@@ -128,34 +140,37 @@ export function AdminShell() {
 
   useEffect(() => {
     setEventSubmissions(getPendingEvents());
+    setPartnerSubmissions(getPendingPartners());
+    setAllMessages([...adminMessages, ...getStoredMessages()]);
   }, []);
 
-  const groupedInbox = useMemo(
+  const visibleMessages = useMemo(
     () =>
-      inboxMessages.reduce<Record<string, MessageItem[]>>((groups, message) => {
-        if (!groups[message.type]) {
-          groups[message.type] = [];
-        }
-        groups[message.type].push(message);
-        return groups;
-      }, {}),
-    [inboxMessages]
+      allMessages.filter((message) => {
+        const status = "status" in message ? message.status : "inbox";
+        return status === messageView;
+      }),
+    [allMessages, messageView]
   );
 
-  const groupedArchived = useMemo(
+  const groupedMessages = useMemo(
     () =>
-      archivedMessages.reduce<Record<string, MessageItem[]>>((groups, message) => {
+      visibleMessages.reduce<Record<string, MessageItem[]>>((groups, message) => {
         if (!groups[message.type]) {
           groups[message.type] = [];
         }
         groups[message.type].push(message);
         return groups;
       }, {}),
-    [archivedMessages]
+    [visibleMessages]
   );
 
   const activeAnalyticsData = analyticsView === "pages" ? adminAnalyticsCharts.pageVisits : adminAnalyticsCharts.ageRanges;
   const activeAnalyticsTitle = analyticsView === "pages" ? "Most visited pages" : "Member age ranges";
+  const filteredMembers = useMemo(
+    () => dashboardUsers.filter((member) => memberFilter === "All" || member.membership === memberFilter),
+    [memberFilter]
+  );
 
   async function refreshSection(section: string) {
     setReportingState((current) => ({
@@ -181,14 +196,16 @@ export function AdminShell() {
     }));
   }
 
-  function archiveMessage(message: MessageItem) {
-    setInboxMessages((current) => current.filter((item) => item.id !== message.id));
-    setArchivedMessages((current) => [message, ...current]);
-  }
-
-  function restoreMessage(message: MessageItem) {
-    setArchivedMessages((current) => current.filter((item) => item.id !== message.id));
-    setInboxMessages((current) => [message, ...current]);
+  function setMessageStatus(message: MessageItem, status: "inbox" | "replied" | "archived") {
+    if ("status" in message) {
+      updateMessageStatus(message.id, status);
+    }
+    setAllMessages((current) =>
+      current.map((item) => (item.id === message.id ? { ...item, status } : item))
+    );
+    if (selectedMessage?.id === message.id) {
+      setSelectedMessage({ ...message, status });
+    }
   }
 
   function exportAnalytics() {
@@ -266,6 +283,15 @@ export function AdminShell() {
               </div>
 
               <div className="filter-bar">
+                <button type="button" className={analyticsSection === "overview" ? "filter-btn active" : "filter-btn"} onClick={() => setAnalyticsSection("overview")}>
+                  Overview
+                </button>
+                <button type="button" className={analyticsSection === "audience" ? "filter-btn active" : "filter-btn"} onClick={() => setAnalyticsSection("audience")}>
+                  Audience
+                </button>
+                <button type="button" className={analyticsSection === "behavior" ? "filter-btn active" : "filter-btn"} onClick={() => setAnalyticsSection("behavior")}>
+                  Behavior
+                </button>
                 <button type="button" className={analyticsView === "pages" ? "filter-btn active" : "filter-btn"} onClick={() => setAnalyticsView("pages")}>
                   Page visits
                 </button>
@@ -291,22 +317,24 @@ export function AdminShell() {
               </div>
             </article>
 
-            <div className="metric-grid compact admin-metric-grid">
-              {adminAnalyticsCards.map((card) => (
-                <article key={card.label} className="metric-card">
-                  <div className="metric-label">{card.label}</div>
-                  <div className="metric-value">{card.value}</div>
-                  <p>{card.detail}</p>
-                </article>
-              ))}
-            </div>
+            {analyticsSection === "overview" ? (
+              <div className="metric-grid compact admin-metric-grid">
+                {adminAnalyticsCards.map((card) => (
+                  <article key={card.label} className="metric-card">
+                    <div className="metric-label">{card.label}</div>
+                    <div className="metric-value">{card.value}</div>
+                    <p>{card.detail}</p>
+                  </article>
+                ))}
+              </div>
+            ) : null}
 
             <div className="two-col-grid">
               <MiniBarChart title={activeAnalyticsTitle} data={activeAnalyticsData} />
               <article className="section-card clean">
                 <div className="section-heading">
                   <div>
-                    <h2>Clean readout</h2>
+                    <h2>{analyticsSection === "audience" ? "Audience details" : analyticsSection === "behavior" ? "Behavior details" : "Clean readout"}</h2>
                   </div>
                 </div>
                 <div className="admin-chart-list">
@@ -380,6 +408,57 @@ export function AdminShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
+                  <h2>Partnership applications</h2>
+                  <p className="section-note compact">Accepting an application adds it directly to the member partners tab.</p>
+                </div>
+              </div>
+
+              <div className="admin-message-list">
+                {partnerSubmissions.length ? (
+                  partnerSubmissions.map((partner) => (
+                    <article key={partner.id} className="admin-message-card">
+                      <div className="admin-message-top">
+                        <strong>{partner.name}</strong>
+                        <small>{partner.source}</small>
+                      </div>
+                      <p>{partner.offer}</p>
+                      <div className="admin-message-meta">
+                        <span>{partner.url}</span>
+                        <span>{partner.whatsapp}</span>
+                      </div>
+                      <div className="event-actions">
+                        <button
+                          type="button"
+                          className="table-link-button"
+                          onClick={() => {
+                            reviewPartnerApplication(partner.id, "approved");
+                            setPartnerSubmissions((current) => current.filter((item) => item.id !== partner.id));
+                          }}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="ghost-button compact"
+                          onClick={() => {
+                            reviewPartnerApplication(partner.id, "declined");
+                            setPartnerSubmissions((current) => current.filter((item) => item.id !== partner.id));
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <p className="empty-copy">No pending partner applications right now.</p>
+                )}
+              </div>
+            </article>
+
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
                   <h2>Inbox</h2>
                 </div>
               </div>
@@ -389,13 +468,17 @@ export function AdminShell() {
                   <Inbox size={14} />
                   Active messages
                 </button>
+                <button type="button" className={messageView === "replied" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("replied")}>
+                  <CheckCheck size={14} />
+                  Replied
+                </button>
                 <button type="button" className={messageView === "archived" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("archived")}>
                   <Archive size={14} />
                   Archived
                 </button>
               </div>
 
-              {Object.entries(messageView === "inbox" ? groupedInbox : groupedArchived).map(([group, items]) => (
+              {Object.entries(groupedMessages).map(([group, items]) => (
                 <div key={group} className="favorites-group">
                   <h3>{group}</h3>
                   <div className="admin-message-list">
@@ -409,17 +492,41 @@ export function AdminShell() {
                         <div className="admin-message-meta">
                           <span>{message.name}</span>
                           <span>{message.email}</span>
+                          {"whatsapp" in message && message.whatsapp ? <span>{message.whatsapp}</span> : null}
                         </div>
                         <div className="event-actions">
+                          <button type="button" className="ghost-button compact" onClick={() => setSelectedMessage(message)}>
+                            <Eye size={14} />
+                            Open
+                          </button>
+                          <button
+                            type="button"
+                            className="ghost-button compact"
+                            onClick={() => navigator.clipboard.writeText(("whatsapp" in message && message.whatsapp) ? message.whatsapp : message.email)}
+                          >
+                            <Copy size={14} />
+                            Copy contact
+                          </button>
                           {messageView === "inbox" ? (
-                            <button type="button" className="ghost-button compact" onClick={() => archiveMessage(message)}>
+                            <>
+                              <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "replied")}>
+                                <CheckCheck size={14} />
+                                Mark replied
+                              </button>
+                              <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "archived")}>
+                                <Archive size={14} />
+                                Archive
+                              </button>
+                            </>
+                          ) : messageView === "archived" ? (
+                            <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "inbox")}>
                               <Archive size={14} />
-                              Archive
+                              Restore
                             </button>
                           ) : (
-                            <button type="button" className="ghost-button compact" onClick={() => restoreMessage(message)}>
+                            <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "archived")}>
                               <RotateCcw size={14} />
-                              Restore
+                              Archive
                             </button>
                           )}
                         </div>
@@ -429,8 +536,7 @@ export function AdminShell() {
                 </div>
               ))}
 
-              {messageView === "inbox" && !inboxMessages.length ? <p className="empty-copy">No active messages right now.</p> : null}
-              {messageView === "archived" && !archivedMessages.length ? <p className="empty-copy">No archived messages yet.</p> : null}
+              {!visibleMessages.length ? <p className="empty-copy">No messages in this section right now.</p> : null}
             </article>
           </section>
         ) : null}
@@ -447,9 +553,9 @@ export function AdminShell() {
 
               <div className="reporting-grid">
                 {reportingTargets.map((target) => (
-                  <article key={target} className="reporting-button">
+                  <article key={target} className="reporting-button reporting-row">
                     <div className="reporting-copy">
-                      <strong>{target.replace("-", " ")}</strong>
+                      <strong>{target.replace(/(^|-)(\w)/g, (_, __, char) => ` ${char.toUpperCase()}`).trim()}</strong>
                       <span>Last updated: {formatLastUpdated(reportingState[target].updatedAt)}</span>
                     </div>
                     <button type="button" className="table-link-button" onClick={() => refreshSection(target)}>
@@ -486,6 +592,14 @@ export function AdminShell() {
                 </a>
               </div>
 
+              <div className="filter-bar">
+                {["All", ...Array.from(new Set(dashboardUsers.map((member) => member.membership)))].map((type) => (
+                  <button key={type} type="button" className={memberFilter === type ? "filter-btn active" : "filter-btn"} onClick={() => setMemberFilter(type)}>
+                    {type}
+                  </button>
+                ))}
+              </div>
+
               <div className="table-shell">
                 <table>
                   <thead>
@@ -499,7 +613,7 @@ export function AdminShell() {
                     </tr>
                   </thead>
                   <tbody>
-                    {dashboardUsers.map((member) => (
+                    {filteredMembers.map((member) => (
                       <tr key={member.email}>
                         <td>{member.name}</td>
                         <td>{member.email}</td>
@@ -579,6 +693,20 @@ export function AdminShell() {
                   Reporting email
                   <input value={preferenceState.reportingEmail} onChange={(event) => setPreferenceState((current) => ({ ...current, reportingEmail: event.target.value }))} />
                 </label>
+                <div className="two-col-grid">
+                  <label>
+                    News update padding (minutes)
+                    <input value={preferenceState.newsPadding} onChange={(event) => setPreferenceState((current) => ({ ...current, newsPadding: event.target.value }))} />
+                  </label>
+                  <label>
+                    Events update padding (minutes)
+                    <input value={preferenceState.eventsPadding} onChange={(event) => setPreferenceState((current) => ({ ...current, eventsPadding: event.target.value }))} />
+                  </label>
+                </div>
+                <label>
+                  Podcast update padding (minutes)
+                  <input value={preferenceState.podcastsPadding} onChange={(event) => setPreferenceState((current) => ({ ...current, podcastsPadding: event.target.value }))} />
+                </label>
                 <button
                   type="button"
                   className="table-link-button"
@@ -606,6 +734,45 @@ export function AdminShell() {
           </section>
         ) : null}
       </section>
+
+      {selectedMessage ? (
+        <div className="modal-overlay open">
+          <div className="modal-card">
+            <div className="modal-head">
+              <div>
+                <h2>{selectedMessage.subject}</h2>
+                <p className="section-note compact">{selectedMessage.name}</p>
+              </div>
+              <button type="button" className="icon-button" onClick={() => setSelectedMessage(null)}>
+                <X size={14} />
+              </button>
+            </div>
+            <div className="form-grid clean">
+              <div className="admin-chart-copy"><strong>Email</strong><span>{selectedMessage.email}</span></div>
+              {"whatsapp" in selectedMessage && selectedMessage.whatsapp ? (
+                <div className="admin-chart-copy"><strong>WhatsApp</strong><span>{selectedMessage.whatsapp}</span></div>
+              ) : null}
+              <p>{selectedMessage.message}</p>
+              <div className="event-actions">
+                <button type="button" className="ghost-button compact" onClick={() => navigator.clipboard.writeText(selectedMessage.email)}>
+                  <Copy size={14} />
+                  Copy email
+                </button>
+                {"whatsapp" in selectedMessage && selectedMessage.whatsapp ? (
+                  <button type="button" className="ghost-button compact" onClick={() => navigator.clipboard.writeText(selectedMessage.whatsapp ?? "")}>
+                    <Copy size={14} />
+                    Copy WhatsApp
+                  </button>
+                ) : null}
+                <button type="button" className="table-link-button" onClick={() => setMessageStatus(selectedMessage, "replied")}>
+                  <CheckCheck size={14} />
+                  Mark replied
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

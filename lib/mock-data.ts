@@ -858,27 +858,33 @@ export const adminMessages = [
     type: "Partnerships",
     name: "Arkana Villas",
     email: "hello@arkanavillas.com",
+    whatsapp: "+62 812 9988 2211",
     subject: "Partner application",
     message: "We would like to offer a preferred management package for BBC members and discuss a formal partner feature.",
-    date: "April 20, 2026"
+    date: "April 20, 2026",
+    status: "inbox"
   },
   {
     id: "msg-contact-1",
     type: "Contacting us",
     name: "James Walker",
     email: "james@walkeradvisory.com",
+    whatsapp: "+61 401 884 552",
     subject: "Membership question",
     message: "Can someone from the team explain how founder memberships differ from investor memberships?",
-    date: "April 19, 2026"
+    date: "April 19, 2026",
+    status: "inbox"
   },
   {
     id: "msg-recommendation-1",
     type: "Recommendations",
     name: "Dina Hartono",
     email: "dina@private.example",
+    whatsapp: "+62 811 9000 441",
     subject: "Podcast recommendation",
     message: "A deep dive on villa management performance in Kedungu would be a great future episode topic.",
-    date: "April 18, 2026"
+    date: "April 18, 2026",
+    status: "inbox"
   }
 ] as const;
 
@@ -1030,4 +1036,3 @@ export const instagramPanels = [
     url: "https://www.instagram.com/bali.business.club/"
   }
 ] as const;
-

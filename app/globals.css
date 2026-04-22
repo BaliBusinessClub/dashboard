@@ -506,8 +506,32 @@ label {
   margin-top: 10px;
 }
 
+.home-name {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(1.5rem, 2vw, 2.2rem);
+}
+
 .home-intro p {
   max-width: 640px;
+}
+
+.quote-card {
+  gap: 14px;
+}
+
+.quote-card-label {
+  color: var(--bbc-yellow);
+  font-size: 0.84rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.quote-card blockquote {
+  margin: 0;
+  color: #fff;
+  font-size: 1.35rem;
+  line-height: 1.5;
 }
 
 .profile-avatar {
@@ -885,6 +909,10 @@ tbody td {
   transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
+.ghost-button.compact.lefted {
+  justify-content: flex-start;
+}
+
 .table-link-button:hover,
 .action-link:hover,
 .primary-button.compact:hover,
@@ -1042,6 +1070,11 @@ tbody td {
   font-size: 1.12rem;
 }
 
+.topic-pill-wide {
+  min-width: 108px;
+  justify-content: center;
+}
+
 .episode-actions {
   display: flex;
   align-items: center;
@@ -1120,6 +1153,28 @@ tbody td {
   background: #fff;
 }
 
+.report-cover-card {
+  min-height: 250px;
+  display: grid;
+  align-content: space-between;
+  padding: 18px;
+  border-radius: 16px;
+  background: #06429a;
+  color: #fff;
+}
+
+.report-cover-card span {
+  color: rgba(255, 255, 255, 0.74);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+}
+
+.report-cover-card strong {
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
 .resource-row {
   align-items: center;
   padding: 22px 24px;
@@ -1176,9 +1231,18 @@ tbody td {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.favorites-grid.clean.single {
+  grid-template-columns: 1fr;
+}
+
 .favorite-card.clean {
   gap: 12px;
   align-content: space-between;
+}
+
+.favorite-card.clean.horizontal {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) auto;
+  align-items: center;
 }
 
 .favorite-actions {
@@ -1257,6 +1321,10 @@ tbody td {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+.social-row span {
+  font-size: 0.85rem;
+}
+
 .social-row:hover {
   border-color: rgba(255, 216, 0, 0.45);
   background: #131313;
@@ -1281,6 +1349,12 @@ tbody td {
 
 .reid-card {
   min-height: 100%;
+}
+
+.carousel-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .news-modal {
@@ -1430,6 +1504,12 @@ tbody td {
   gap: 16px;
 }
 
+.reporting-row {
+  min-height: 0;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
 .reporting-copy {
   display: grid;
   gap: 8px;
@@ -1475,6 +1555,15 @@ tbody td {
   width: auto;
   height: 64px;
   object-fit: contain;
+}
+
+.auth-logo-wrap.compact.lifted {
+  margin-top: -18px;
+  margin-bottom: 8px;
+}
+
+.upload-note {
+  font-size: 0.82rem;
 }
 
 .auth-tabs.clean {
