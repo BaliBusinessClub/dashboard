@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   Building2,
+  CalendarRange,
   ChartColumn,
   ChevronDown,
   ExternalLink,
@@ -25,6 +26,7 @@ import {
 import { SessionUser, useAuth } from "@/components/auth-provider";
 import { BaliTime } from "@/components/bali-time";
 import {
+  baliEvents,
   dashboardShortcuts,
   initialFavorites,
   marketReports,
@@ -33,14 +35,17 @@ import {
   partnerBenefits,
   podcastFeed,
   podcastTopics,
+  reidReports,
   resourceDocuments,
   socials
 } from "@/lib/mock-data";
+import { DashboardEvent, getReviewedEvents, submitEvent } from "@/lib/event-store";
 
 const dashboardTabs = [
   { id: "home", label: "Home", icon: House },
   { id: "market", label: "Market Insights", icon: ChartColumn },
   { id: "news", label: "News", icon: Newspaper },
+  { id: "events", label: "Events", icon: CalendarRange },
   { id: "podcasts", label: "Podcasts", icon: Podcast },
   { id: "resources", label: "Ressources", icon: BookOpen },
   { id: "partners", label: "Partners", icon: Building2 },
@@ -310,6 +315,7 @@ function ProfileModal({
           <button type="button" className="table-link-button" onClick={() => fileInputRef.current?.click()}>
             Upload profile picture
           </button>
+          <small>Recommended size: 800 x 800 px square PNG or JPG.</small>
           <input
             ref={fileInputRef}
             type="file"
@@ -371,6 +377,17 @@ export function DashboardShell() {
   const [podcastTopic, setPodcastTopic] = useState<PodcastTopic>("All");
   const [favorites, setFavorites] = useState<FavoriteItem[]>([...initialFavorites]);
   const [activeArticle, setActiveArticle] = useState<NewsArticleView | null>(null);
+  const [eventTopic, setEventTopic] = useState<DashboardEvent["category"] | "All">("All");
+  const [approvedEvents, setApprovedEvents] = useState<DashboardEvent[]>([]);
+  const [eventForm, setEventForm] = useState({
+    title: "",
+    date: "",
+    location: "",
+    signupUrl: "",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    category: "Networking" as DashboardEvent["category"],
+    description: ""
+  });
   const [greeting, setGreeting] = useState(getGreeting());
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -410,6 +427,13 @@ export function DashboardShell() {
   useEffect(() => {
     const timer = window.setInterval(() => setGreeting(getGreeting()), 1000 * 60 * 15);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    setApprovedEvents([
+      ...baliEvents,
+      ...getReviewedEvents().filter((item) => item.status === "approved")
+    ]);
   }, []);
 
   const filteredCharts = useMemo(
@@ -458,6 +482,11 @@ export function DashboardShell() {
     [allNewsArticles, newsTopic]
   );
 
+  const visibleEvents = useMemo(
+    () => approvedEvents.filter((event) => eventTopic === "All" || event.category === eventTopic),
+    [approvedEvents, eventTopic]
+  );
+
   function toggleFavorite(item: FavoriteItem) {
     setFavorites((current) =>
       current.some((favorite) => favorite.id === item.id)
@@ -494,6 +523,29 @@ export function DashboardShell() {
       setActiveTab("resources");
       window.open(match.url, "_blank", "noopener,noreferrer");
     }
+  }
+
+  function handleEventSubmit() {
+    const submission = submitEvent({
+      title: eventForm.title,
+      category: eventForm.category,
+      date: eventForm.date,
+      location: eventForm.location,
+      description: eventForm.description,
+      signupUrl: eventForm.signupUrl,
+      whatsappUrl: eventForm.whatsappUrl,
+      source: "BBC community submission"
+    });
+
+    setEventForm({
+      title: "",
+      date: "",
+      location: "",
+      signupUrl: "",
+      whatsappUrl: "https://wa.link/zg5xw8",
+      category: "Networking",
+      description: ""
+    });
   }
 
   if (!ready || !user) {
@@ -691,6 +743,31 @@ export function DashboardShell() {
                 ))}
               </div>
             </article>
+
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Download the REID reports</h2>
+                  <p className="section-note compact">All attached REID reports are available here for direct download.</p>
+                </div>
+              </div>
+
+              <div className="resource-list">
+                {reidReports.map((report) => (
+                  <article key={report.id} className="resource-row">
+                    <div className="resource-copy">
+                      <div className="table-main">{report.title}</div>
+                      <small>{report.source}</small>
+                    </div>
+                    <div className="resource-actions">
+                      <a href={report.url} download className="table-link-button">
+                        Download
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </article>
           </section>
         ) : null}
 
@@ -768,6 +845,107 @@ export function DashboardShell() {
           </section>
         ) : null}
 
+        {activeTab === "events" ? (
+          <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Events happening in Bali now</h2>
+                  <p className="section-note compact">Discover upcoming Bali events by category and jump straight to registration.</p>
+                </div>
+              </div>
+
+              <div className="filter-bar">
+                {(["All", "Networking", "Business", "Wellness & Sport", "Music & Culture"] as const).map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    className={eventTopic === category ? "filter-btn active" : "filter-btn"}
+                    onClick={() => setEventTopic(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+              <div className="event-grid">
+                {visibleEvents.map((event) => (
+                  <article key={event.id} className="event-card">
+                    <div className="event-card-top">
+                      <span className="news-cat">{event.category}</span>
+                      <small>{event.source}</small>
+                    </div>
+                    <strong>{event.title}</strong>
+                    <p>{event.description}</p>
+                    <div className="event-meta">
+                      <span>{event.date}</span>
+                      <span>{event.location}</span>
+                    </div>
+                    <div className="event-actions">
+                      <a href={event.signupUrl} target="_blank" rel="noreferrer" className="table-link-button">
+                        Sign up
+                      </a>
+                      {event.whatsappUrl ? (
+                        <a href={event.whatsappUrl} target="_blank" rel="noreferrer" className="ghost-button compact">
+                          WhatsApp
+                        </a>
+                      ) : null}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </article>
+
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Add an event</h2>
+                  <p className="section-note compact">Submit a Bali event and the BBC admin team can review it before it appears on the dashboard.</p>
+                </div>
+              </div>
+
+              <form className="form-grid clean">
+                <label>
+                  Event name
+                  <input value={eventForm.title} onChange={(event) => setEventForm((current) => ({ ...current, title: event.target.value }))} />
+                </label>
+                <label>
+                  Date and time
+                  <input value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} placeholder="April 28, 2026 · 8:30 AM" />
+                </label>
+                <label>
+                  Location
+                  <input value={eventForm.location} onChange={(event) => setEventForm((current) => ({ ...current, location: event.target.value }))} placeholder="Venue in Bali" />
+                </label>
+                <label>
+                  Category
+                  <select value={eventForm.category} onChange={(event) => setEventForm((current) => ({ ...current, category: event.target.value as DashboardEvent["category"] }))}>
+                    <option>Networking</option>
+                    <option>Business</option>
+                    <option>Wellness & Sport</option>
+                    <option>Music & Culture</option>
+                  </select>
+                </label>
+                <label>
+                  Website to sign up
+                  <input value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
+                </label>
+                <label>
+                  WhatsApp link
+                  <input value={eventForm.whatsappUrl} onChange={(event) => setEventForm((current) => ({ ...current, whatsappUrl: event.target.value }))} />
+                </label>
+                <label>
+                  Description
+                  <textarea rows={5} value={eventForm.description} onChange={(event) => setEventForm((current) => ({ ...current, description: event.target.value }))} placeholder="What is this event about?" />
+                </label>
+                <button type="button" className="primary-button compact" onClick={handleEventSubmit}>
+                  Send event
+                </button>
+              </form>
+            </article>
+          </section>
+        ) : null}
+
         {activeTab === "podcasts" ? (
           <section className="panel-stack">
             <article className="section-card clean">
@@ -800,35 +978,34 @@ export function DashboardShell() {
                     sourceId: episode.id
                   };
 
-                  return (
-                    <a key={episode.id} href={episode.url} target="_blank" rel="noreferrer" className="episode-card cover-card">
-                      <div className="episode-cover">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={episode.image} alt={episode.title} className="episode-cover-image" />
-                      </div>
-                      <div className="episode-tag">{episode.topic}</div>
-                      <strong>{episode.title}</strong>
-                      <p>{episode.description}</p>
-                      <div className="episode-actions">
-                        <span className="watch-pill">
-                          <Youtube size={14} />
-                          Watch
-                        </span>
-                        <button
-                          type="button"
-                          className="mini-action"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            toggleFavorite(favorite);
-                          }}
-                        >
-                          <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
-                          {isFavorite(favorite.id) ? "Saved" : "Save"}
-                        </button>
-                      </div>
-                    </a>
-                  );
-                })}
+                    return (
+                      <article key={episode.id} className="episode-card cover-card">
+                        <div className="episode-cover">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={episode.image} alt={episode.title} className="episode-cover-image" />
+                        </div>
+                        <div className="episode-tag">{episode.topic}</div>
+                        <strong>{episode.title}</strong>
+                        <p>{episode.description}</p>
+                        <div className="episode-actions">
+                          <a href={episode.url} target="_blank" rel="noreferrer" className="watch-pill">
+                            <Youtube size={14} />
+                            Watch
+                          </a>
+                          <button
+                            type="button"
+                            className="mini-action"
+                            onClick={() => {
+                              toggleFavorite(favorite);
+                            }}
+                          >
+                            <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                            {isFavorite(favorite.id) ? "Saved" : "Save"}
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
               </div>
             </article>
           </section>
@@ -844,7 +1021,7 @@ export function DashboardShell() {
                   </div>
                 </div>
 
-                <div className="resource-list">
+                <div className="resource-visual-grid">
                   {items.map((resource) => {
                     const favorite: FavoriteItem = {
                       id: `fav-${resource.id}`,
@@ -855,12 +1032,15 @@ export function DashboardShell() {
                     };
 
                     return (
-                      <article key={resource.id} className="resource-row">
-                        <div className="resource-copy">
+                      <article key={resource.id} className="resource-card-visual">
+                        <div className="resource-preview">
+                          <iframe title={resource.title} src={`${resource.url}#toolbar=0&navpanes=0&scrollbar=0&page=1`} />
+                        </div>
+                        <div className="resource-copy visual">
                           <div className="table-main">{resource.title}</div>
                           <small>{resource.source}</small>
                         </div>
-                        <div className="resource-actions">
+                        <div className="resource-actions visual">
                           <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
                             <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
@@ -993,10 +1173,6 @@ export function DashboardShell() {
                 </div>
               </div>
 
-              <p className="section-note">
-                Stay close to the BBC ecosystem through our social channels, podcast links, and direct WhatsApp contact.
-              </p>
-
               <div className="social-list">
                 {socials.map((social) => (
                   <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-row">
@@ -1004,45 +1180,12 @@ export function DashboardShell() {
                       <div className="social-badge">
                         <SocialLogo icon={social.icon} />
                       </div>
-                      <div>
-                        <strong>{social.name}</strong>
-                        <p>{social.handle}</p>
-                      </div>
+                      <strong>{social.name}</strong>
                     </div>
                     <ExternalLink size={16} />
                   </a>
                 ))}
               </div>
-            </article>
-
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <h2>Suggest future podcast ideas</h2>
-                </div>
-              </div>
-
-              <form className="form-grid clean">
-                <label>
-                  Name
-                  <input placeholder="Your name" />
-                </label>
-                <label>
-                  Email
-                  <input placeholder="you@example.com" />
-                </label>
-                <label>
-                  Topic suggestion
-                  <input placeholder="What should we cover next?" />
-                </label>
-                <label>
-                  Details
-                  <textarea rows={5} placeholder="Share the angle, guest idea, or question you want BBC to explore." />
-                </label>
-                <button type="button" className="primary-button compact">
-                  Send suggestion
-                </button>
-              </form>
             </article>
 
             <div className="whatsapp-banner">

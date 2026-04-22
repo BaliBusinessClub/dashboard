@@ -230,7 +230,7 @@ label {
 .bbc-tab-nav {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   min-width: 0;
   margin: 0;
@@ -242,14 +242,15 @@ label {
 .bbc-tab {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
+  gap: 7px;
+  padding: 8px 11px;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 14px;
   background: rgba(13, 13, 13, 0.92);
   color: var(--bbc-muted);
   cursor: pointer;
   white-space: nowrap;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
@@ -550,7 +551,9 @@ label {
 .news-grid.clean,
 .metric-grid,
 .dashboard-chart-grid,
-.stat-rectangle-grid {
+.stat-rectangle-grid,
+.event-grid,
+.resource-visual-grid {
   display: grid;
   gap: 20px;
 }
@@ -630,6 +633,11 @@ label {
 .insight-grid.clean.compact,
 .dashboard-chart-grid,
 .stat-rectangle-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.event-grid,
+.resource-visual-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -1041,9 +1049,39 @@ tbody td {
   color: #fff7cf;
 }
 
+.watch-pill:hover {
+  border-color: rgba(255, 216, 0, 0.32);
+  background: rgba(255, 216, 0, 0.12);
+}
+
 .resource-list {
   display: grid;
   gap: 18px;
+}
+
+.resource-card-visual {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: var(--bbc-panel);
+  border: 1px solid var(--bbc-border);
+  border-radius: var(--bbc-radius);
+  box-shadow: var(--bbc-shadow-soft);
+}
+
+.resource-preview {
+  overflow: hidden;
+  border-radius: 16px;
+  background: #0b0b0c;
+  aspect-ratio: 0.8;
+  border: 1px solid var(--bbc-border);
+}
+
+.resource-preview iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
 }
 
 .resource-row {
@@ -1057,11 +1095,19 @@ tbody td {
   padding-right: 18px;
 }
 
+.resource-copy.visual {
+  padding-right: 0;
+}
+
 .resource-actions {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.resource-actions.visual {
+  justify-content: space-between;
 }
 
 .partner-card.clean,
@@ -1098,11 +1144,32 @@ tbody td {
   gap: 12px;
 }
 
+.event-card {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  background: var(--bbc-panel);
+  border: 1px solid var(--bbc-border);
+  border-radius: var(--bbc-radius);
+  box-shadow: var(--bbc-shadow-soft);
+}
+
+.event-card-top,
+.event-meta,
+.event-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .social-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  min-height: 76px;
 }
 
 .social-main {
@@ -1237,9 +1304,9 @@ tbody td {
   justify-content: space-between;
   gap: 18px;
   padding: 18px 22px;
-  border: 1px solid rgba(255, 216, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255, 216, 0, 0.08), rgba(255, 216, 0, 0.03));
+  background: #101011;
 }
 
 .whatsapp-banner-copy,
@@ -1459,6 +1526,8 @@ tbody td {
   .stat-rectangle-grid,
   .news-grid.clean,
   .episode-grid.covers,
+  .event-grid,
+  .resource-visual-grid,
   .favorites-grid.clean,
   .metric-grid.compact,
   .reporting-grid,
@@ -1488,6 +1557,8 @@ tbody td {
   .news-footer,
   .resource-row,
   .episode-actions,
+  .event-meta,
+  .event-actions,
   .chart-card-head,
   .chart-caption {
     flex-direction: column;
@@ -1500,6 +1571,8 @@ tbody td {
   .stat-rectangle-grid,
   .news-grid.clean,
   .episode-grid.covers,
+  .event-grid,
+  .resource-visual-grid,
   .favorites-grid.clean,
   .metric-grid.compact,
   .reporting-grid,

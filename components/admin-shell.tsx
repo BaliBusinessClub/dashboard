@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BellRing, Database, Download, LogOut, MessageSquareText, RefreshCw, Settings, Users } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { adminAnalyticsCards, adminAnalyticsCharts, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
+import { DashboardEvent, getPendingEvents, reviewEvent } from "@/lib/event-store";
 
 const adminTabs = [
   { id: "analytics", label: "Analytics", icon: Users },
@@ -56,6 +57,7 @@ export function AdminShell() {
   const { user, ready, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
   const [refreshStatus, setRefreshStatus] = useState<string | null>(null);
+  const [eventSubmissions, setEventSubmissions] = useState<DashboardEvent[]>([]);
   const [settingsState, setSettingsState] = useState(
     adminSettings.map((setting) => ({
       ...setting,
@@ -88,6 +90,10 @@ export function AdminShell() {
       router.replace("/dashboard");
     }
   }, [ready, router, user]);
+
+  useEffect(() => {
+    setEventSubmissions(getPendingEvents());
+  }, []);
 
   async function refreshSection(section: string) {
     setRefreshStatus(`Refreshing ${section}...`);
@@ -165,6 +171,57 @@ export function AdminShell() {
 
         {activeTab === "messages" ? (
           <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Event submissions</h2>
+                  <p className="section-note compact">Approve or refuse community-submitted events before they appear on the member dashboard.</p>
+                </div>
+              </div>
+
+              <div className="admin-message-list">
+                {eventSubmissions.length ? (
+                  eventSubmissions.map((event) => (
+                    <article key={event.id} className="admin-message-card">
+                      <div className="admin-message-top">
+                        <strong>{event.title}</strong>
+                        <small>{event.date}</small>
+                      </div>
+                      <p>{event.description}</p>
+                      <div className="admin-message-meta">
+                        <span>{event.category}</span>
+                        <span>{event.location}</span>
+                      </div>
+                      <div className="event-actions">
+                        <button
+                          type="button"
+                          className="table-link-button"
+                          onClick={() => {
+                            reviewEvent(event.id, "approved");
+                            setEventSubmissions((current) => current.filter((item) => item.id !== event.id));
+                          }}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="ghost-button compact"
+                          onClick={() => {
+                            reviewEvent(event.id, "declined");
+                            setEventSubmissions((current) => current.filter((item) => item.id !== event.id));
+                          }}
+                        >
+                          Refuse
+                        </button>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <p className="empty-copy">No pending event submissions right now.</p>
+                )}
+              </div>
+            </article>
+
             {Object.entries(groupedMessages).map(([group, items]) => (
               <article key={group} className="section-card clean">
                 <div className="section-heading">

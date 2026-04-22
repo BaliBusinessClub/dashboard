@@ -2,6 +2,7 @@ import {
   BookOpen,
   Building2,
   ChartColumn,
+  CalendarRange,
   Heart,
   MessagesSquare,
   Newspaper,
@@ -40,10 +41,10 @@ export const dashboardShortcuts = [
     icon: Building2
   },
   {
-    id: "favorites",
-    title: "Favorites",
-    description: "Keep the news, episodes, and resources you want to come back to later.",
-    icon: Heart
+    id: "events",
+    title: "Events",
+    description: "See what is happening in Bali now and discover the best events to join next.",
+    icon: CalendarRange
   }
 ] as const;
 
@@ -205,6 +206,51 @@ export const marketStatCards = [
   }
 ] as const;
 
+export const reidReports = [
+  {
+    id: "reid-2023-market-report",
+    title: "2023 Market Report",
+    source: "REID",
+    url: "/resources/reid/2023-market-report.pdf"
+  },
+  {
+    id: "reid-2024-h1-report",
+    title: "2024 H1 Report",
+    source: "REID",
+    url: "/resources/reid/2024-h1-report.pdf"
+  },
+  {
+    id: "reid-2024-market-report",
+    title: "2024 Market Report",
+    source: "REID",
+    url: "/resources/reid/2024-market-report.pdf"
+  },
+  {
+    id: "reid-2025-annual-report",
+    title: "Bali Real Estate Market Annual Report 2025",
+    source: "REID",
+    url: "/resources/reid/bali-real-estate-market-annual-report-2025.pdf"
+  },
+  {
+    id: "reid-q1-2025-market-report",
+    title: "Q1 2025 Market Report",
+    source: "REID",
+    url: "/resources/reid/q1-2025-market-report.pdf"
+  },
+  {
+    id: "reid-q2-2025-market-report",
+    title: "Q2 2025 Market Report",
+    source: "REID",
+    url: "/resources/reid/q2-2025-market-report.pdf"
+  },
+  {
+    id: "reid-q3-2025-market-report",
+    title: "Q3 2025 Market Report",
+    source: "REID",
+    url: "/resources/reid/q3-2025-market-report.pdf"
+  }
+] as const;
+
 export const newsSections = [
   {
     title: "Business",
@@ -347,35 +393,35 @@ export const podcastTopics = ["All", "Property", "Investment", "Business", "Mark
 export const podcastFeed = [
   {
     id: "x5iGqCEj1og",
-    title: "Membangun di Bali: Apa yang Perlu Diketahui Setiap Pengembang dan Investor",
-    description: "A current BBC conversation comparing return logic, downside risk, and market positioning across Dubai and Bali.",
-    published: "3 weeks ago",
+    title: "Dubai vs Bali Property: Returns, Risks, and the truth",
+    description: "A current BBC comparison of return profiles, downside risk, and how Dubai and Bali stack up for investors.",
+    published: "8 hours ago",
     topic: "Investment",
     url: "https://www.youtube.com/watch?v=x5iGqCEj1og",
     image: "https://i.ytimg.com/vi/x5iGqCEj1og/hqdefault.jpg"
   },
   {
     id: "vyL_5E7htbo",
-    title: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
-    description: "Hiring, talent signals, and what strong companies in Bali look for as they scale.",
+    title: "Membangun di Bali: Apa yang Perlu Diketahui Setiap Pengembang dan Investor",
+    description: "A Bali construction conversation for developers and investors on what matters before you build.",
     published: "2 months ago",
-    topic: "Business",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=vyL_5E7htbo",
     image: "https://i.ytimg.com/vi/vyL_5E7htbo/hqdefault.jpg"
   },
   {
     id: "PG2TFBF0uY8",
-    title: "Bali Real Estate Market in 2026: What the Data Really Shows",
-    description: "A data-focused BBC episode unpacking where the Bali property market is actually heading.",
-    published: "3 months ago",
-    topic: "Property",
+    title: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
+    description: "Hiring, leadership, and what strong companies in Bali look for as they scale.",
+    published: "2 months ago",
+    topic: "Business",
     url: "https://www.youtube.com/watch?v=PG2TFBF0uY8",
     image: "https://i.ytimg.com/vi/PG2TFBF0uY8/hqdefault.jpg"
   },
   {
     id: "Ayb4THzSjE0",
-    title: "From marketing to brokering and development: Inside GEONETs Real Estate Machine",
-    description: "An inside look at how brokerage, development, and positioning come together in Bali real estate.",
+    title: "Bali Real Estate Market in 2026: What the Data Really Shows",
+    description: "A data-first BBC episode unpacking what the market numbers really suggest for Bali real estate.",
     published: "3 months ago",
     topic: "Property",
     url: "https://www.youtube.com/watch?v=Ayb4THzSjE0",
@@ -383,80 +429,80 @@ export const podcastFeed = [
   },
   {
     id: "LkiYTQ1k0ss",
-    title: "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
-    description: "Fund performance, location thesis, and the strategic logic behind Kedungu's trajectory.",
-    published: "5 months ago",
-    topic: "Investment",
+    title: "From marketing to brokering and development: Inside GEONET’s Real Estate Machine",
+    description: "An inside look at how marketing, brokerage, and development work together inside one Bali real estate platform.",
+    published: "3 months ago",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=LkiYTQ1k0ss",
     image: "https://i.ytimg.com/vi/LkiYTQ1k0ss/hqdefault.jpg"
   },
   {
     id: "4jIi_bXuUSU",
-    title: "How Bali Business Founders Can Attract Investors from the Middle East",
-    description: "Capital raising lessons for founders building Bali-facing businesses and investor relationships.",
-    published: "6 months ago",
-    topic: "Business",
+    title: "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
+    description: "A fund update focused on growth, thesis validation, and what comes next for Kedungu.",
+    published: "5 months ago",
+    topic: "Investment",
     url: "https://www.youtube.com/watch?v=4jIi_bXuUSU",
     image: "https://i.ytimg.com/vi/4jIi_bXuUSU/hqdefault.jpg"
   },
   {
     id: "KScozjNYu9Q",
-    title: "Bali Property Made Simple: The 9-Step Process Explained",
-    description: "A clear walkthrough of the property acquisition journey from first look to closing.",
-    published: "7 months ago",
-    topic: "Property",
+    title: "How Bali Business Founders Can Attract Investors from the Middle East",
+    description: "Capital-raising lessons for founders building Bali-facing businesses and investor relationships.",
+    published: "6 months ago",
+    topic: "Business",
     url: "https://www.youtube.com/watch?v=KScozjNYu9Q",
     image: "https://i.ytimg.com/vi/KScozjNYu9Q/hqdefault.jpg"
   },
   {
     id: "UNaQQiIjoCk",
-    title: "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
-    description: "A marketing and sales conversation around launch velocity, positioning, and off-plan demand.",
-    published: "8 months ago",
-    topic: "Marketing",
+    title: "Bali Property Made Simple: The 9-Step Process Explained",
+    description: "A clear walkthrough of the property acquisition journey from first look to closing.",
+    published: "7 months ago",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=UNaQQiIjoCk",
     image: "https://i.ytimg.com/vi/UNaQQiIjoCk/hqdefault.jpg"
   },
   {
     id: "0cMjvf1lb3g",
-    title: "The Kedungu Funds $10M Milestone: A Look Ahead",
-    description: "A milestone review focused on fund growth, thesis validation, and the next phase.",
-    published: "9 months ago",
-    topic: "Investment",
+    title: "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
+    description: "A sales and launch conversation around positioning, demand, and off-plan momentum.",
+    published: "8 months ago",
+    topic: "Marketing",
     url: "https://www.youtube.com/watch?v=0cMjvf1lb3g",
     image: "https://i.ytimg.com/vi/0cMjvf1lb3g/hqdefault.jpg"
   },
   {
     id: "yxJwNl3n3t4",
-    title: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
-    description: "A practical checklist episode for buyers evaluating off-plan opportunities in Bali.",
-    published: "11 months ago",
-    topic: "Property",
+    title: "The Kedungu Fund’s $10M Milestone: A Look Ahead",
+    description: "A milestone review focused on fund growth, thesis validation, and the next phase.",
+    published: "9 months ago",
+    topic: "Investment",
     url: "https://www.youtube.com/watch?v=yxJwNl3n3t4",
     image: "https://i.ytimg.com/vi/yxJwNl3n3t4/hqdefault.jpg"
   },
   {
     id: "bfHu20vi2g8",
-    title: "The Secret Growth Formula Content Creators MustKnow!",
-    description: "A BBC episode on distribution, audience-building, and creator-led business growth.",
-    published: "1 year ago",
-    topic: "Marketing",
+    title: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
+    description: "A practical checklist episode for buyers evaluating off-plan opportunities in Bali.",
+    published: "11 months ago",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=bfHu20vi2g8",
     image: "https://i.ytimg.com/vi/bfHu20vi2g8/hqdefault.jpg"
   },
   {
     id: "G1lT0E2nSGQ",
-    title: "Bali Real Estate: Triple Your Investment In 3 Years!",
-    description: "A high-conviction discussion around upside potential, timing, and market selection.",
+    title: "The Secret Growth Formula Content Creators Must Know!",
+    description: "A BBC episode on distribution, audience-building, and creator-led business growth.",
     published: "1 year ago",
-    topic: "Investment",
+    topic: "Marketing",
     url: "https://www.youtube.com/watch?v=G1lT0E2nSGQ",
     image: "https://i.ytimg.com/vi/G1lT0E2nSGQ/hqdefault.jpg"
   },
   {
     id: "7bXHvn8Vksw",
-    title: "When Is the BEST Time to Invest in Bali? ROI CyclesExplained!",
-    description: "Timing, cycle awareness, and how investors can interpret momentum in Bali.",
+    title: "Bali Real Estate: Triple Your Investment In 3 Years!",
+    description: "A high-conviction discussion around upside potential, timing, and market selection.",
     published: "1 year ago",
     topic: "Investment",
     url: "https://www.youtube.com/watch?v=7bXHvn8Vksw",
@@ -464,26 +510,26 @@ export const podcastFeed = [
   },
   {
     id: "9LNXudhoxO0",
-    title: "Short-Term Rentals in Crisis: Why You Should Opt For Long-Term",
-    description: "An episode exploring rental strategy choices and how operators should think about demand shifts.",
+    title: "When Is the BEST Time to Invest in Bali? ROI Cycles Explained!",
+    description: "Timing, cycle awareness, and how investors can interpret momentum in Bali.",
     published: "1 year ago",
-    topic: "Property",
+    topic: "Investment",
     url: "https://www.youtube.com/watch?v=9LNXudhoxO0",
     image: "https://i.ytimg.com/vi/9LNXudhoxO0/hqdefault.jpg"
   },
   {
     id: "fGuiCmtcOKo",
-    title: "Beware! Why We NEVER Invest in Uluwatu!",
-    description: "A strong viewpoint on location risk, execution quality, and what to avoid in property investing.",
+    title: "Short-Term Rentals in Crisis: Why You Should Opt For Long-Term",
+    description: "An episode exploring rental strategy choices and how operators should think about demand shifts.",
     published: "1 year ago",
-    topic: "Investment",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=fGuiCmtcOKo",
     image: "https://i.ytimg.com/vi/fGuiCmtcOKo/hqdefault.jpg"
   },
   {
     id: "SPFp95YSETE",
-    title: "The Kedungu Fund: All the Answers",
-    description: "A detailed Q&A style episode covering the fund's structure, rationale, and opportunity set.",
+    title: "Beware! Why We NEVER Invest in Uluwatu!",
+    description: "A strong viewpoint on location risk, execution quality, and what to avoid in property investing.",
     published: "1 year ago",
     topic: "Investment",
     url: "https://www.youtube.com/watch?v=SPFp95YSETE",
@@ -491,71 +537,71 @@ export const podcastFeed = [
   },
   {
     id: "jh_Ejqlc40g",
-    title: "How To Sell More, Marketing Funnels: How AndWhyTheyWork",
-    description: "A funnel-focused episode for brands and operators who want clearer conversion systems.",
+    title: "The Kedungu Fund: All the Answers",
+    description: "A detailed Q&A style episode covering the fund's structure, rationale, and opportunity set.",
     published: "1 year ago",
-    topic: "Marketing",
+    topic: "Investment",
     url: "https://www.youtube.com/watch?v=jh_Ejqlc40g",
     image: "https://i.ytimg.com/vi/jh_Ejqlc40g/hqdefault.jpg"
   },
   {
     id: "qDP46lfSpaI",
-    title: "Bali Beach Glamping : The Journey to success",
-    description: "A founder story about product-market fit, hospitality experience, and operating execution.",
+    title: "How To Sell More, Marketing Funnels: How And Why They Work",
+    description: "A funnel-focused episode for brands and operators who want clearer conversion systems.",
     published: "1 year ago",
-    topic: "Business",
+    topic: "Marketing",
     url: "https://www.youtube.com/watch?v=qDP46lfSpaI",
     image: "https://i.ytimg.com/vi/qDP46lfSpaI/hqdefault.jpg"
   },
   {
     id: "CfgZ7lqMhS8",
-    title: "Stop! 7 Key Tips to Know Before Buying a Bali Property",
-    description: "A practical buyer's guide to avoiding common mistakes before entering the market.",
+    title: "Bali Beach Glamping : The Journey to success",
+    description: "A founder story about product-market fit, hospitality experience, and operating execution.",
     published: "1 year ago",
-    topic: "Property",
+    topic: "Business",
     url: "https://www.youtube.com/watch?v=CfgZ7lqMhS8",
     image: "https://i.ytimg.com/vi/CfgZ7lqMhS8/hqdefault.jpg"
   },
   {
     id: "DHIQD-7YkTo",
-    title: "Pioneer Investing: The 3 Golden Rules",
-    description: "A BBC framework for identifying emerging opportunities before the crowd arrives.",
+    title: "Stop! 7 Key Tips to Know Before Buying a Bali Property",
+    description: "A practical buyer's guide to avoiding common mistakes before entering the market.",
     published: "1 year ago",
-    topic: "Investment",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=DHIQD-7YkTo",
     image: "https://i.ytimg.com/vi/DHIQD-7YkTo/hqdefault.jpg"
   },
   {
     id: "oFFzcP9m-14",
-    title: "Bali Leasehold vs. Freehold! The Ultimate Guide to the Hows, Whats and Whys!",
-    description: "A core BBC episode covering ownership structures and why they matter so much in Bali.",
+    title: "Pioneer Investing: The 3 Golden Rules",
+    description: "A BBC framework for identifying emerging opportunities before the crowd arrives.",
     published: "1 year ago",
-    topic: "Property",
+    topic: "Investment",
     url: "https://www.youtube.com/watch?v=oFFzcP9m-14",
     image: "https://i.ytimg.com/vi/oFFzcP9m-14/hqdefault.jpg"
   },
   {
     id: "A-8XYkc3hCA",
-    title: "A Fashion Success Story: Paul Ropp and Biasa Group",
-    description: "A founder-led business story on brand-building, staying power, and regional growth.",
+    title: "Bali Leasehold vs. Freehold! The Ultimate Guide to the Hows, Whats and Whys!",
+    description: "A core BBC episode covering ownership structures and why they matter so much in Bali.",
     published: "1 year ago",
-    topic: "Business",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=A-8XYkc3hCA",
     image: "https://i.ytimg.com/vi/A-8XYkc3hCA/hqdefault.jpg"
   },
   {
     id: "BhrlhfO1hz4",
-    title: "Killer Tips for Investors: Leasehold Extensions in Bali",
-    description: "A focused investor episode on extension mechanics, negotiation risk, and legal diligence.",
+    title: "A Fashion Success Story: Paul Ropp and Biasa Group",
+    description: "A founder-led business story on brand-building, staying power, and regional growth.",
     published: "1 year ago",
-    topic: "Property",
+    topic: "Business",
     url: "https://www.youtube.com/watch?v=BhrlhfO1hz4",
     image: "https://i.ytimg.com/vi/BhrlhfO1hz4/hqdefault.jpg"
   },
   {
     id: "E1FguH5Op68",
-    title: "Building in Bali? Top Architect and Project Manager Insights",
-    description: "A construction-focused conversation around design, execution, and project delivery realities.",
+    title: "Killer Tips for Investors: Leasehold Extensions in Bali",
+    description: "A focused investor episode on extension mechanics, negotiation risk, and legal diligence.",
     published: "1 year ago",
     topic: "Property",
     url: "https://www.youtube.com/watch?v=E1FguH5Op68",
@@ -563,8 +609,8 @@ export const podcastFeed = [
   },
   {
     id: "aiHuohwGnrU",
-    title: "Notary's insights: Bali Real Estate Explained",
-    description: "A BBC episode unpacking legal structure, transaction flow, and what notaries see most often in Bali deals.",
+    title: "Building in Bali? Top Architect and Project Manager Insights",
+    description: "A construction-focused conversation around design, execution, and project delivery realities.",
     published: "1 year ago",
     topic: "Property",
     url: "https://www.youtube.com/watch?v=aiHuohwGnrU",
@@ -572,21 +618,21 @@ export const podcastFeed = [
   },
   {
     id: "nKp94xADWdM",
-    title: "The Kedungu Fund Strategy: Bali Investment Redefined",
-    description: "A deeper look at the fund thesis, location timing, and how the investment strategy is positioned.",
+    title: "Notary's insights: Bali Real Estate Explained",
+    description: "A BBC episode unpacking legal structure, transaction flow, and what notaries see most often in Bali deals.",
     published: "1 year ago",
-    topic: "Investment",
+    topic: "Property",
     url: "https://www.youtube.com/watch?v=nKp94xADWdM",
     image: "https://i.ytimg.com/vi/nKp94xADWdM/hqdefault.jpg"
   },
   {
-    id: "q48YXinbITk",
+    id: "_viN8MqKMcQ",
     title: "Real Estate: How to 9x your investment and other Bali property tips",
     description: "A high-upside property episode on strategy, leverage points, and practical Bali investing lessons.",
     published: "1 year ago",
     topic: "Investment",
-    url: "https://www.youtube.com/watch?v=q48YXinbITk",
-    image: "https://i.ytimg.com/vi/q48YXinbITk/hqdefault.jpg"
+    url: "https://www.youtube.com/watch?v=_viN8MqKMcQ",
+    image: "https://i.ytimg.com/vi/_viN8MqKMcQ/hqdefault.jpg"
   }
 ] as const;
 
@@ -841,6 +887,57 @@ export const adminSettings = [
   { label: "Podcast auto-sync", value: "Active" },
   { label: "Email verification required", value: "Active" },
   { label: "Admin code login", value: "Enabled" }
+] as const;
+
+export const baliEvents = [
+  {
+    id: "event-biamc-workshop",
+    title: "Workshop Construction & Engineering Arbitration #1",
+    category: "Business",
+    date: "April 24, 2026 · 10:00 AM",
+    location: "Jalan Cemara, Denpasar Selatan",
+    description: "A full-day workshop focused on construction and engineering arbitration with BIAMC speakers and networking.",
+    signupUrl: "https://www.eventbrite.com/e/workshop-construction-engineering-arbitration-1-tickets-1986393521495",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Eventbrite",
+    status: "approved"
+  },
+  {
+    id: "event-bali-spirit-festival",
+    title: "BaliSpirit Festival 2026",
+    category: "Wellness & Sport",
+    date: "April 22, 2026 · 9:00 AM",
+    location: "Ubud, Bali",
+    description: "A multi-day Bali festival centred on yoga, movement, music, wellness, and global community in Ubud.",
+    signupUrl: "https://www.balispiritfestival.com/",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "BaliSpirit Festival",
+    status: "approved"
+  },
+  {
+    id: "event-fht-bali",
+    title: "FHT Bali - Food, Hotel & Tourism Bali 2026",
+    category: "Networking",
+    date: "April 28, 2026 · 8:30 AM",
+    location: "Bali Nusa Dua Convention Center",
+    description: "A hospitality and tourism exhibition bringing together suppliers, operators, owners, and investors across Bali.",
+    signupUrl: "https://allevents.in/nusa-dua/fht-bali-food-hotel-and-tourism-bali-2026/3700027815332305",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "AllEvents",
+    status: "approved"
+  },
+  {
+    id: "event-semarapura-festival",
+    title: "Festival Semarapura 2026",
+    category: "Music & Culture",
+    date: "April 28, 2026 · 6:00 PM",
+    location: "Semarapura, Klungkung",
+    description: "A city festival with stage performances, local culture, and public celebrations in Klungkung.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live",
+    status: "approved"
+  }
 ] as const;
 
 export const socials = [
