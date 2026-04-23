@@ -24,9 +24,9 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { adminAnalyticsCards, adminAnalyticsCharts, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
-import { DashboardEvent, getPendingEvents, reviewEvent } from "@/lib/event-store";
+import { DashboardEvent, getPendingEvents, getReviewedEvents, reviewEvent } from "@/lib/event-store";
 import { getStoredMessages, InboxMessage, updateMessageStatus } from "@/lib/message-store";
-import { getPendingPartners, reviewPartnerApplication, PartnerApplication } from "@/lib/partner-store";
+import { getPendingPartners, getReviewedPartners, reviewPartnerApplication, PartnerApplication } from "@/lib/partner-store";
 
 const adminTabs = [
   { id: "analytics", label: "Analytics", icon: Users },
@@ -92,9 +92,12 @@ export function AdminShell() {
   const { user, ready, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
   const [eventSubmissions, setEventSubmissions] = useState<DashboardEvent[]>([]);
+  const [reviewedEvents, setReviewedEvents] = useState<DashboardEvent[]>([]);
   const [partnerSubmissions, setPartnerSubmissions] = useState<PartnerApplication[]>([]);
+  const [reviewedPartners, setReviewedPartners] = useState<PartnerApplication[]>([]);
   const [messageView, setMessageView] = useState<"inbox" | "replied" | "archived">("inbox");
   const [messageSection, setMessageSection] = useState<MessageSection>("Questions");
+  const [submissionView, setSubmissionView] = useState<"pending" | "approved" | "declined">("pending");
   const [selectedMessage, setSelectedMessage] = useState<MessageItem | null>(null);
   const [allMessages, setAllMessages] = useState<MessageItem[]>([...adminMessages]);
   const [adminToast, setAdminToast] = useState<string | null>(null);
@@ -142,7 +145,9 @@ export function AdminShell() {
 
   useEffect(() => {
     setEventSubmissions(getPendingEvents());
+    setReviewedEvents(getReviewedEvents());
     setPartnerSubmissions(getPendingPartners());
+    setReviewedPartners(getReviewedPartners());
     setAllMessages([...adminMessages, ...getStoredMessages()]);
   }, []);
 
@@ -153,6 +158,12 @@ export function AdminShell() {
     const timer = window.setTimeout(() => setAdminToast(null), 2200);
     return () => window.clearTimeout(timer);
   }, [adminToast]);
+
+  useEffect(() => {
+    if (messageSection === "Events" || messageSection === "Partnerships") {
+      setSubmissionView("pending");
+    }
+  }, [messageSection]);
 
   const visibleMessages = useMemo(() => {
     return allMessages.filter((message) => {
@@ -216,14 +227,20 @@ export function AdminShell() {
   }
 
   function handleEventReview(eventId: string, status: "approved" | "declined") {
-    reviewEvent(eventId, status);
+    const reviewed = reviewEvent(eventId, status);
     setEventSubmissions((current) => current.filter((item) => item.id !== eventId));
+    if (reviewed) {
+      setReviewedEvents((current) => [reviewed, ...current]);
+    }
     setAdminToast(status === "approved" ? "Event approved." : "Event rejected.");
   }
 
   function handlePartnerReview(partnerId: string, status: "approved" | "declined") {
-    reviewPartnerApplication(partnerId, status);
+    const reviewed = reviewPartnerApplication(partnerId, status);
     setPartnerSubmissions((current) => current.filter((item) => item.id !== partnerId));
+    if (reviewed) {
+      setReviewedPartners((current) => [reviewed, ...current]);
+    }
     setAdminToast(status === "approved" ? "Partner approved." : "Partner rejected.");
   }
 
@@ -337,7 +354,7 @@ export function AdminShell() {
             </article>
 
             {analyticsSection === "overview" ? (
-              <div className="metric-grid compact admin-metric-grid">
+              <div className="metric-grid compact admin-metric-grid meta-style">
                 {adminAnalyticsCards.map((card) => (
                   <article key={card.label} className="metric-card">
                     <div className="metric-label">{card.label}</div>
@@ -413,8 +430,30 @@ export function AdminShell() {
 
               {messageSection === "Events" ? (
                 <div className="admin-message-list">
-                  {eventSubmissions.length ? (
-                    eventSubmissions.map((event) => (
+                  <div className="filter-bar">
+                    {([
+                      { id: "pending", label: "Pending" },
+                      { id: "approved", label: "Accepted" },
+                      { id: "declined", label: "Refused" }
+                    ] as const).map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={submissionView === item.id ? "filter-btn active" : "filter-btn"}
+                        onClick={() => setSubmissionView(item.id)}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                  {(submissionView === "pending"
+                    ? eventSubmissions
+                    : reviewedEvents.filter((event) => event.status === submissionView)
+                  ).length ? (
+                    (submissionView === "pending"
+                      ? eventSubmissions
+                      : reviewedEvents.filter((event) => event.status === submissionView)
+                    ).map((event) => (
                       <article key={event.id} className="admin-message-card submission-card">
                         <div className="admin-message-top">
                           <strong>{event.title}</strong>
@@ -425,26 +464,56 @@ export function AdminShell() {
                           <span>{event.category}</span>
                           <span>{event.location}</span>
                         </div>
-                        <div className="event-actions">
-                          <button type="button" className="action-approve" onClick={() => handleEventReview(event.id, "approved")}>
-                            Approve
-                          </button>
-                          <button type="button" className="action-reject" onClick={() => handleEventReview(event.id, "declined")}>
-                            Reject
-                          </button>
-                        </div>
+                        {submissionView === "pending" ? (
+                          <div className="event-actions">
+                            <button type="button" className="action-approve" onClick={() => handleEventReview(event.id, "approved")}>
+                              Approve
+                            </button>
+                            <button type="button" className="action-reject" onClick={() => handleEventReview(event.id, "declined")}>
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="event-actions">
+                            <span className={event.status === "approved" ? "status-pill success" : "status-pill danger"}>
+                              {event.status === "approved" ? "Accepted" : "Refused"}
+                            </span>
+                          </div>
+                        )}
                       </article>
                     ))
                   ) : (
-                    <p className="empty-copy">No pending event submissions right now.</p>
+                    <p className="empty-copy">No event submissions in this section right now.</p>
                   )}
                 </div>
               ) : null}
 
               {messageSection === "Partnerships" ? (
                 <div className="admin-message-list">
-                  {partnerSubmissions.length ? (
-                    partnerSubmissions.map((partner) => (
+                  <div className="filter-bar">
+                    {([
+                      { id: "pending", label: "Pending" },
+                      { id: "approved", label: "Accepted" },
+                      { id: "declined", label: "Refused" }
+                    ] as const).map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={submissionView === item.id ? "filter-btn active" : "filter-btn"}
+                        onClick={() => setSubmissionView(item.id)}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                  {(submissionView === "pending"
+                    ? partnerSubmissions
+                    : reviewedPartners.filter((partner) => partner.status === submissionView)
+                  ).length ? (
+                    (submissionView === "pending"
+                      ? partnerSubmissions
+                      : reviewedPartners.filter((partner) => partner.status === submissionView)
+                    ).map((partner) => (
                       <article key={partner.id} className="admin-message-card submission-card">
                         <div className="admin-message-top">
                           <strong>{partner.name}</strong>
@@ -455,18 +524,26 @@ export function AdminShell() {
                           <span>{partner.url}</span>
                           <span>{partner.whatsapp}</span>
                         </div>
-                        <div className="event-actions">
-                          <button type="button" className="action-approve" onClick={() => handlePartnerReview(partner.id, "approved")}>
-                            Approve
-                          </button>
-                          <button type="button" className="action-reject" onClick={() => handlePartnerReview(partner.id, "declined")}>
-                            Reject
-                          </button>
-                        </div>
+                        {submissionView === "pending" ? (
+                          <div className="event-actions">
+                            <button type="button" className="action-approve" onClick={() => handlePartnerReview(partner.id, "approved")}>
+                              Approve
+                            </button>
+                            <button type="button" className="action-reject" onClick={() => handlePartnerReview(partner.id, "declined")}>
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="event-actions">
+                            <span className={partner.status === "approved" ? "status-pill success" : "status-pill danger"}>
+                              {partner.status === "approved" ? "Accepted" : "Refused"}
+                            </span>
+                          </div>
+                        )}
                       </article>
                     ))
                   ) : (
-                    <p className="empty-copy">No pending partner applications right now.</p>
+                    <p className="empty-copy">No partner applications in this section right now.</p>
                   )}
                 </div>
               ) : null}
@@ -769,11 +846,20 @@ export function AdminShell() {
               </button>
             </div>
             <div className="form-grid clean">
-              <div className="admin-chart-copy"><strong>Email</strong><span>{selectedMessage.email}</span></div>
+              <div className="message-detail-stack">
+                <strong>Email</strong>
+                <span>{selectedMessage.email}</span>
+              </div>
               {"whatsapp" in selectedMessage && selectedMessage.whatsapp ? (
-                <div className="admin-chart-copy"><strong>WhatsApp</strong><span>{selectedMessage.whatsapp}</span></div>
+                <div className="message-detail-stack">
+                  <strong>WhatsApp</strong>
+                  <span>{selectedMessage.whatsapp}</span>
+                </div>
               ) : null}
-              <p>{selectedMessage.message}</p>
+              <div className="message-detail-stack">
+                <strong>Message</strong>
+                <p>{selectedMessage.message}</p>
+              </div>
               <div className="event-actions">
                 <button
                   type="button"

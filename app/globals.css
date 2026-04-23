@@ -504,14 +504,14 @@ label {
 
 .home-intro h1 {
   margin-top: 10px;
-  font-size: clamp(3rem, 5vw, 4.6rem);
+  font-size: clamp(2.6rem, 4.2vw, 4rem);
   line-height: 0.95;
 }
 
 .home-name {
   display: block;
   margin-top: 10px;
-  font-size: clamp(1.15rem, 1.35vw, 1.45rem);
+  font-size: clamp(1.28rem, 1.65vw, 1.8rem);
 }
 
 .home-intro p {
@@ -522,8 +522,12 @@ label {
   display: grid;
   justify-items: center;
   gap: 14px;
-  padding: 20px 0 4px;
+  padding: 28px 28px 22px;
   text-align: center;
+  border: 1px solid var(--bbc-border);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 216, 0, 0.03));
+  box-shadow: var(--bbc-shadow-soft);
 }
 
 .quote-card-label {
@@ -1264,13 +1268,8 @@ tbody td {
 .favorite-card.clean {
   gap: 12px;
   align-content: space-between;
-  min-height: 168px;
+  min-height: 176px;
   background: #101011;
-}
-
-.favorite-card.clean.horizontal {
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr) auto;
-  align-items: center;
 }
 
 .favorite-actions {
@@ -1516,6 +1515,41 @@ tbody td {
   background: var(--bbc-yellow);
 }
 
+.meta-style .metric-card {
+  min-height: 168px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+.message-detail-stack {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--bbc-border);
+  border-radius: 16px;
+  background: #111;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+.status-pill.success {
+  background: rgba(31, 143, 74, 0.18);
+  color: #bfe8cb;
+}
+
+.status-pill.danger {
+  background: rgba(179, 51, 51, 0.18);
+  color: #ffb4b4;
+}
+
 .connect-shell {
   display: grid;
   gap: 24px;
@@ -1704,8 +1738,8 @@ tbody td {
 }
 
 .toast-card {
-  min-width: 320px;
-  max-width: 420px;
+  min-width: 380px;
+  max-width: 560px;
   padding: 28px;
   display: grid;
   justify-items: center;
@@ -1718,7 +1752,7 @@ tbody td {
 
 .toast-card p {
   text-align: center;
-  white-space: nowrap;
+  max-width: 100%;
 }
 
 .toast-check {

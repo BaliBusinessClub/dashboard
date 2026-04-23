@@ -143,6 +143,27 @@ function getGreeting() {
   return "Good Evening";
 }
 
+function detectDialCode() {
+  if (typeof navigator === "undefined") {
+    return "+62";
+  }
+
+  const locale = (navigator.language || "en-ID").toUpperCase();
+  const region = locale.split("-")[1] ?? "ID";
+  const codes: Record<string, string> = {
+    ID: "+62",
+    SG: "+65",
+    AU: "+61",
+    GB: "+44",
+    US: "+1",
+    CA: "+1",
+    FR: "+33",
+    AE: "+971"
+  };
+
+  return codes[region] ?? "+62";
+}
+
 function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
   if (icon === "youtube") {
     return (
@@ -450,6 +471,7 @@ export function DashboardShell() {
   const [greeting, setGreeting] = useState(getGreeting());
   const [dailyQuote, setDailyQuote] = useState(getDailyQuote());
   const [dynamicPartners, setDynamicPartners] = useState(getApprovedPartners());
+  const [partnerDialCode, setPartnerDialCode] = useState("+62");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState<{ title: string; copy: string } | null>(null);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
@@ -494,6 +516,10 @@ export function DashboardShell() {
 
   useEffect(() => {
     setDailyQuote(getDailyQuote());
+  }, []);
+
+  useEffect(() => {
+    setPartnerDialCode(detectDialCode());
   }, []);
 
   useEffect(() => {
@@ -688,6 +714,18 @@ export function DashboardShell() {
     const hasPlus = trimmed.startsWith("+");
     const digits = trimmed.replace(/\D/g, "");
     return `${hasPlus ? "+" : ""}${digits}`;
+  }
+
+  function fillDialCodeIfNeeded() {
+    setPartnerForm((current) => {
+      if (current.whatsapp.trim()) {
+        return current;
+      }
+      return {
+        ...current,
+        whatsapp: partnerDialCode
+      };
+    });
   }
 
   function isValidWhatsapp(value: string) {
@@ -1274,7 +1312,6 @@ export function DashboardShell() {
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={episode.image} alt={episode.title} className="episode-cover-image" />
                         </div>
-                        <div className="episode-tag topic-pill-clean">{episode.topic}</div>
                         <strong>{episode.title}</strong>
                         <p>{episode.description}</p>
                         <div className="episode-actions">
@@ -1405,7 +1442,7 @@ export function DashboardShell() {
                       {items.length ? (
                         <div className={items.length === 1 ? "favorites-grid clean single" : "favorites-grid clean"}>
                           {items.map((item) => (
-                            <article key={item.id} className={items.length === 1 ? "favorite-card clean horizontal" : "favorite-card clean"}>
+                            <article key={item.id} className="favorite-card clean">
                               <strong>{item.title}</strong>
                               <p>{item.note}</p>
                               <div className="favorite-actions">
@@ -1549,11 +1586,27 @@ export function DashboardShell() {
               <div className="two-col-grid">
                 <label>
                   Date
-                  <input className={formErrors["event-date"] ? "field-error" : ""} type="date" required value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} />
+                  <input
+                    className={formErrors["event-date"] ? "field-error" : ""}
+                    type="date"
+                    required
+                    value={eventForm.date}
+                    onFocus={(event) => event.currentTarget.showPicker?.()}
+                    onClick={(event) => event.currentTarget.showPicker?.()}
+                    onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))}
+                  />
                 </label>
                 <label>
                   Time
-                  <input className={formErrors["event-time"] ? "field-error" : ""} type="time" required value={eventForm.time} onChange={(event) => setEventForm((current) => ({ ...current, time: event.target.value }))} />
+                  <input
+                    className={formErrors["event-time"] ? "field-error" : ""}
+                    type="time"
+                    required
+                    value={eventForm.time}
+                    onFocus={(event) => event.currentTarget.showPicker?.()}
+                    onClick={(event) => event.currentTarget.showPicker?.()}
+                    onChange={(event) => setEventForm((current) => ({ ...current, time: event.target.value }))}
+                  />
                 </label>
               </div>
               <label>
@@ -1616,7 +1669,18 @@ export function DashboardShell() {
               </label>
               <label>
                 WhatsApp number
-                <input className={formErrors["partner-whatsapp"] ? "field-error" : ""} type="tel" inputMode="numeric" required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: normalizePhoneNumber(event.target.value) }))} />
+                <input
+                  className={formErrors["partner-whatsapp"] ? "field-error" : ""}
+                  type="tel"
+                  inputMode="numeric"
+                  required
+                  placeholder={partnerDialCode}
+                  value={partnerForm.whatsapp}
+                  onFocus={fillDialCodeIfNeeded}
+                  onChange={(event) =>
+                    setPartnerForm((current) => ({ ...current, whatsapp: normalizePhoneNumber(event.target.value) }))
+                  }
+                />
               </label>
               <label>
                 Website

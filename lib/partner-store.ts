@@ -41,6 +41,10 @@ export function getApprovedPartners() {
   return read<PartnerApplication>(REVIEWED_KEY).filter((item) => item.status === "approved");
 }
 
+export function getReviewedPartners() {
+  return read<PartnerApplication>(REVIEWED_KEY);
+}
+
 export function submitPartnerApplication(partner: Omit<PartnerApplication, "id" | "status" | "source">) {
   const nextPartner: PartnerApplication = {
     ...partner,
