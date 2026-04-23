@@ -70,8 +70,16 @@ type FavoriteItem = {
   sourceId: string;
 };
 
-type NewsArticleView = (typeof newsSections)[number]["articles"][number] & {
+type NewsArticleView = {
+  id: string;
+  title: string;
+  teaser: string;
+  content: string;
+  source: string;
+  date: string;
+  url: string;
   topic: string;
+  region: "Bali" | "Indonesia";
 };
 
 function formatMetricValue(value: number) {
@@ -97,9 +105,32 @@ function formatMemberSince(date: string) {
   }).format(new Date(date));
 }
 
-const dailyQuote = {
-  quote: "Bali rewards the people who stay informed, move early, and build long-term relationships.",
-  source: "Bali Business Club"
+const businessQuotes = [
+  { quote: "Price is what you pay. Value is what you get.", source: "Warren Buffett" },
+  { quote: "The way to get started is to quit talking and begin doing.", source: "Walt Disney" },
+  { quote: "In the middle of difficulty lies opportunity.", source: "Albert Einstein" },
+  { quote: "Success usually comes to those who are too busy to be looking for it.", source: "Henry David Thoreau" },
+  { quote: "Opportunities don't happen. You create them.", source: "Chris Grosser" }
+] as const;
+
+function getDailyQuote() {
+  const dayIndex = new Date().getDate() % businessQuotes.length;
+  return businessQuotes[dayIndex];
+}
+
+function sanitizeCopy(value: string) {
+  return value
+    .replaceAll("â€™", "'")
+    .replaceAll("Â·", "·")
+    .replaceAll("â€œ", '"')
+    .replaceAll("â€", '"');
+}
+
+const ebookCoverMap: Record<string, string> = {
+  "Comprehensive Guide to Real Estate Investing in Bali": "/resources/covers/bbc-real-estate-investing.png",
+  "Why Location Is Everything": "/resources/covers/bbc-why-location-is-everything.png",
+  "Dubai-Based Entrepreneurs and Investors": "/resources/covers/bbc-dubai-investor-guide.jpg",
+  "Escape to Bali - A Guide to a Better Life": "/resources/covers/bbc-escape-to-bali.png"
 };
 
 function getGreeting() {
@@ -384,6 +415,7 @@ export function DashboardShell() {
   const [marketMetric, setMarketMetric] = useState<string>(marketReports[0].metrics[0].id);
   const [chartSelection, setChartSelection] = useState<Record<string, number>>({});
   const [newsTopic, setNewsTopic] = useState<NewsTopic>("All");
+  const [newsRegion, setNewsRegion] = useState<"All" | "Bali" | "Indonesia">("All");
   const [podcastTopic, setPodcastTopic] = useState<PodcastTopic>("All");
   const [favorites, setFavorites] = useState<FavoriteItem[]>([...initialFavorites]);
   const [activeArticle, setActiveArticle] = useState<NewsArticleView | null>(null);
@@ -391,6 +423,7 @@ export function DashboardShell() {
   const [approvedEvents, setApprovedEvents] = useState<DashboardEvent[]>([]);
   const [eventFormOpen, setEventFormOpen] = useState(false);
   const [partnerFormOpen, setPartnerFormOpen] = useState(false);
+  const [suggestionOpen, setSuggestionOpen] = useState(false);
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
@@ -419,7 +452,10 @@ export function DashboardShell() {
     details: ""
   });
   const [greeting, setGreeting] = useState(getGreeting());
+  const [dailyQuote, setDailyQuote] = useState(getDailyQuote());
   const [dynamicPartners, setDynamicPartners] = useState(getApprovedPartners());
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [toastMessage, setToastMessage] = useState<{ title: string; copy: string } | null>(null);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
   const reidCarouselRef = useRef<HTMLDivElement | null>(null);
 
@@ -462,6 +498,18 @@ export function DashboardShell() {
   }, []);
 
   useEffect(() => {
+    setDailyQuote(getDailyQuote());
+  }, []);
+
+  useEffect(() => {
+    if (!toastMessage) {
+      return;
+    }
+    const timer = window.setTimeout(() => setToastMessage(null), 2600);
+    return () => window.clearTimeout(timer);
+  }, [toastMessage]);
+
+  useEffect(() => {
     if (!user?.name) {
       return;
     }
@@ -494,7 +542,9 @@ export function DashboardShell() {
 
   const groupedResources = useMemo(
     () =>
-      resourceDocuments.reduce<Record<string, Array<(typeof resourceDocuments)[number]>>>((groups, item) => {
+      resourceDocuments
+        .filter((item) => item.section === "Ebooks")
+        .reduce<Record<string, Array<(typeof resourceDocuments)[number]>>>((groups, item) => {
         if (!groups[item.section]) {
           groups[item.section] = [];
         }
@@ -550,15 +600,29 @@ export function DashboardShell() {
       newsSections.flatMap((section) =>
         section.articles.map((article) => ({
           ...article,
-          topic: section.title
+          title: sanitizeCopy(article.title),
+          teaser: sanitizeCopy(article.teaser),
+          content: sanitizeCopy(article.content),
+          topic: section.title,
+          region:
+            "region" in article && (article.region === "Bali" || article.region === "Indonesia")
+              ? article.region
+              : article.url.includes("/indonesia/")
+                ? "Indonesia"
+                : "Bali"
         }))
       ),
     []
   );
 
   const visibleNewsArticles = useMemo(
-    () => allNewsArticles.filter((article) => newsTopic === "All" || article.topic === newsTopic),
-    [allNewsArticles, newsTopic]
+    () =>
+      allNewsArticles.filter(
+        (article) =>
+          (newsTopic === "All" || article.topic === newsTopic) &&
+          (newsRegion === "All" || article.region === newsRegion)
+      ),
+    [allNewsArticles, newsRegion, newsTopic]
   );
 
   const visibleEvents = useMemo(
@@ -625,11 +689,27 @@ export function DashboardShell() {
     }
   }
 
+  function markMissing(keys: string[]) {
+    setFormErrors(Object.fromEntries(keys.map((key) => [key, true])));
+  }
+
   function handleEventSubmit() {
     const finalCategory = eventForm.category === "Other" ? eventForm.customCategory.trim() : eventForm.category;
-    if (!eventForm.title || !eventForm.date || !eventForm.time || !eventForm.location || !eventForm.signupUrl || !eventForm.description || !finalCategory) {
+    const missing = [
+      !eventForm.title && "event-title",
+      !eventForm.date && "event-date",
+      !eventForm.time && "event-time",
+      !eventForm.location && "event-location",
+      !eventForm.signupUrl && "event-signup",
+      !eventForm.description && "event-description",
+      !finalCategory && "event-category"
+    ].filter(Boolean) as string[];
+
+    if (missing.length) {
+      markMissing(missing);
       return;
     }
+    setFormErrors({});
     submitEvent({
       title: eventForm.title,
       category: finalCategory,
@@ -641,6 +721,10 @@ export function DashboardShell() {
       source: "BBC community submission"
     });
     setEventNotice("Event received. We will review it shortly before it appears on the dashboard.");
+    setToastMessage({
+      title: "Event submitted",
+      copy: "We received your event and will review it shortly."
+    });
 
     setEventForm({
       title: "",
@@ -657,9 +741,17 @@ export function DashboardShell() {
   }
 
   function handlePartnerSubmit() {
-    if (!partnerForm.company || !partnerForm.whatsapp || !partnerForm.website || !partnerForm.offer) {
+    const missing = [
+      !partnerForm.company && "partner-company",
+      !partnerForm.whatsapp && "partner-whatsapp",
+      !partnerForm.website && "partner-website",
+      !partnerForm.offer && "partner-offer"
+    ].filter(Boolean) as string[];
+    if (missing.length) {
+      markMissing(missing);
       return;
     }
+    setFormErrors({});
     submitPartnerApplication({
       name: partnerForm.company,
       whatsapp: partnerForm.whatsapp,
@@ -676,6 +768,10 @@ export function DashboardShell() {
       message: partnerForm.offer
     });
     setPartnerNotice("Application sent. We will review it and get back to you shortly.");
+    setToastMessage({
+      title: "Application sent",
+      copy: "We received your partner application and will review it."
+    });
     setPartnerForm({
       company: "",
       whatsapp: "",
@@ -688,9 +784,16 @@ export function DashboardShell() {
   }
 
   function handleSuggestionSubmit() {
-    if (!suggestionForm.name || !suggestionForm.topic || !suggestionForm.details) {
+    const missing = [
+      !suggestionForm.name && "suggestion-name",
+      !suggestionForm.topic && "suggestion-topic",
+      !suggestionForm.details && "suggestion-details"
+    ].filter(Boolean) as string[];
+    if (missing.length) {
+      markMissing(missing);
       return;
     }
+    setFormErrors({});
     submitMessage({
       type: "Recommendations",
       name: suggestionForm.name,
@@ -699,11 +802,16 @@ export function DashboardShell() {
       message: suggestionForm.details
     });
     setConnectNotice("Thanks, we received your suggestion and the team will review it.");
+    setToastMessage({
+      title: "Suggestion sent",
+      copy: "Thanks. The team received your idea."
+    });
     setSuggestionForm({
       name: user?.name ?? "",
       topic: "",
       details: ""
     });
+    setSuggestionOpen(false);
   }
 
   if (!ready || !user) {
@@ -788,7 +896,7 @@ export function DashboardShell() {
           <section className="panel-stack">
             <div className="home-intro">
               <div>
-                <h2>{greeting}</h2>
+                <h1>{greeting}</h1>
                 <strong className="home-name">{user.name}</strong>
               </div>
               <p>Everything you need to know what&apos;s happening in Bali.</p>
@@ -910,8 +1018,13 @@ export function DashboardShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <h2>Download the REID reports</h2>
-                  <p className="section-note compact">Browse every attached REID report in a horizontal library with quick save and download actions.</p>
+                  <h2>Download the Market Reports of Bali</h2>
+                  <p className="section-note compact">
+                    Created by REID, a Bali real estate intelligence platform focused on market reports, pricing trends, and property data.
+                  </p>
+                  <small className="market-report-copy">
+                    For more details and deeper market intelligence, visit <a href="https://www.realinfo.id/" target="_blank" rel="noreferrer">realinfo.id</a>.
+                  </small>
                 </div>
                 <div className="carousel-controls">
                   <button
@@ -934,8 +1047,7 @@ export function DashboardShell() {
               <div className="reid-carousel" ref={reidCarouselRef}>
                 {reidReports.map((report) => (
                   <article key={report.id} className="resource-card-visual reid-card">
-                    <div className="report-cover-card">
-                      <span>REID</span>
+                    <div className={`report-cover-card ${report.id}`}>
                       <strong>{report.title}</strong>
                     </div>
                     <div className="resource-copy visual">
@@ -977,9 +1089,19 @@ export function DashboardShell() {
           <section className="panel-stack news-panel-plain">
             <div className="news-toolbar">
               <div>
-                <h2>Relevant news by topic</h2>
+                <h2>Recent News in Indonesia</h2>
               </div>
               <div className="filter-bar">
+                {(["All", "Bali", "Indonesia"] as const).map((region) => (
+                  <button
+                    key={region}
+                    type="button"
+                    className={newsRegion === region ? "filter-btn active" : "filter-btn"}
+                    onClick={() => setNewsRegion(region)}
+                  >
+                    {region}
+                  </button>
+                ))}
                 <button
                   type="button"
                   className={newsTopic === "All" ? "filter-btn active" : "filter-btn"}
@@ -1022,6 +1144,7 @@ export function DashboardShell() {
                         onClick={() => setActiveArticle(article)}
                       >
                         <div className="news-meta">
+                          <span className="news-cat">{article.region}</span>
                           <span className="news-cat">{article.topic}</span>
                         </div>
                         <div className="news-title">{article.title}</div>
@@ -1115,7 +1238,6 @@ export function DashboardShell() {
                 })}
               </div>
             </article>
-            {eventNotice ? <div className="status-banner success">{eventNotice}</div> : null}
           </section>
         ) : null}
 
@@ -1190,11 +1312,11 @@ export function DashboardShell() {
               <article key={section} className="section-card clean">
                 <div className="section-heading">
                   <div>
-                    <h2>{section}</h2>
+                    <h2>{section === "Ebooks" ? "Our Ebooks" : section}</h2>
                   </div>
                 </div>
 
-                <div className="resource-visual-grid">
+                <div className="resource-visual-grid ebook-grid">
                   {items.map((resource) => {
                     const favorite: FavoriteItem = {
                       id: `fav-${resource.id}`,
@@ -1206,12 +1328,9 @@ export function DashboardShell() {
 
                     return (
                       <article key={resource.id} className="resource-card-visual">
-                        <div className="resource-preview clean-cover">
-                          <iframe
-                            title={resource.title}
-                            src={`${resource.url}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
-                            scrolling="no"
-                          />
+                        <div className="resource-preview image-cover">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={ebookCoverMap[resource.title] ?? "/bali-business-club-logo-white.png"} alt={resource.title} className="resource-cover-image" />
                         </div>
                         <div className="resource-copy visual">
                           <div className="table-main">{resource.title}</div>
@@ -1270,7 +1389,6 @@ export function DashboardShell() {
                 ))}
               </div>
             </article>
-            {partnerNotice ? <div className="status-banner success">{partnerNotice}</div> : null}
           </section>
         ) : null}
 
@@ -1293,7 +1411,6 @@ export function DashboardShell() {
                         <div className={items.length === 1 ? "favorites-grid clean single" : "favorites-grid clean"}>
                           {items.map((item) => (
                             <article key={item.id} className={items.length === 1 ? "favorite-card clean horizontal" : "favorite-card clean"}>
-                              <div className="favorite-label">{item.type}</div>
                               <strong>{item.title}</strong>
                               <p>{item.note}</p>
                               <div className="favorite-actions">
@@ -1352,25 +1469,11 @@ export function DashboardShell() {
                 <div>
                   <h2>Podcast suggestions</h2>
                 </div>
-              </div>
-              <form className="form-grid clean">
-                <label>
-                  Your name
-                  <input value={suggestionForm.name} onChange={(event) => setSuggestionForm((current) => ({ ...current, name: event.target.value }))} />
-                </label>
-                <label>
-                  Topic idea
-                  <input value={suggestionForm.topic} onChange={(event) => setSuggestionForm((current) => ({ ...current, topic: event.target.value }))} placeholder="What should we cover next?" />
-                </label>
-                <label>
-                  Details
-                  <textarea rows={5} value={suggestionForm.details} onChange={(event) => setSuggestionForm((current) => ({ ...current, details: event.target.value }))} placeholder="Share guest ideas, angles, or questions." />
-                </label>
-                <button type="button" className="primary-button compact" onClick={handleSuggestionSubmit}>
-                  Send suggestion
+                <button type="button" className="outline-yellow-button" onClick={() => setSuggestionOpen(true)}>
+                  Make a suggestion
                 </button>
-                {connectNotice ? <div className="status-banner success">{connectNotice}</div> : null}
-              </form>
+              </div>
+              <p className="section-note compact">Share podcast ideas, guest suggestions, or themes you want the BBC team to cover next.</p>
             </article>
 
             <div className="whatsapp-banner">
@@ -1446,25 +1549,25 @@ export function DashboardShell() {
             <form className="form-grid clean">
               <label>
                 Event name
-                <input required value={eventForm.title} onChange={(event) => setEventForm((current) => ({ ...current, title: event.target.value }))} />
+                <input className={formErrors["event-title"] ? "field-error" : ""} required value={eventForm.title} onChange={(event) => setEventForm((current) => ({ ...current, title: event.target.value }))} />
               </label>
               <div className="two-col-grid">
                 <label>
                   Date
-                  <input type="date" required value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} />
+                  <input className={formErrors["event-date"] ? "field-error" : ""} type="date" required value={eventForm.date} onChange={(event) => setEventForm((current) => ({ ...current, date: event.target.value }))} />
                 </label>
                 <label>
                   Time
-                  <input type="time" required value={eventForm.time} onChange={(event) => setEventForm((current) => ({ ...current, time: event.target.value }))} />
+                  <input className={formErrors["event-time"] ? "field-error" : ""} type="time" required value={eventForm.time} onChange={(event) => setEventForm((current) => ({ ...current, time: event.target.value }))} />
                 </label>
               </div>
               <label>
                 Location
-                <input required value={eventForm.location} onChange={(event) => setEventForm((current) => ({ ...current, location: event.target.value }))} placeholder="Venue in Bali" />
+                <input className={formErrors["event-location"] ? "field-error" : ""} required value={eventForm.location} onChange={(event) => setEventForm((current) => ({ ...current, location: event.target.value }))} placeholder="Venue in Bali" />
               </label>
               <label>
                 Category
-                <select required value={eventForm.category} onChange={(event) => setEventForm((current) => ({ ...current, category: event.target.value as DashboardEvent["category"] }))}>
+                <select className={formErrors["event-category"] ? "field-error" : ""} required value={eventForm.category} onChange={(event) => setEventForm((current) => ({ ...current, category: event.target.value as DashboardEvent["category"] }))}>
                   <option>Networking</option>
                   <option>Business</option>
                   <option>Wellness & Sport</option>
@@ -1475,12 +1578,12 @@ export function DashboardShell() {
               {eventForm.category === "Other" ? (
                 <label>
                   Custom category
-                  <input required value={eventForm.customCategory} onChange={(event) => setEventForm((current) => ({ ...current, customCategory: event.target.value }))} placeholder="Write the event category" />
+                  <input className={formErrors["event-category"] ? "field-error" : ""} required value={eventForm.customCategory} onChange={(event) => setEventForm((current) => ({ ...current, customCategory: event.target.value }))} placeholder="Write the event category" />
                 </label>
               ) : null}
               <label>
                 Website to sign up
-                <input required value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
+                <input className={formErrors["event-signup"] ? "field-error" : ""} required value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
               </label>
               <label>
                 WhatsApp link (optional)
@@ -1488,7 +1591,7 @@ export function DashboardShell() {
               </label>
               <label>
                 Description
-                <textarea required rows={5} value={eventForm.description} onChange={(event) => setEventForm((current) => ({ ...current, description: event.target.value }))} placeholder="What is this event about?" />
+                <textarea className={formErrors["event-description"] ? "field-error" : ""} required rows={5} value={eventForm.description} onChange={(event) => setEventForm((current) => ({ ...current, description: event.target.value }))} placeholder="What is this event about?" />
               </label>
               <button type="button" className="primary-button compact" onClick={handleEventSubmit}>
                 Create Event
@@ -1514,15 +1617,15 @@ export function DashboardShell() {
             <form className="form-grid clean">
               <label>
                 Company name
-                <input required placeholder="Your company name" value={partnerForm.company} onChange={(event) => setPartnerForm((current) => ({ ...current, company: event.target.value }))} />
+                <input className={formErrors["partner-company"] ? "field-error" : ""} required placeholder="Your company name" value={partnerForm.company} onChange={(event) => setPartnerForm((current) => ({ ...current, company: event.target.value }))} />
               </label>
               <label>
                 WhatsApp number
-                <input required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: event.target.value }))} />
+                <input className={formErrors["partner-whatsapp"] ? "field-error" : ""} required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: event.target.value }))} />
               </label>
               <label>
                 Website
-                <input required placeholder="https://..." value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
+                <input className={formErrors["partner-website"] ? "field-error" : ""} required placeholder="https://..." value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
               </label>
               <label>
                 Company logo
@@ -1544,12 +1647,55 @@ export function DashboardShell() {
               </label>
               <label>
                 What would you like to offer?
-                <textarea required rows={5} placeholder="Describe the offer for BBC members." value={partnerForm.offer} onChange={(event) => setPartnerForm((current) => ({ ...current, offer: event.target.value }))} />
+                <textarea className={formErrors["partner-offer"] ? "field-error" : ""} required rows={5} placeholder="Describe the offer for BBC members." value={partnerForm.offer} onChange={(event) => setPartnerForm((current) => ({ ...current, offer: event.target.value }))} />
               </label>
               <button type="button" className="primary-button compact" onClick={handlePartnerSubmit}>
                 Send application
               </button>
             </form>
+          </div>
+        </div>
+      ) : null}
+
+      {suggestionOpen ? (
+        <div className="modal-overlay open">
+          <div className="modal-card">
+            <div className="modal-head">
+              <div>
+                <h2>Make a suggestion</h2>
+                <p className="section-note compact">Share a podcast idea, guest, or topic you want us to cover next.</p>
+              </div>
+              <button type="button" className="icon-button" onClick={() => setSuggestionOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+            <form className="form-grid clean">
+              <label>
+                Your name
+                <input className={formErrors["suggestion-name"] ? "field-error" : ""} value={suggestionForm.name} onChange={(event) => setSuggestionForm((current) => ({ ...current, name: event.target.value }))} />
+              </label>
+              <label>
+                Topic idea
+                <input className={formErrors["suggestion-topic"] ? "field-error" : ""} value={suggestionForm.topic} onChange={(event) => setSuggestionForm((current) => ({ ...current, topic: event.target.value }))} placeholder="What should we cover next?" />
+              </label>
+              <label>
+                Details
+                <textarea className={formErrors["suggestion-details"] ? "field-error" : ""} rows={5} value={suggestionForm.details} onChange={(event) => setSuggestionForm((current) => ({ ...current, details: event.target.value }))} placeholder="Share guest ideas, angles, or questions." />
+              </label>
+              <button type="button" className="primary-button compact" onClick={handleSuggestionSubmit}>
+                Send suggestion
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
+      {toastMessage ? (
+        <div className="modal-overlay open toast-overlay">
+          <div className="toast-card">
+            <div className="toast-check">✓</div>
+            <strong>{toastMessage.title}</strong>
+            <p>{toastMessage.copy}</p>
           </div>
         </div>
       ) : null}

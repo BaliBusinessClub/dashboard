@@ -508,8 +508,8 @@ label {
 
 .home-name {
   display: block;
-  margin-top: 8px;
-  font-size: clamp(1.5rem, 2vw, 2.2rem);
+  margin-top: 10px;
+  font-size: clamp(1.2rem, 1.4vw, 1.55rem);
 }
 
 .home-intro p {
@@ -517,7 +517,10 @@ label {
 }
 
 .quote-card {
-  gap: 14px;
+  gap: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 216, 0, 0.08), transparent 58%),
+    var(--bbc-panel);
 }
 
 .quote-card-label {
@@ -530,7 +533,7 @@ label {
 .quote-card blockquote {
   margin: 0;
   color: #fff;
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   line-height: 1.5;
 }
 
@@ -1071,8 +1074,9 @@ tbody td {
 }
 
 .topic-pill-wide {
-  min-width: 108px;
+  min-width: 116px;
   justify-content: center;
+  padding-inline: 14px;
 }
 
 .episode-actions {
@@ -1156,24 +1160,29 @@ tbody td {
 .report-cover-card {
   min-height: 250px;
   display: grid;
-  align-content: space-between;
+  align-content: end;
   padding: 18px;
   border-radius: 16px;
-  background: #06429a;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.62)),
+    #06429a;
+  background-size: cover;
+  background-position: center;
   color: #fff;
-}
-
-.report-cover-card span {
-  color: rgba(255, 255, 255, 0.74);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.8rem;
 }
 
 .report-cover-card strong {
   font-size: 1.3rem;
   line-height: 1.25;
 }
+
+.report-cover-card.reid-2023-market-report { background-image: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.62)), url("/resources/covers/bbc-dubai-investor-guide.jpg"); }
+.report-cover-card.reid-2024-h1-report { background-image: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.62)), url("/resources/covers/bbc-why-location-is-everything.png"); }
+.report-cover-card.reid-2024-market-report { background-image: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.62)), url("/resources/covers/bbc-real-estate-investing.png"); }
+.report-cover-card.reid-2025-annual-report { background-image: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.62)), url("/resources/covers/bbc-dubai-investor-guide.jpg"); }
+.report-cover-card.reid-q1-2025-market-report { background-image: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.62)), url("/resources/covers/bbc-escape-to-bali.png"); }
+.report-cover-card.reid-q2-2025-market-report { background-image: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.62)), url("/resources/covers/bbc-why-location-is-everything.png"); }
+.report-cover-card.reid-q3-2025-market-report { background-image: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.62)), url("/resources/covers/bbc-real-estate-investing.png"); }
 
 .resource-row {
   align-items: center;
@@ -1341,14 +1350,16 @@ tbody td {
 .reid-carousel {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(250px, 286px);
+  grid-auto-columns: minmax(280px, 320px);
   gap: 18px;
   overflow-x: auto;
   padding-bottom: 4px;
+  scroll-snap-type: x mandatory;
 }
 
 .reid-card {
   min-height: 100%;
+  scroll-snap-align: start;
 }
 
 .carousel-controls {
@@ -1564,6 +1575,65 @@ tbody td {
 
 .upload-note {
   font-size: 0.82rem;
+}
+
+.market-report-copy {
+  display: block;
+  margin-top: 12px;
+}
+
+.market-report-copy a {
+  color: var(--bbc-yellow);
+}
+
+.ebook-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.resource-preview.image-cover {
+  aspect-ratio: 0.72;
+  background: #0b0b0c;
+}
+
+.resource-cover-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.field-error {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.28);
+}
+
+.toast-overlay {
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.toast-card {
+  min-width: 320px;
+  max-width: 420px;
+  padding: 28px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  background: rgba(15, 15, 16, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: var(--bbc-shadow);
+}
+
+.toast-check {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(45, 163, 78, 0.18);
+  color: #c7f3d5;
+  font-weight: 700;
 }
 
 .auth-tabs.clean {

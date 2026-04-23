@@ -258,6 +258,7 @@ export const newsSections = [
     articles: [
       {
         id: "news-business-1",
+        region: "Indonesia",
         title: "Indonesia leans on ASEAN and domestic demand to protect tourism activity",
         teaser: "A strategy shift toward regional and domestic travelers could reshape how Bali-facing businesses think about demand resilience.",
         content:
@@ -268,6 +269,7 @@ export const newsSections = [
       },
       {
         id: "news-business-2",
+        region: "Indonesia",
         title: "Community-based tourism is moving higher on the national agenda",
         teaser: "Policy is signaling a broader tourism model that may reward local partnerships and more distributed value creation.",
         content:
@@ -278,6 +280,7 @@ export const newsSections = [
       },
       {
         id: "news-business-3",
+        region: "Indonesia",
         title: "Mideast route disruption may reduce foreign arrivals and tourism receipts",
         teaser: "Flight disruption is becoming a planning variable that businesses with tourism exposure cannot ignore.",
         content:
@@ -294,6 +297,7 @@ export const newsSections = [
     articles: [
       {
         id: "news-tourism-1",
+        region: "Bali",
         title: "Tourism Ministry strengthens Bali accommodation governance",
         teaser: "Compliance, licensing, and operating clarity are becoming more central to Bali's tourism environment.",
         content:
@@ -304,6 +308,7 @@ export const newsSections = [
       },
       {
         id: "news-tourism-2",
+        region: "Bali",
         title: "Government pushes water taxi and pier development to support Bali tourism",
         teaser: "Mobility and visitor flow remain long-term factors behind which Bali areas gain or lose momentum.",
         content:
@@ -314,6 +319,7 @@ export const newsSections = [
       },
       {
         id: "news-tourism-3",
+        region: "Indonesia",
         title: "Fiscal support is being used to sustain tourism demand",
         teaser: "Travel affordability remains a live policy lever for keeping visitor numbers resilient.",
         content:
@@ -356,6 +362,7 @@ export const newsSections = [
     articles: [
       {
         id: "news-policy-1",
+        region: "Indonesia",
         title: "Indonesia shifts tourism focus to Asia and Oceania amid Middle East tensions",
         teaser: "Source-market strategy is changing, which may alter the visitor mix many Bali businesses depend on.",
         content:
@@ -366,6 +373,7 @@ export const newsSections = [
       },
       {
         id: "news-policy-2",
+        region: "Bali",
         title: "Bali tightens security after violent crimes linked to international groups",
         teaser: "Security and compliance are increasingly part of the operational context for tourism-facing businesses.",
         content:
@@ -376,6 +384,7 @@ export const newsSections = [
       },
       {
         id: "news-policy-3",
+        region: "Indonesia",
         title: "New circular sets safety protocols for the 2026 Eid holiday season",
         teaser: "Government is leaning into destination readiness, service standards, and safety discipline before major travel peaks.",
         content:
