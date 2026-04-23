@@ -12,7 +12,6 @@ import {
   Copy,
   Database,
   Download,
-  Eye,
   Inbox,
   LogOut,
   MessageSquareText,
@@ -40,6 +39,7 @@ const adminTabs = [
 const reportingTargets = ["market-insights", "news", "events", "podcasts", "resources", "partners"] as const;
 type AdminTab = (typeof adminTabs)[number]["id"];
 type MessageItem = (typeof adminMessages)[number] | InboxMessage;
+type MessageSection = "Events" | "Partnerships" | "Questions" | "Suggestions";
 
 function MiniBarChart({
   title,
@@ -94,8 +94,10 @@ export function AdminShell() {
   const [eventSubmissions, setEventSubmissions] = useState<DashboardEvent[]>([]);
   const [partnerSubmissions, setPartnerSubmissions] = useState<PartnerApplication[]>([]);
   const [messageView, setMessageView] = useState<"inbox" | "replied" | "archived">("inbox");
+  const [messageSection, setMessageSection] = useState<MessageSection>("Questions");
   const [selectedMessage, setSelectedMessage] = useState<MessageItem | null>(null);
   const [allMessages, setAllMessages] = useState<MessageItem[]>([...adminMessages]);
+  const [adminToast, setAdminToast] = useState<string | null>(null);
   const [analyticsSection, setAnalyticsSection] = useState<"overview" | "audience" | "behavior">("overview");
   const [analyticsView, setAnalyticsView] = useState<"pages" | "ages">("pages");
   const [analyticsRange, setAnalyticsRange] = useState("7d");
@@ -144,26 +146,24 @@ export function AdminShell() {
     setAllMessages([...adminMessages, ...getStoredMessages()]);
   }, []);
 
-  const visibleMessages = useMemo(
-    () =>
-      allMessages.filter((message) => {
-        const status = "status" in message ? message.status : "inbox";
-        return status === messageView;
-      }),
-    [allMessages, messageView]
-  );
+  useEffect(() => {
+    if (!adminToast) {
+      return;
+    }
+    const timer = window.setTimeout(() => setAdminToast(null), 2200);
+    return () => window.clearTimeout(timer);
+  }, [adminToast]);
 
-  const groupedMessages = useMemo(
-    () =>
-      visibleMessages.reduce<Record<string, MessageItem[]>>((groups, message) => {
-        if (!groups[message.type]) {
-          groups[message.type] = [];
-        }
-        groups[message.type].push(message);
-        return groups;
-      }, {}),
-    [visibleMessages]
-  );
+  const visibleMessages = useMemo(() => {
+    return allMessages.filter((message) => {
+      const status = "status" in message ? message.status : "inbox";
+      const matchesStatus = status === messageView;
+      const matchesSection =
+        (messageSection === "Questions" && message.type === "Contacting us") ||
+        (messageSection === "Suggestions" && message.type === "Recommendations");
+      return matchesStatus && matchesSection;
+    });
+  }, [allMessages, messageSection, messageView]);
 
   const activeAnalyticsData = analyticsView === "pages" ? adminAnalyticsCharts.pageVisits : adminAnalyticsCharts.ageRanges;
   const activeAnalyticsTitle = analyticsView === "pages" ? "Most visited pages" : "Member age ranges";
@@ -206,6 +206,25 @@ export function AdminShell() {
     if (selectedMessage?.id === message.id) {
       setSelectedMessage({ ...message, status });
     }
+    setAdminToast(
+      status === "archived"
+        ? "Message archived."
+        : status === "replied"
+          ? "Message moved to replied."
+          : "Message restored."
+    );
+  }
+
+  function handleEventReview(eventId: string, status: "approved" | "declined") {
+    reviewEvent(eventId, status);
+    setEventSubmissions((current) => current.filter((item) => item.id !== eventId));
+    setAdminToast(status === "approved" ? "Event approved." : "Event rejected.");
+  }
+
+  function handlePartnerReview(partnerId: string, status: "approved" | "declined") {
+    reviewPartnerApplication(partnerId, status);
+    setPartnerSubmissions((current) => current.filter((item) => item.id !== partnerId));
+    setAdminToast(status === "approved" ? "Partner approved." : "Partner rejected.");
   }
 
   function exportAnalytics() {
@@ -357,186 +376,188 @@ export function AdminShell() {
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
-                  <h2>Event submissions</h2>
-                  <p className="section-note compact">Approve or refuse community-submitted events before they appear on the member dashboard.</p>
-                </div>
-              </div>
-
-              <div className="admin-message-list">
-                {eventSubmissions.length ? (
-                  eventSubmissions.map((event) => (
-                    <article key={event.id} className="admin-message-card">
-                      <div className="admin-message-top">
-                        <strong>{event.title}</strong>
-                        <small>{event.date}</small>
-                      </div>
-                      <p>{event.description}</p>
-                      <div className="admin-message-meta">
-                        <span>{event.category}</span>
-                        <span>{event.location}</span>
-                      </div>
-                      <div className="event-actions">
-                        <button
-                          type="button"
-                          className="table-link-button"
-                          onClick={() => {
-                            reviewEvent(event.id, "approved");
-                            setEventSubmissions((current) => current.filter((item) => item.id !== event.id));
-                          }}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          className="ghost-button compact"
-                          onClick={() => {
-                            reviewEvent(event.id, "declined");
-                            setEventSubmissions((current) => current.filter((item) => item.id !== event.id));
-                          }}
-                        >
-                          Refuse
-                        </button>
-                      </div>
-                    </article>
-                  ))
-                ) : (
-                  <p className="empty-copy">No pending event submissions right now.</p>
-                )}
-              </div>
-            </article>
-
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <h2>Partnership applications</h2>
-                  <p className="section-note compact">Accepting an application adds it directly to the member partners tab.</p>
-                </div>
-              </div>
-
-              <div className="admin-message-list">
-                {partnerSubmissions.length ? (
-                  partnerSubmissions.map((partner) => (
-                    <article key={partner.id} className="admin-message-card">
-                      <div className="admin-message-top">
-                        <strong>{partner.name}</strong>
-                        <small>{partner.source}</small>
-                      </div>
-                      <p>{partner.offer}</p>
-                      <div className="admin-message-meta">
-                        <span>{partner.url}</span>
-                        <span>{partner.whatsapp}</span>
-                      </div>
-                      <div className="event-actions">
-                        <button
-                          type="button"
-                          className="table-link-button"
-                          onClick={() => {
-                            reviewPartnerApplication(partner.id, "approved");
-                            setPartnerSubmissions((current) => current.filter((item) => item.id !== partner.id));
-                          }}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          className="ghost-button compact"
-                          onClick={() => {
-                            reviewPartnerApplication(partner.id, "declined");
-                            setPartnerSubmissions((current) => current.filter((item) => item.id !== partner.id));
-                          }}
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    </article>
-                  ))
-                ) : (
-                  <p className="empty-copy">No pending partner applications right now.</p>
-                )}
-              </div>
-            </article>
-
-            <article className="section-card clean">
-              <div className="section-heading">
-                <div>
-                  <h2>Inbox</h2>
+                  <h2>Message center</h2>
+                  <p className="section-note compact">Review incoming submissions, archive resolved items, and approve what should appear on the member dashboard.</p>
                 </div>
               </div>
 
               <div className="filter-bar">
-                <button type="button" className={messageView === "inbox" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("inbox")}>
-                  <Inbox size={14} />
-                  Active messages
-                </button>
-                <button type="button" className={messageView === "replied" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("replied")}>
-                  <CheckCheck size={14} />
-                  Replied
-                </button>
-                <button type="button" className={messageView === "archived" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("archived")}>
-                  <Archive size={14} />
-                  Archived
-                </button>
+                {(["Events", "Partnerships", "Questions", "Suggestions"] as const).map((section) => (
+                  <button
+                    key={section}
+                    type="button"
+                    className={messageSection === section ? "filter-btn active" : "filter-btn"}
+                    onClick={() => setMessageSection(section)}
+                  >
+                    {section}
+                  </button>
+                ))}
               </div>
 
-              {Object.entries(groupedMessages).map(([group, items]) => (
-                <div key={group} className="favorites-group">
-                  <h3>{group}</h3>
-                  <div className="admin-message-list">
-                    {items.map((message) => (
-                      <article key={message.id} className="admin-message-card">
+              {messageSection === "Questions" || messageSection === "Suggestions" ? (
+                <div className="filter-bar">
+                  <button type="button" className={messageView === "inbox" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("inbox")}>
+                    <Inbox size={14} />
+                    Active messages
+                  </button>
+                  <button type="button" className={messageView === "replied" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("replied")}>
+                    <CheckCheck size={14} />
+                    Replied
+                  </button>
+                  <button type="button" className={messageView === "archived" ? "filter-btn active" : "filter-btn"} onClick={() => setMessageView("archived")}>
+                    <Archive size={14} />
+                    Archived
+                  </button>
+                </div>
+              ) : null}
+
+              {messageSection === "Events" ? (
+                <div className="admin-message-list">
+                  {eventSubmissions.length ? (
+                    eventSubmissions.map((event) => (
+                      <article key={event.id} className="admin-message-card submission-card">
                         <div className="admin-message-top">
-                          <strong>{message.subject}</strong>
-                          <small>{message.date}</small>
+                          <strong>{event.title}</strong>
+                          <small>{event.date}</small>
                         </div>
-                        <p>{message.message}</p>
+                        <p>{event.description}</p>
                         <div className="admin-message-meta">
-                          <span>{message.name}</span>
-                          <span>{message.email}</span>
-                          {"whatsapp" in message && message.whatsapp ? <span>{message.whatsapp}</span> : null}
+                          <span>{event.category}</span>
+                          <span>{event.location}</span>
                         </div>
                         <div className="event-actions">
-                          <button type="button" className="ghost-button compact" onClick={() => setSelectedMessage(message)}>
-                            <Eye size={14} />
-                            Open
+                          <button type="button" className="action-approve" onClick={() => handleEventReview(event.id, "approved")}>
+                            Approve
                           </button>
+                          <button type="button" className="action-reject" onClick={() => handleEventReview(event.id, "declined")}>
+                            Reject
+                          </button>
+                        </div>
+                      </article>
+                    ))
+                  ) : (
+                    <p className="empty-copy">No pending event submissions right now.</p>
+                  )}
+                </div>
+              ) : null}
+
+              {messageSection === "Partnerships" ? (
+                <div className="admin-message-list">
+                  {partnerSubmissions.length ? (
+                    partnerSubmissions.map((partner) => (
+                      <article key={partner.id} className="admin-message-card submission-card">
+                        <div className="admin-message-top">
+                          <strong>{partner.name}</strong>
+                          <small>{partner.source}</small>
+                        </div>
+                        <p>{partner.offer}</p>
+                        <div className="admin-message-meta">
+                          <span>{partner.url}</span>
+                          <span>{partner.whatsapp}</span>
+                        </div>
+                        <div className="event-actions">
+                          <button type="button" className="action-approve" onClick={() => handlePartnerReview(partner.id, "approved")}>
+                            Approve
+                          </button>
+                          <button type="button" className="action-reject" onClick={() => handlePartnerReview(partner.id, "declined")}>
+                            Reject
+                          </button>
+                        </div>
+                      </article>
+                    ))
+                  ) : (
+                    <p className="empty-copy">No pending partner applications right now.</p>
+                  )}
+                </div>
+              ) : null}
+
+              {messageSection === "Questions" || messageSection === "Suggestions" ? (
+                <div className="admin-message-list">
+                  {visibleMessages.map((message) => (
+                    <article
+                      key={message.id}
+                      className="admin-message-card clickable"
+                      onClick={() => setSelectedMessage(message)}
+                    >
+                      <div className="admin-message-top">
+                        <strong>{message.subject}</strong>
+                        <small>{message.date}</small>
+                      </div>
+                      <p>{message.message}</p>
+                      <div className="admin-message-meta">
+                        <span>{message.name}</span>
+                        <span>{message.email}</span>
+                        {"whatsapp" in message && message.whatsapp ? <span>{message.whatsapp}</span> : null}
+                      </div>
+                      <div className="event-actions">
+                        <button
+                          type="button"
+                          className="ghost-button compact"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            navigator.clipboard.writeText(("whatsapp" in message && message.whatsapp) ? message.whatsapp : message.email);
+                            setAdminToast("Contact copied.");
+                          }}
+                        >
+                          <Copy size={14} />
+                          Copy contact
+                        </button>
+                        {messageView === "inbox" ? (
+                          <>
+                            <button
+                              type="button"
+                              className="ghost-button compact"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setMessageStatus(message, "replied");
+                              }}
+                            >
+                              <CheckCheck size={14} />
+                              Mark replied
+                            </button>
+                            <button
+                              type="button"
+                              className="ghost-button compact"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setMessageStatus(message, "archived");
+                              }}
+                            >
+                              <Archive size={14} />
+                              Archive
+                            </button>
+                          </>
+                        ) : messageView === "archived" ? (
                           <button
                             type="button"
                             className="ghost-button compact"
-                            onClick={() => navigator.clipboard.writeText(("whatsapp" in message && message.whatsapp) ? message.whatsapp : message.email)}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setMessageStatus(message, "inbox");
+                            }}
                           >
-                            <Copy size={14} />
-                            Copy contact
+                            <RotateCcw size={14} />
+                            Restore
                           </button>
-                          {messageView === "inbox" ? (
-                            <>
-                              <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "replied")}>
-                                <CheckCheck size={14} />
-                                Mark replied
-                              </button>
-                              <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "archived")}>
-                                <Archive size={14} />
-                                Archive
-                              </button>
-                            </>
-                          ) : messageView === "archived" ? (
-                            <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "inbox")}>
-                              <Archive size={14} />
-                              Restore
-                            </button>
-                          ) : (
-                            <button type="button" className="ghost-button compact" onClick={() => setMessageStatus(message, "archived")}>
-                              <RotateCcw size={14} />
-                              Archive
-                            </button>
-                          )}
-                        </div>
-                      </article>
-                    ))}
-                  </div>
+                        ) : (
+                          <button
+                            type="button"
+                            className="ghost-button compact"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setMessageStatus(message, "archived");
+                            }}
+                          >
+                            <Archive size={14} />
+                            Archive
+                          </button>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                  {!visibleMessages.length ? <p className="empty-copy">No messages in this section right now.</p> : null}
                 </div>
-              ))}
-
-              {!visibleMessages.length ? <p className="empty-copy">No messages in this section right now.</p> : null}
+              ) : null}
             </article>
           </section>
         ) : null}
@@ -754,22 +775,53 @@ export function AdminShell() {
               ) : null}
               <p>{selectedMessage.message}</p>
               <div className="event-actions">
-                <button type="button" className="ghost-button compact" onClick={() => navigator.clipboard.writeText(selectedMessage.email)}>
+                <button
+                  type="button"
+                  className="ghost-button compact"
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedMessage.email);
+                    setAdminToast("Email copied.");
+                  }}
+                >
                   <Copy size={14} />
                   Copy email
                 </button>
                 {"whatsapp" in selectedMessage && selectedMessage.whatsapp ? (
-                  <button type="button" className="ghost-button compact" onClick={() => navigator.clipboard.writeText(selectedMessage.whatsapp ?? "")}>
+                  <button
+                    type="button"
+                    className="ghost-button compact"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedMessage.whatsapp ?? "");
+                      setAdminToast("WhatsApp copied.");
+                    }}
+                  >
                     <Copy size={14} />
                     Copy WhatsApp
                   </button>
                 ) : null}
-                <button type="button" className="table-link-button" onClick={() => setMessageStatus(selectedMessage, "replied")}>
+                <button
+                  type="button"
+                  className="table-link-button"
+                  onClick={() => {
+                    setMessageStatus(selectedMessage, "replied");
+                    setSelectedMessage(null);
+                  }}
+                >
                   <CheckCheck size={14} />
                   Mark replied
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {adminToast ? (
+        <div className="modal-overlay open toast-overlay">
+          <div className="toast-card">
+            <div className="toast-check">OK</div>
+            <strong>Updated</strong>
+            <p>{adminToast}</p>
           </div>
         </div>
       ) : null}

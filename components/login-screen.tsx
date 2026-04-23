@@ -8,6 +8,9 @@ import { useAuth } from "@/components/auth-provider";
 
 type Mode = "signin" | "create" | "verify";
 const ADMIN_EMAIL = "admin@balibusinessclub.com";
+const MEMBER_EMAIL = "member@balibusinessclub.com";
+const MEMBER_CODE = "246810";
+const ADMIN_CODE = "112233";
 
 const memberTypeOptions = [
   "Business owner",
@@ -50,6 +53,21 @@ export function LoginScreen() {
   }, [ready, router, user]);
 
   async function sendCode(flow: "signin" | "create") {
+    if (flow === "signin") {
+      const normalizedEmail = email.trim().toLowerCase();
+      if (normalizedEmail === MEMBER_EMAIL || normalizedEmail === ADMIN_EMAIL) {
+        setPendingFlow("signin");
+        setMode("verify");
+        setPreviewCode(normalizedEmail === ADMIN_EMAIL ? ADMIN_CODE : MEMBER_CODE);
+        setStatus(normalizedEmail === ADMIN_EMAIL ? "Admin access code ready." : "Member access code ready.");
+        return;
+      }
+
+      setPreviewCode(null);
+      setStatus("This email does not have direct sign-in access yet. Please create an account first.");
+      return;
+    }
+
     if (flow === "create") {
       if (!name.trim()) {
         setStatus("Please add your name before creating an account.");
@@ -92,6 +110,27 @@ export function LoginScreen() {
   }
 
   async function verifyCode() {
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedCode = code.trim();
+
+    if (pendingFlow === "signin" || mode === "signin") {
+      if (
+        (normalizedEmail === MEMBER_EMAIL && normalizedCode === MEMBER_CODE) ||
+        (normalizedEmail === ADMIN_EMAIL && normalizedCode === ADMIN_CODE)
+      ) {
+        const sessionUser = signInWithEmail(email, name, {
+          ageRange,
+          memberType: effectiveMemberType,
+          companyLogo
+        });
+        router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
+        return;
+      }
+
+      setStatus("That code does not match an active member or admin login.");
+      return;
+    }
+
     setStatus("Checking your code...");
 
     const response = await fetch("/api/auth/verify-code", {
@@ -286,6 +325,11 @@ export function LoginScreen() {
 
           {status ? <p className="status-banner">{status}</p> : null}
           {previewCode ? <p className="preview-banner">Preview code: {previewCode}</p> : null}
+          {mode === "signin" ? (
+            <p className="preview-banner">
+              Member demo: {MEMBER_EMAIL} / {MEMBER_CODE} - Admin demo: {ADMIN_EMAIL} / {ADMIN_CODE}
+            </p>
+          ) : null}
         </div>
       </section>
     </main>

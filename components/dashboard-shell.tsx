@@ -10,8 +10,6 @@ import {
   CalendarRange,
   ChartColumn,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Heart,
   House,
   LogOut,
@@ -22,6 +20,7 @@ import {
   PencilLine,
   Podcast,
   Save,
+  Sparkles,
   Trash2,
   Youtube,
   X
@@ -136,12 +135,12 @@ const ebookCoverMap: Record<string, string> = {
 function getGreeting() {
   const hour = new Date().getHours();
   if (hour < 12) {
-    return "Good morning";
+    return "Good Morning";
   }
   if (hour < 18) {
-    return "Good afternoon";
+    return "Good Afternoon";
   }
-  return "Good evening";
+  return "Good Evening";
 }
 
 function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
@@ -443,9 +442,6 @@ export function DashboardShell() {
     logo: ""
   });
   const [partnerLogoInputKey, setPartnerLogoInputKey] = useState(0);
-  const [eventNotice, setEventNotice] = useState("");
-  const [partnerNotice, setPartnerNotice] = useState("");
-  const [connectNotice, setConnectNotice] = useState("");
   const [suggestionForm, setSuggestionForm] = useState({
     name: user?.name ?? "",
     topic: "",
@@ -457,7 +453,6 @@ export function DashboardShell() {
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState<{ title: string; copy: string } | null>(null);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
-  const reidCarouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!ready) {
@@ -651,7 +646,6 @@ export function DashboardShell() {
     if (item.type === "News") {
       const match = allNewsArticles.find((article) => article.id === item.sourceId);
       if (match) {
-        setActiveTab("news");
         setActiveArticle(match);
       }
       return;
@@ -660,7 +654,6 @@ export function DashboardShell() {
     if (item.type === "Podcast") {
       const match = podcastFeed.find((episode) => episode.id === item.sourceId);
       if (match) {
-        setActiveTab("podcasts");
         window.open(match.url, "_blank", "noopener,noreferrer");
       }
       return;
@@ -669,7 +662,6 @@ export function DashboardShell() {
     if (item.type === "Event") {
       const match = approvedEvents.find((event) => event.id === item.sourceId);
       if (match) {
-        setActiveTab("events");
         window.open(match.signupUrl, "_blank", "noopener,noreferrer");
       }
       return;
@@ -677,16 +669,31 @@ export function DashboardShell() {
 
     const resourceMatch = resourceDocuments.find((resource) => resource.id === item.sourceId);
     if (resourceMatch) {
-      setActiveTab("resources");
       window.open(resourceMatch.url, "_blank", "noopener,noreferrer");
       return;
     }
 
     const reportMatch = reidReports.find((report) => report.id === item.sourceId);
     if (reportMatch) {
-      setActiveTab("market");
       window.open(reportMatch.url, "_blank", "noopener,noreferrer");
     }
+  }
+
+  function normalizePhoneNumber(value: string) {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return "";
+    }
+
+    const hasPlus = trimmed.startsWith("+");
+    const digits = trimmed.replace(/\D/g, "");
+    return `${hasPlus ? "+" : ""}${digits}`;
+  }
+
+  function isValidWhatsapp(value: string) {
+    const normalized = normalizePhoneNumber(value);
+    const digits = normalized.replace(/\D/g, "");
+    return digits.length >= 8 && digits.length <= 15;
   }
 
   function markMissing(keys: string[]) {
@@ -720,10 +727,9 @@ export function DashboardShell() {
       whatsappUrl: eventForm.whatsappUrl || undefined,
       source: "BBC community submission"
     });
-    setEventNotice("Event received. We will review it shortly before it appears on the dashboard.");
     setToastMessage({
       title: "Event submitted",
-      copy: "We received your event and will review it shortly."
+      copy: "Your event has been received and will be reviewed shortly."
     });
 
     setEventForm({
@@ -741,9 +747,10 @@ export function DashboardShell() {
   }
 
   function handlePartnerSubmit() {
+    const normalizedWhatsapp = normalizePhoneNumber(partnerForm.whatsapp);
     const missing = [
       !partnerForm.company && "partner-company",
-      !partnerForm.whatsapp && "partner-whatsapp",
+      !normalizedWhatsapp && "partner-whatsapp",
       !partnerForm.website && "partner-website",
       !partnerForm.offer && "partner-offer"
     ].filter(Boolean) as string[];
@@ -751,10 +758,14 @@ export function DashboardShell() {
       markMissing(missing);
       return;
     }
+    if (!isValidWhatsapp(normalizedWhatsapp)) {
+      markMissing(["partner-whatsapp"]);
+      return;
+    }
     setFormErrors({});
     submitPartnerApplication({
       name: partnerForm.company,
-      whatsapp: partnerForm.whatsapp,
+      whatsapp: normalizedWhatsapp,
       url: partnerForm.website,
       offer: partnerForm.offer,
       logo: partnerForm.logo
@@ -763,14 +774,13 @@ export function DashboardShell() {
       type: "Partnerships",
       name: partnerForm.company,
       email: partnerForm.website,
-      whatsapp: partnerForm.whatsapp,
+      whatsapp: normalizedWhatsapp,
       subject: "Partner application",
       message: partnerForm.offer
     });
-    setPartnerNotice("Application sent. We will review it and get back to you shortly.");
     setToastMessage({
       title: "Application sent",
-      copy: "We received your partner application and will review it."
+      copy: "Your partner application has been sent and is now under review."
     });
     setPartnerForm({
       company: "",
@@ -801,10 +811,9 @@ export function DashboardShell() {
       subject: suggestionForm.topic,
       message: suggestionForm.details
     });
-    setConnectNotice("Thanks, we received your suggestion and the team will review it.");
     setToastMessage({
       title: "Suggestion sent",
-      copy: "Thanks. The team received your idea."
+      copy: "Your suggestion has been sent to the BBC team for review."
     });
     setSuggestionForm({
       name: user?.name ?? "",
@@ -899,7 +908,7 @@ export function DashboardShell() {
                 <h1>{greeting}</h1>
                 <strong className="home-name">{user.name}</strong>
               </div>
-              <p>Everything you need to know what&apos;s happening in Bali.</p>
+              <p>Here is everything you need to know about what is happening in Bali.</p>
             </div>
 
             <div className="shortcut-grid clean large-home">
@@ -921,9 +930,12 @@ export function DashboardShell() {
               })}
             </div>
 
-            <article className="section-card clean quote-card">
-              <div className="quote-card-label">Quote of the day</div>
-              <blockquote>&ldquo;{dailyQuote.quote}&rdquo;</blockquote>
+            <article className="quote-card">
+              <div className="quote-card-label">
+                <Sparkles size={16} />
+                <span>Quote of the day</span>
+              </div>
+              <blockquote>{dailyQuote.quote}</blockquote>
               <small>{dailyQuote.source}</small>
             </article>
           </section>
@@ -1019,42 +1031,23 @@ export function DashboardShell() {
               <div className="section-heading">
                 <div>
                   <h2>Download the Market Reports of Bali</h2>
-                  <p className="section-note compact">
+                  <p className="section-note compact single-line">
                     Created by REID, a Bali real estate intelligence platform focused on market reports, pricing trends, and property data.
                   </p>
-                  <small className="market-report-copy">
-                    For more details and deeper market intelligence, visit <a href="https://www.realinfo.id/" target="_blank" rel="noreferrer">realinfo.id</a>.
-                  </small>
                 </div>
-                <div className="carousel-controls">
-                  <button
-                    type="button"
-                    className="icon-button"
-                    onClick={() => reidCarouselRef.current?.scrollBy({ left: -320, behavior: "smooth" })}
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    className="icon-button"
-                    onClick={() => reidCarouselRef.current?.scrollBy({ left: 320, behavior: "smooth" })}
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
+                <a href="https://www.realinfo.id/" target="_blank" rel="noreferrer" className="ghost-button compact">
+                  More details
+                </a>
               </div>
 
-              <div className="reid-carousel" ref={reidCarouselRef}>
+              <div className="market-report-list">
                 {reidReports.map((report) => (
-                  <article key={report.id} className="resource-card-visual reid-card">
-                    <div className={`report-cover-card ${report.id}`}>
+                  <article key={report.id} className="market-report-row">
+                    <div className="market-report-row-copy">
                       <strong>{report.title}</strong>
-                    </div>
-                    <div className="resource-copy visual">
-                      <div className="table-main">{report.title}</div>
                       <small>{report.source}</small>
                     </div>
-                    <div className="resource-actions visual">
+                    <div className="resource-actions market-report-actions">
                       <button
                         type="button"
                         className="mini-action"
@@ -1091,7 +1084,7 @@ export function DashboardShell() {
               <div>
                 <h2>Recent News in Indonesia</h2>
               </div>
-              <div className="filter-bar">
+              <div className="filter-bar region-filter-bar">
                 {(["All", "Bali", "Indonesia"] as const).map((region) => (
                   <button
                     key={region}
@@ -1102,6 +1095,8 @@ export function DashboardShell() {
                     {region}
                   </button>
                 ))}
+              </div>
+              <div className="filter-bar topic-filter-bar">
                 <button
                   type="button"
                   className={newsTopic === "All" ? "filter-btn active" : "filter-btn"}
@@ -1279,7 +1274,7 @@ export function DashboardShell() {
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={episode.image} alt={episode.title} className="episode-cover-image" />
                         </div>
-                        <div className="episode-tag topic-pill-wide">{episode.topic}</div>
+                        <div className="episode-tag topic-pill-clean">{episode.topic}</div>
                         <strong>{episode.title}</strong>
                         <p>{episode.description}</p>
                         <div className="episode-actions">
@@ -1535,11 +1530,11 @@ export function DashboardShell() {
 
       {eventFormOpen ? (
         <div className="modal-overlay open">
-          <div className="modal-card">
+          <div className="modal-card wide-form">
             <div className="modal-head">
               <div>
                 <h2>Add an event</h2>
-                <p className="section-note compact">Submit an upcoming Bali event and we will review it before it appears on the dashboard.</p>
+                <p className="section-note compact single-line">Submit an upcoming Bali event and we will review it before it appears on the dashboard.</p>
               </div>
               <button type="button" className="icon-button" onClick={() => setEventFormOpen(false)}>
                 <X size={16} />
@@ -1603,11 +1598,11 @@ export function DashboardShell() {
 
       {partnerFormOpen ? (
         <div className="modal-overlay open">
-          <div className="modal-card">
+          <div className="modal-card wide-form">
             <div className="modal-head">
               <div>
                 <h2>Become a partner</h2>
-                <p className="section-note compact">Send your offer and the BBC team will review it before it is shared with members.</p>
+                <p className="section-note compact single-line">Send your offer and the BBC team will review it before it is shared with members.</p>
               </div>
               <button type="button" className="icon-button" onClick={() => setPartnerFormOpen(false)}>
                 <X size={16} />
@@ -1621,7 +1616,7 @@ export function DashboardShell() {
               </label>
               <label>
                 WhatsApp number
-                <input className={formErrors["partner-whatsapp"] ? "field-error" : ""} required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: event.target.value }))} />
+                <input className={formErrors["partner-whatsapp"] ? "field-error" : ""} type="tel" inputMode="numeric" required placeholder="+62..." value={partnerForm.whatsapp} onChange={(event) => setPartnerForm((current) => ({ ...current, whatsapp: normalizePhoneNumber(event.target.value) }))} />
               </label>
               <label>
                 Website
@@ -1659,11 +1654,11 @@ export function DashboardShell() {
 
       {suggestionOpen ? (
         <div className="modal-overlay open">
-          <div className="modal-card">
+          <div className="modal-card wide-form">
             <div className="modal-head">
               <div>
                 <h2>Make a suggestion</h2>
-                <p className="section-note compact">Share a podcast idea, guest, or topic you want us to cover next.</p>
+                <p className="section-note compact single-line">Share a podcast idea, guest, or topic you want us to cover next.</p>
               </div>
               <button type="button" className="icon-button" onClick={() => setSuggestionOpen(false)}>
                 <X size={16} />

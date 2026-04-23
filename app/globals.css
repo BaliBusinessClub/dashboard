@@ -502,14 +502,16 @@ label {
   margin-bottom: 6px;
 }
 
-.home-intro h2 {
+.home-intro h1 {
   margin-top: 10px;
+  font-size: clamp(3rem, 5vw, 4.6rem);
+  line-height: 0.95;
 }
 
 .home-name {
   display: block;
   margin-top: 10px;
-  font-size: clamp(1.2rem, 1.4vw, 1.55rem);
+  font-size: clamp(1.15rem, 1.35vw, 1.45rem);
 }
 
 .home-intro p {
@@ -517,13 +519,18 @@ label {
 }
 
 .quote-card {
-  gap: 18px;
-  background:
-    linear-gradient(135deg, rgba(255, 216, 0, 0.08), transparent 58%),
-    var(--bbc-panel);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 20px 0 4px;
+  text-align: center;
 }
 
 .quote-card-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
   color: var(--bbc-yellow);
   font-size: 0.84rem;
   text-transform: uppercase;
@@ -533,7 +540,8 @@ label {
 .quote-card blockquote {
   margin: 0;
   color: #fff;
-  font-size: 1.45rem;
+  max-width: 860px;
+  font-size: 1.55rem;
   line-height: 1.5;
 }
 
@@ -944,6 +952,7 @@ tbody td {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
   border-color: var(--bbc-yellow);
+  background: rgba(255, 216, 0, 0.12);
 }
 
 .google-button,
@@ -1077,6 +1086,14 @@ tbody td {
   min-width: 116px;
   justify-content: center;
   padding-inline: 14px;
+}
+
+.topic-pill-clean {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
 }
 
 .episode-actions {
@@ -1247,10 +1264,12 @@ tbody td {
 .favorite-card.clean {
   gap: 12px;
   align-content: space-between;
+  min-height: 168px;
+  background: #101011;
 }
 
 .favorite-card.clean.horizontal {
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) auto;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr) auto;
   align-items: center;
 }
 
@@ -1413,6 +1432,48 @@ tbody td {
   border: 1px solid var(--bbc-border);
   border-radius: 18px;
   background: #111;
+  transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+}
+
+.admin-message-card.clickable {
+  cursor: pointer;
+}
+
+.admin-message-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #131314;
+}
+
+.submission-card {
+  background: #101011;
+}
+
+.action-approve,
+.action-reject {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.action-approve {
+  background: #1f8f4a;
+  color: #f7fff9;
+}
+
+.action-reject {
+  background: #b33333;
+  color: #fff5f5;
+}
+
+.action-approve:hover,
+.action-reject:hover {
+  transform: translateY(-1px);
 }
 
 .admin-message-top,
@@ -1586,6 +1647,36 @@ tbody td {
   color: var(--bbc-yellow);
 }
 
+.single-line {
+  white-space: nowrap;
+}
+
+.market-report-list {
+  display: grid;
+  gap: 14px;
+}
+
+.market-report-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 22px;
+  border: 1px solid var(--bbc-border);
+  border-radius: 18px;
+  background: #101011;
+}
+
+.market-report-row-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.market-report-actions {
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
 .ebook-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -1625,6 +1716,11 @@ tbody td {
   box-shadow: var(--bbc-shadow);
 }
 
+.toast-card p {
+  text-align: center;
+  white-space: nowrap;
+}
+
 .toast-check {
   width: 42px;
   height: 42px;
@@ -1634,6 +1730,7 @@ tbody td {
   background: rgba(45, 163, 78, 0.18);
   color: #c7f3d5;
   font-weight: 700;
+  font-size: 0.78rem;
 }
 
 .auth-tabs.clean {
@@ -1745,6 +1842,10 @@ tbody td {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 24%),
     var(--bbc-panel);
+}
+
+.modal-card.wide-form {
+  width: min(640px, calc(100vw - 32px));
 }
 
 .modal-head {

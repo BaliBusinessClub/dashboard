@@ -337,7 +337,7 @@ export const newsSections = [
       {
         id: "news-infrastructure-1",
         title: "Government pushes water taxi and pier development to support Bali tourism",
-        teaser: "Transport connectivity is becoming a more visible part of Baliâ€™s long-term visitor experience and location logic.",
+        teaser: "Transport connectivity is becoming a more visible part of Bali's long-term visitor experience and location logic.",
         content:
           "ANTARA reported that the Transportation Ministry is accelerating work on water taxi and pier development in Bali. While these projects take time to materialize, they matter because they can gradually reshape how visitors move across the island and how congestion-heavy corridors are perceived.\n\nFor investors, developers, and hospitality operators, connectivity has strategic value. Improved movement between air, land, and sea transport can shift where demand strengthens next, particularly in areas that become easier to reach or better integrated into tourist itineraries.",
         source: "ANTARA News",
@@ -346,10 +346,10 @@ export const newsSections = [
       },
       {
         id: "news-infrastructure-2",
-        title: "Ticket discounts help cushion Baliâ€™s tourism low season",
+        title: "Ticket discounts help cushion Bali's tourism low season",
         teaser: "Transport pricing support is feeding directly into retail optimism and travel resilience in Bali.",
         content:
-          "ANTARA reported that Bank Indonesiaâ€™s Bali office sees transportation ticket discounts as a meaningful buffer during Baliâ€™s low season. The signal here is bigger than airfare: mobility cost is a real lever for keeping travel demand active, especially in softer seasonal periods.\n\nFor business owners, that matters because lower friction on travel can support occupancy, footfall, and consumer spending in periods that would otherwise be more vulnerable. It is another reminder that tourism performance is tied not just to destination appeal, but also to how affordable and easy Bali is to access.",
+          "ANTARA reported that Bank Indonesia's Bali office sees transportation ticket discounts as a meaningful buffer during Bali's low season. The signal here is bigger than airfare: mobility cost is a real lever for keeping travel demand active, especially in softer seasonal periods.\n\nFor business owners, that matters because lower friction on travel can support occupancy, footfall, and consumer spending in periods that would otherwise be more vulnerable. It is another reminder that tourism performance is tied not just to destination appeal, but also to how affordable and easy Bali is to access.",
         source: "ANTARA News",
         date: "March 14, 2026",
         url: "https://en.antaranews.com/news/408422/homepage-v2.html"
@@ -438,7 +438,7 @@ export const podcastFeed = [
   },
   {
     id: "LkiYTQ1k0ss",
-    title: "From marketing to brokering and development: Inside GEONETâ€™s Real Estate Machine",
+    title: "From marketing to brokering and development: Inside GEONET's Real Estate Machine",
     description: "An inside look at how marketing, brokerage, and development work together inside one Bali real estate platform.",
     published: "3 months ago",
     topic: "Property",
@@ -483,7 +483,7 @@ export const podcastFeed = [
   },
   {
     id: "yxJwNl3n3t4",
-    title: "The Kedungu Fundâ€™s $10M Milestone: A Look Ahead",
+    title: "The Kedungu Fund's $10M Milestone: A Look Ahead",
     description: "A milestone review focused on fund growth, thesis validation, and the next phase.",
     published: "9 months ago",
     topic: "Investment",
@@ -913,6 +913,7 @@ export const baliEvents = [
     location: "Jalan Cemara, Denpasar Selatan",
     description: "A full-day workshop focused on construction and engineering arbitration with BIAMC speakers and networking.",
     signupUrl: "https://www.eventbrite.com/e/workshop-construction-engineering-arbitration-1-tickets-1986393521495",
+    whatsappUrl: "https://wa.link/zg5xw8",
     source: "Eventbrite",
     status: "approved"
   },
@@ -924,6 +925,7 @@ export const baliEvents = [
     location: "The Jungle Club Ubud",
     description: "Season opening live set with Pippi Ciez and a Bali community crowd gathering at The Jungle Club.",
     signupUrl: "https://www.eventbrite.com/e/awakened-dreamers-bohemian-blossom-pippi-ciez-live-at-the-jungle-club-tickets-1985884964387?aff=erelexpmlt",
+    whatsappUrl: "https://wa.link/zg5xw8",
     source: "Eventbrite",
     status: "approved"
   },
@@ -932,9 +934,10 @@ export const baliEvents = [
     title: "Bali Nourish Retreat",
     category: "Wellness & Sport",
     date: "May 10, 2026 · 12:00 PM",
-    location: "Jalan Hanoman 2, Ubud",
-    description: "A women's retreat in Ubud focused on holistic health, self-care, and reconnection in a guided Bali setting.",
+    location: "Ubud, Bali, Indonesia",
+    description: "A seven-day Ubud retreat focused on holistic health, self-care, and women’s wellness.",
     signupUrl: "https://allevents.in/ubud/bali-nourish-retreat/200029729622711",
+    whatsappUrl: "https://wa.link/zg5xw8",
     source: "AllEvents",
     status: "approved"
   },
@@ -944,30 +947,57 @@ export const baliEvents = [
     category: "Networking",
     date: "May 11, 2026 · 7:00 AM",
     location: "Kerobokan Kaja, Kuta Utara",
-    description: "A global vocational education conference with sessions, partner networking, and evening events across Bali.",
+    description: "A global education conference with networking, partner sessions, and evening events in Bali.",
     signupUrl: "https://allevents.in/kuta/avec-2026-conference/200029648147958",
+    whatsappUrl: "https://wa.link/zg5xw8",
     source: "AllEvents",
     status: "approved"
   },
   {
-    id: "event-magic-dirt",
-    title: "Magic Dirt Live in Bali",
+    id: "event-dinner-with-entrepreneurs",
+    title: "Dinner with Entrepreneurs: Bali",
+    category: "Networking",
+    date: "May 13, 2026 · 7:00 PM",
+    location: "Restaurant of the Week, Bali",
+    description: "A small-group networking dinner for founders and operators looking to connect with other entrepreneurs in Bali.",
+    signupUrl: "https://www.eventbrite.com/e/dinner-with-entrepreneurs-bali-tickets-1967662389174",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Eventbrite",
+    status: "approved"
+  },
+  {
+    id: "event-light-your-soul",
+    title: "Light Your Soul International Yoga Retreat",
+    category: "Wellness & Sport",
+    date: "May 23, 2026 · 4:00 PM",
+    location: "Soulshine Bali, Ubud",
+    description: "A week-long Bali retreat combining yoga, meditation, sound healing, and wellness experiences in Ubud.",
+    signupUrl: "https://www.eventbrite.com/e/light-your-soul-international-yoga-retreat-at-soulshine-in-bali-2026-tickets-1391906583059",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Eventbrite",
+    status: "approved"
+  },
+  {
+    id: "event-aamari-bali-retreat",
+    title: "Aamari Bali Retreat 2026",
+    category: "Wellness & Sport",
+    date: "May 29, 2026 · 10:00 AM",
+    location: "Hotel Komune and Beach Club Bali",
+    description: "A five-night healing and movement retreat designed around reconnection, rest, and community.",
+    signupUrl: "https://www.eventbrite.com/e/aamari-bali-retreat-2026-tickets-1983702419336?aff=erelexpmlt",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Eventbrite",
+    status: "approved"
+  },
+  {
+    id: "event-magic-dirt-bali",
+    title: "Magic Dirt in Bali",
     category: "Music & Culture",
     date: "June 1, 2026 · 5:00 PM",
-    location: "InterContinental Bali Resort, Kabupaten Badung",
-    description: "A live music night in Bali featuring Magic Dirt at InterContinental Bali Resort.",
+    location: "InterContinental Bali Resort, Jimbaran",
+    description: "A live music night in Jimbaran featuring Magic Dirt as part of the Music in Paradise Bali program.",
     signupUrl: "https://allevents.in/kabupaten-badung/magic-dirt-in-kabupaten-badung/3300028418919246",
-    source: "AllEvents",
-    status: "approved"
-  },
-  {
-    id: "event-bali-mountain-retreat",
-    title: "Bali Mountain Retreat",
-    category: "Wellness & Sport",
-    date: "June 12, 2026 · 10:30 AM",
-    location: "Alam Shanti, Ubud",
-    description: "A week-long Bali retreat blending yoga, celebration, and restorative time near the mountains of Tabanan.",
-    signupUrl: "https://allevents.in/ubud/bali-mountain-retreat/200029724598824",
+    whatsappUrl: "https://wa.link/zg5xw8",
     source: "AllEvents",
     status: "approved"
   },
@@ -977,19 +1007,9 @@ export const baliEvents = [
     category: "Wellness & Sport",
     date: "June 18, 2026 · 5:00 PM",
     location: "InterContinental Bali Sanur Resort",
-    description: "A four-day retreat with workouts, self-development workshops, and a strong community energy in Sanur.",
+    description: "A four-day Bali retreat with workouts, workshops, guest speakers, and wellness-led community sessions.",
     signupUrl: "https://allevents.in/sanur/the-jungle-body-retreat-bali-june-18-21-2026/200028582279026",
-    source: "AllEvents",
-    status: "approved"
-  },
-  {
-    id: "event-kali-in-bali",
-    title: "Kali in Bali 2026",
-    category: "Wellness & Sport",
-    date: "June 22, 2026 · 8:00 AM",
-    location: "Candidasa, Karangasem",
-    description: "A multi-day Filipino martial arts camp in Bali that combines technical training with a destination experience.",
-    signupUrl: "https://allevents.in/klungkung/kali-in-bali-2026/200028622761353",
+    whatsappUrl: "https://wa.link/zg5xw8",
     source: "AllEvents",
     status: "approved"
   }
