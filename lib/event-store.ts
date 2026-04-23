@@ -76,3 +76,25 @@ export function reviewEvent(id: string, decision: "approved" | "declined") {
   write(REVIEWED_KEY, [nextReviewed, ...reviewed]);
   return nextReviewed;
 }
+
+export function updateReviewedEvent(id: string, updates: Partial<Omit<DashboardEvent, "id">>) {
+  const reviewed = getReviewedEvents();
+  let nextEvent: DashboardEvent | null = null;
+  const nextReviewed = reviewed.map((item) => {
+    if (item.id !== id) {
+      return item;
+    }
+    nextEvent = { ...item, ...updates };
+    return nextEvent;
+  });
+  write(REVIEWED_KEY, nextReviewed);
+  return nextEvent;
+}
+
+export function removeReviewedEvent(id: string) {
+  const reviewed = getReviewedEvents();
+  write(
+    REVIEWED_KEY,
+    reviewed.filter((item) => item.id !== id)
+  );
+}

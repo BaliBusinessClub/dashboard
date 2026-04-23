@@ -14,23 +14,30 @@ import {
   Download,
   Inbox,
   LogOut,
+  Mail,
+  MapPin,
   MessageSquareText,
+  PencilLine,
   RefreshCw,
   RotateCcw,
   Settings,
   SlidersHorizontal,
+  Trash2,
   X,
+  User,
   Users
 } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { adminAnalyticsCards, adminAnalyticsCharts, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
-import { DashboardEvent, getPendingEvents, getReviewedEvents, reviewEvent } from "@/lib/event-store";
+import { DashboardEvent, getPendingEvents, getReviewedEvents, removeReviewedEvent, reviewEvent, updateReviewedEvent } from "@/lib/event-store";
 import { getStoredMessages, InboxMessage, updateMessageStatus } from "@/lib/message-store";
-import { getPendingPartners, getReviewedPartners, reviewPartnerApplication, PartnerApplication } from "@/lib/partner-store";
+import { getPendingPartners, getReviewedPartners, removeReviewedPartner, reviewPartnerApplication, PartnerApplication, updateReviewedPartner } from "@/lib/partner-store";
 
 const adminTabs = [
   { id: "analytics", label: "Analytics", icon: Users },
   { id: "messages", label: "Messages", icon: MessageSquareText },
+  { id: "events", label: "Events", icon: CalendarDays },
+  { id: "partners", label: "Partners", icon: Users },
   { id: "reporting", label: "Reporting", icon: RefreshCw },
   { id: "database", label: "Database", icon: Database },
   { id: "settings", label: "Settings", icon: Settings }
@@ -99,6 +106,8 @@ export function AdminShell() {
   const [messageSection, setMessageSection] = useState<MessageSection>("Questions");
   const [submissionView, setSubmissionView] = useState<"pending" | "approved" | "declined">("pending");
   const [selectedMessage, setSelectedMessage] = useState<MessageItem | null>(null);
+  const [editingEvent, setEditingEvent] = useState<DashboardEvent | null>(null);
+  const [editingPartner, setEditingPartner] = useState<PartnerApplication | null>(null);
   const [allMessages, setAllMessages] = useState<MessageItem[]>([...adminMessages]);
   const [adminToast, setAdminToast] = useState<string | null>(null);
   const [analyticsSection, setAnalyticsSection] = useState<"overview" | "audience" | "behavior">("overview");
@@ -242,6 +251,30 @@ export function AdminShell() {
       setReviewedPartners((current) => [reviewed, ...current]);
     }
     setAdminToast(status === "approved" ? "Partner approved." : "Partner rejected.");
+  }
+
+  function saveEditedEvent() {
+    if (!editingEvent) {
+      return;
+    }
+    const updated = updateReviewedEvent(editingEvent.id, editingEvent) as DashboardEvent | null;
+    if (updated) {
+      setReviewedEvents((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      setAdminToast("Event updated.");
+    }
+    setEditingEvent(null);
+  }
+
+  function saveEditedPartner() {
+    if (!editingPartner) {
+      return;
+    }
+    const updated = updateReviewedPartner(editingPartner.id, editingPartner) as PartnerApplication | null;
+    if (updated) {
+      setReviewedPartners((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      setAdminToast("Partner updated.");
+    }
+    setEditingPartner(null);
   }
 
   function exportAnalytics() {
@@ -639,6 +672,149 @@ export function AdminShell() {
           </section>
         ) : null}
 
+        {activeTab === "events" ? (
+          <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Manage Events</h2>
+                  <p className="section-note compact">Edit or remove reviewed events and the member dashboard will update automatically.</p>
+                </div>
+              </div>
+
+              <div className="filter-bar">
+                {([
+                  { id: "approved", label: "Accepted" },
+                  { id: "declined", label: "Refused" }
+                ] as const).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={submissionView === item.id ? "filter-btn active" : "filter-btn"}
+                    onClick={() => setSubmissionView(item.id)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="admin-message-list">
+                {reviewedEvents.filter((event) => event.status === submissionView).length ? (
+                  reviewedEvents
+                    .filter((event) => event.status === submissionView)
+                    .map((event) => (
+                      <article key={event.id} className="admin-message-card submission-card">
+                        <div className="admin-message-top">
+                          <strong>{event.title}</strong>
+                          <span className={event.status === "approved" ? "status-pill success" : "status-pill danger"}>
+                            {event.status === "approved" ? "Accepted" : "Refused"}
+                          </span>
+                        </div>
+                        <div className="message-detail-stack compact">
+                          <span>Date: {event.date}</span>
+                          <span>Location: {event.location}</span>
+                          <span>Category: {event.category}</span>
+                        </div>
+                        <p>{event.description}</p>
+                        <div className="event-actions">
+                          <button type="button" className="ghost-button compact" onClick={() => setEditingEvent(event)}>
+                            <PencilLine size={14} />
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="action-reject"
+                            onClick={() => {
+                              removeReviewedEvent(event.id);
+                              setReviewedEvents((current) => current.filter((item) => item.id !== event.id));
+                              setAdminToast("Event removed.");
+                            }}
+                          >
+                            <Trash2 size={14} />
+                            Remove
+                          </button>
+                        </div>
+                      </article>
+                    ))
+                ) : (
+                  <p className="empty-copy">No events in this section right now.</p>
+                )}
+              </div>
+            </article>
+          </section>
+        ) : null}
+
+        {activeTab === "partners" ? (
+          <section className="panel-stack">
+            <article className="section-card clean">
+              <div className="section-heading">
+                <div>
+                  <h2>Manage Partners</h2>
+                  <p className="section-note compact">Edit or remove reviewed partners and the member dashboard will update automatically.</p>
+                </div>
+              </div>
+
+              <div className="filter-bar">
+                {([
+                  { id: "approved", label: "Accepted" },
+                  { id: "declined", label: "Refused" }
+                ] as const).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={submissionView === item.id ? "filter-btn active" : "filter-btn"}
+                    onClick={() => setSubmissionView(item.id)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="admin-message-list">
+                {reviewedPartners.filter((partner) => partner.status === submissionView).length ? (
+                  reviewedPartners
+                    .filter((partner) => partner.status === submissionView)
+                    .map((partner) => (
+                      <article key={partner.id} className="admin-message-card submission-card">
+                        <div className="admin-message-top">
+                          <strong>{partner.name}</strong>
+                          <span className={partner.status === "approved" ? "status-pill success" : "status-pill danger"}>
+                            {partner.status === "approved" ? "Accepted" : "Refused"}
+                          </span>
+                        </div>
+                        <div className="message-detail-stack compact">
+                          <span>Website: {partner.url}</span>
+                          <span>WhatsApp: {partner.whatsapp}</span>
+                        </div>
+                        <p>{partner.offer}</p>
+                        <div className="event-actions">
+                          <button type="button" className="ghost-button compact" onClick={() => setEditingPartner(partner)}>
+                            <PencilLine size={14} />
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="action-reject"
+                            onClick={() => {
+                              removeReviewedPartner(partner.id);
+                              setReviewedPartners((current) => current.filter((item) => item.id !== partner.id));
+                              setAdminToast("Partner removed.");
+                            }}
+                          >
+                            <Trash2 size={14} />
+                            Remove
+                          </button>
+                        </div>
+                      </article>
+                    ))
+                ) : (
+                  <p className="empty-copy">No partners in this section right now.</p>
+                )}
+              </div>
+            </article>
+          </section>
+        ) : null}
+
         {activeTab === "reporting" ? (
           <section className="panel-stack">
             <article className="section-card clean">
@@ -847,17 +1023,25 @@ export function AdminShell() {
             </div>
             <div className="form-grid clean">
               <div className="message-detail-stack">
-                <strong>Email</strong>
+                <strong><Mail size={14} /> Email</strong>
                 <span>{selectedMessage.email}</span>
               </div>
               {"whatsapp" in selectedMessage && selectedMessage.whatsapp ? (
                 <div className="message-detail-stack">
-                  <strong>WhatsApp</strong>
+                  <strong><MessageSquareText size={14} /> WhatsApp</strong>
                   <span>{selectedMessage.whatsapp}</span>
                 </div>
               ) : null}
               <div className="message-detail-stack">
-                <strong>Message</strong>
+                <strong><User size={14} /> Name</strong>
+                <span>{selectedMessage.name}</span>
+              </div>
+              <div className="message-detail-stack">
+                <strong><CalendarDays size={14} /> Date</strong>
+                <span>{selectedMessage.date}</span>
+              </div>
+              <div className="message-detail-stack">
+                <strong><MessageSquareText size={14} /> Message</strong>
                 <p>{selectedMessage.message}</p>
               </div>
               <div className="event-actions">
@@ -897,6 +1081,78 @@ export function AdminShell() {
                   Mark replied
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {editingEvent ? (
+        <div className="modal-overlay open">
+          <div className="modal-card">
+            <div className="modal-head">
+              <div>
+                <h2>Edit Event</h2>
+              </div>
+              <button type="button" className="icon-button" onClick={() => setEditingEvent(null)}>
+                <X size={14} />
+              </button>
+            </div>
+            <div className="form-grid clean">
+              <label>
+                Event title
+                <input value={editingEvent.title} onChange={(event) => setEditingEvent((current) => (current ? { ...current, title: event.target.value } : current))} />
+              </label>
+              <label>
+                Location
+                <input value={editingEvent.location} onChange={(event) => setEditingEvent((current) => (current ? { ...current, location: event.target.value } : current))} />
+              </label>
+              <label>
+                Date
+                <input value={editingEvent.date} onChange={(event) => setEditingEvent((current) => (current ? { ...current, date: event.target.value } : current))} />
+              </label>
+              <label>
+                Description
+                <textarea rows={4} value={editingEvent.description} onChange={(event) => setEditingEvent((current) => (current ? { ...current, description: event.target.value } : current))} />
+              </label>
+              <button type="button" className="table-link-button" onClick={saveEditedEvent}>
+                Save event
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {editingPartner ? (
+        <div className="modal-overlay open">
+          <div className="modal-card">
+            <div className="modal-head">
+              <div>
+                <h2>Edit Partner</h2>
+              </div>
+              <button type="button" className="icon-button" onClick={() => setEditingPartner(null)}>
+                <X size={14} />
+              </button>
+            </div>
+            <div className="form-grid clean">
+              <label>
+                Partner name
+                <input value={editingPartner.name} onChange={(event) => setEditingPartner((current) => (current ? { ...current, name: event.target.value } : current))} />
+              </label>
+              <label>
+                Website
+                <input value={editingPartner.url} onChange={(event) => setEditingPartner((current) => (current ? { ...current, url: event.target.value } : current))} />
+              </label>
+              <label>
+                WhatsApp
+                <input value={editingPartner.whatsapp} onChange={(event) => setEditingPartner((current) => (current ? { ...current, whatsapp: event.target.value } : current))} />
+              </label>
+              <label>
+                Offer
+                <textarea rows={4} value={editingPartner.offer} onChange={(event) => setEditingPartner((current) => (current ? { ...current, offer: event.target.value } : current))} />
+              </label>
+              <button type="button" className="table-link-button" onClick={saveEditedPartner}>
+                Save partner
+              </button>
             </div>
           </div>
         </div>

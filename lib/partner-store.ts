@@ -72,3 +72,25 @@ export function reviewPartnerApplication(id: string, decision: "approved" | "dec
   write(REVIEWED_KEY, [nextReviewed, ...reviewed]);
   return nextReviewed;
 }
+
+export function updateReviewedPartner(id: string, updates: Partial<Omit<PartnerApplication, "id">>) {
+  const reviewed = read<PartnerApplication>(REVIEWED_KEY);
+  let nextPartner: PartnerApplication | null = null;
+  const nextReviewed = reviewed.map((item) => {
+    if (item.id !== id) {
+      return item;
+    }
+    nextPartner = { ...item, ...updates };
+    return nextPartner;
+  });
+  write(REVIEWED_KEY, nextReviewed);
+  return nextPartner;
+}
+
+export function removeReviewedPartner(id: string) {
+  const reviewed = read<PartnerApplication>(REVIEWED_KEY);
+  write(
+    REVIEWED_KEY,
+    reviewed.filter((item) => item.id !== id)
+  );
+}

@@ -119,10 +119,10 @@ function getDailyQuote() {
 
 function sanitizeCopy(value: string) {
   return value
-    .replaceAll("â€™", "'")
-    .replaceAll("Â·", "·")
-    .replaceAll("â€œ", '"')
-    .replaceAll("â€", '"');
+    .replaceAll("Ã¢â‚¬â„¢", "'")
+    .replaceAll("Ã‚·", "·")
+    .replaceAll("Ã¢â‚¬Å“", '"')
+    .replaceAll("Ã¢â‚¬Â", '"');
 }
 
 const ebookCoverMap: Record<string, string> = {
@@ -162,6 +162,15 @@ function detectDialCode() {
   };
 
   return codes[region] ?? "+62";
+}
+
+function isValidUrl(value: string) {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
@@ -580,12 +589,12 @@ export function DashboardShell() {
       const homepageTitleOverrides: Record<string, string> = {
         PG2TFBF0uY8: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
         Ayb4THzSjE0: "Bali Real Estate Market in 2026: What the Data Really Shows",
-        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONET’s Real Estate Machine",
+        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONETâ€™s Real Estate Machine",
         "4jIi_bXuUSU": "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
         KScozjNYu9Q: "How Bali Business Founders Can Attract Investors from the Middle East",
         UNaQQiIjoCk: "Bali Property Made Simple: The 9-Step Process Explained",
         "0cMjvf1lb3g": "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
-        yxJwNl3n3t4: "The Kedungu Fund’s $10M Milestone: A Look Ahead",
+        yxJwNl3n3t4: "The Kedungu Fundâ€™s $10M Milestone: A Look Ahead",
         bfHu20vi2g8: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
         G1lT0E2nSGQ: "The Secret Growth Formula Content Creators Must Know!",
         "7bXHvn8Vksw": "BALI REAL ESTATE: HOW TO TRIPLE YOUR INVESTMENT RETURNS!",
@@ -752,6 +761,10 @@ export function DashboardShell() {
 
     if (missing.length) {
       markMissing(missing);
+      return;
+    }
+    if (!isValidUrl(eventForm.signupUrl)) {
+      markMissing(["event-signup"]);
       return;
     }
     setFormErrors({});
@@ -943,8 +956,9 @@ export function DashboardShell() {
           <section className="panel-stack">
             <div className="home-intro">
               <div>
-                <h1>{greeting}</h1>
-                <strong className="home-name">{user.name}</strong>
+                <h1>
+                  {greeting} <span className="home-name inline">{user.name}</span>
+                </h1>
               </div>
               <p>Here is everything you need to know about what is happening in Bali.</p>
             </div>
@@ -981,7 +995,7 @@ export function DashboardShell() {
 
         {activeTab === "market" ? (
           <section className="panel-stack">
-            <article className="section-card clean">
+            <article className="section-card clean page-plain">
               <div className="section-heading">
                 <div>
                   <h2>What is happening in Bali real estate right now?</h2>
@@ -1047,7 +1061,7 @@ export function DashboardShell() {
               ) : null}
             </article>
 
-            <article className="section-card clean">
+            <article className="section-card clean page-plain">
               <div className="section-heading">
                 <div>
                   <h2>Interesting figures from the REID reports</h2>
@@ -1341,7 +1355,7 @@ export function DashboardShell() {
         {activeTab === "resources" ? (
           <section className="panel-stack">
             {Object.entries(groupedResources).map(([section, items]) => (
-              <article key={section} className="section-card clean">
+              <article key={section} className="section-card clean page-plain">
                 <div className="section-heading">
                   <div>
                     <h2>{section === "Ebooks" ? "Our Ebooks" : section}</h2>
@@ -1388,7 +1402,7 @@ export function DashboardShell() {
 
         {activeTab === "partners" ? (
           <section className="panel-stack">
-            <article className="section-card clean">
+            <article className="section-card clean page-plain">
               <div className="section-heading">
                 <div>
                   <h2>Our Partners</h2>
@@ -1426,7 +1440,7 @@ export function DashboardShell() {
 
         {activeTab === "favorites" ? (
           <section className="panel-stack">
-            <article className="section-card clean">
+            <article className="section-card clean page-plain">
               <div className="section-heading">
                 <div>
                   <h2>Favorites</h2>
@@ -1474,7 +1488,7 @@ export function DashboardShell() {
 
         {activeTab === "connect" ? (
           <section className="panel-stack">
-            <article className="section-card clean">
+            <article className="section-card clean page-plain">
               <div className="section-heading">
                 <div>
                   <h2>Follow Bali Business Club</h2>
@@ -1752,7 +1766,7 @@ export function DashboardShell() {
       {toastMessage ? (
         <div className="modal-overlay open toast-overlay">
           <div className="toast-card">
-            <div className="toast-check">✓</div>
+            <div className="toast-check">OK</div>
             <strong>{toastMessage.title}</strong>
             <p>{toastMessage.copy}</p>
           </div>
