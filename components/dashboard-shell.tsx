@@ -10,6 +10,7 @@ import {
   CalendarRange,
   ChartColumn,
   ChevronDown,
+  Globe,
   Heart,
   House,
   LogOut,
@@ -119,10 +120,10 @@ function getDailyQuote() {
 
 function sanitizeCopy(value: string) {
   return value
-    .replaceAll("â€™", "'")
-    .replaceAll("Â·", "·")
-    .replaceAll("â€œ", '"')
-    .replaceAll("â€", '"');
+    .replaceAll("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢", "'")
+    .replaceAll("ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·", "Ãƒâ€šÃ‚Â·")
+    .replaceAll("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“", '"')
+    .replaceAll("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â", '"');
 }
 
 const ebookCoverMap: Record<string, string> = {
@@ -133,14 +134,19 @@ const ebookCoverMap: Record<string, string> = {
 };
 
 const partnerBusinessOptions = [
-  "Recording Studio",
   "Visa Agency",
   "Accounting Agency",
+  "International School",
   "Real Estate",
   "Hospitality",
   "Marketing Agency",
   "Investment Firm",
   "Wellness Business",
+  "Legal Services",
+  "Education",
+  "Consulting",
+  "Health & Beauty",
+  "Food & Beverage",
   "Technology",
   "Other"
 ] as const;
@@ -188,6 +194,28 @@ function normalizeWebsite(value: string) {
   }
 
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+function getPhoneCountry(phone: string) {
+  const normalized = phone.replace(/\s+/g, "");
+  if (normalized.startsWith("+62")) return { code: "ID", flag: "https://flagcdn.com/w40/id.png" };
+  if (normalized.startsWith("+61")) return { code: "AU", flag: "https://flagcdn.com/w40/au.png" };
+  if (normalized.startsWith("+65")) return { code: "SG", flag: "https://flagcdn.com/w40/sg.png" };
+  if (normalized.startsWith("+44")) return { code: "GB", flag: "https://flagcdn.com/w40/gb.png" };
+  if (normalized.startsWith("+1")) return { code: "US", flag: "https://flagcdn.com/w40/us.png" };
+  if (normalized.startsWith("+33")) return { code: "FR", flag: "https://flagcdn.com/w40/fr.png" };
+  if (normalized.startsWith("+971")) return { code: "AE", flag: "https://flagcdn.com/w40/ae.png" };
+  return { code: "ID", flag: "https://flagcdn.com/w40/id.png" };
+}
+
+function PhoneFlag({ phone }: { phone: string }) {
+  const country = getPhoneCountry(phone);
+  return (
+    <span className="phone-flag">
+      <img src={country.flag} alt={country.code} />
+      <span>{country.code}</span>
+    </span>
+  );
 }
 
 function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
@@ -470,6 +498,7 @@ export function DashboardShell() {
   const [eventFormOpen, setEventFormOpen] = useState(false);
   const [partnerFormOpen, setPartnerFormOpen] = useState(false);
   const [suggestionOpen, setSuggestionOpen] = useState(false);
+  const [eventView, setEventView] = useState<"list" | "month">("list");
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
@@ -608,12 +637,12 @@ export function DashboardShell() {
       const homepageTitleOverrides: Record<string, string> = {
         PG2TFBF0uY8: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
         Ayb4THzSjE0: "Bali Real Estate Market in 2026: What the Data Really Shows",
-        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONET’s Real Estate Machine",
+        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONETÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s Real Estate Machine",
         "4jIi_bXuUSU": "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
         KScozjNYu9Q: "How Bali Business Founders Can Attract Investors from the Middle East",
         UNaQQiIjoCk: "Bali Property Made Simple: The 9-Step Process Explained",
         "0cMjvf1lb3g": "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
-        yxJwNl3n3t4: "The Kedungu Fund’s $10M Milestone: A Look Ahead",
+        yxJwNl3n3t4: "The Kedungu FundÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s $10M Milestone: A Look Ahead",
         bfHu20vi2g8: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
         G1lT0E2nSGQ: "The Secret Growth Formula Content Creators Must Know!",
         "7bXHvn8Vksw": "BALI REAL ESTATE: HOW TO TRIPLE YOUR INVESTMENT RETURNS!",
@@ -684,6 +713,30 @@ export function DashboardShell() {
     [approvedEvents]
   );
 
+  const monthCalendar = useMemo(() => {
+    const base = visibleEvents[0]?.date ?? `2026-04-24 ÃƒÂ¯Ã‚Â¿Ã‚Â½ 9:00 AM`;
+    const [baseDate] = base.split(" ÃƒÂ¯Ã‚Â¿Ã‚Â½ ");
+    const anchor = new Date(baseDate);
+    const year = anchor.getFullYear();
+    const month = anchor.getMonth();
+    const monthStart = new Date(year, month, 1);
+    const monthEnd = new Date(year, month + 1, 0);
+    const startOffset = monthStart.getDay();
+    const cells = [];
+    for (let index = 0; index < startOffset; index += 1) cells.push({ date: null, items: [] });
+    for (let day = 1; day <= monthEnd.getDate(); day += 1) {
+      const currentDate = new Date(year, month, day);
+      const iso = currentDate.toISOString().slice(0, 10);
+      const items = visibleEvents.filter((event) => event.date.startsWith(iso));
+      cells.push({ date: currentDate, items });
+    }
+    while (cells.length % 7 !== 0) cells.push({ date: null, items: [] });
+    return {
+      label: new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(anchor),
+      cells
+    };
+  }, [visibleEvents]);
+
   function toggleFavorite(item: FavoriteItem) {
     setFavorites((current) =>
       current.some((favorite) => favorite.id === item.id)
@@ -749,7 +802,7 @@ export function DashboardShell() {
   function getFavoriteDetail(item: FavoriteItem) {
     if (item.type === "News") {
       const article = allNewsArticles.find((entry) => entry.id === item.sourceId);
-      return article ? `${article.topic} · ${article.date}` : "";
+      return article ? `${article.topic} Ãƒâ€šÃ‚Â· ${article.date}` : "";
     }
 
     if (item.type === "Podcast") {
@@ -763,7 +816,7 @@ export function DashboardShell() {
     }
 
     const event = approvedEvents.find((entry) => entry.id === item.sourceId);
-    return event ? `${event.location} · ${event.date}` : "";
+    return event ? `${event.location} Ãƒâ€šÃ‚Â· ${event.date}` : "";
   }
 
   function normalizePhoneNumber(value: string) {
@@ -824,7 +877,7 @@ export function DashboardShell() {
     submitEvent({
       title: eventForm.title,
       category: finalCategory,
-      date: `${eventForm.date} · ${eventForm.time}`,
+      date: `${eventForm.date} Ãƒâ€šÃ‚Â· ${eventForm.time}`,
       location: eventForm.location,
       description: eventForm.description,
       signupUrl: normalizedSignup,
@@ -1146,7 +1199,7 @@ export function DashboardShell() {
               <div className="section-heading">
                 <div>
                   <h2>Download the Market Reports of Bali</h2>
-                  <p className="section-note compact single-line">
+                  <p className="section-note compact single-line market-report-note">
                     Created by REID, a Bali real estate intelligence platform focused on market reports, pricing trends, and property data.
                   </p>
                 </div>
@@ -1306,47 +1359,84 @@ export function DashboardShell() {
                 ))}
               </div>
 
-              <div className="event-grid">
-                {visibleEvents.map((event) => {
-                  const favorite: FavoriteItem = {
-                    id: `fav-${event.id}`,
-                    type: "Event",
-                    title: event.title,
-                    note: `${event.category} · ${event.date}`,
-                    sourceId: event.id
-                  };
-
-                  return (
-                    <article key={event.id} className="event-card">
-                      <div className="event-card-top">
-                        <span className="news-cat">{event.category}</span>
-                        <small>{event.source}</small>
-                      </div>
-                      <strong>{event.title}</strong>
-                      <p>{event.description}</p>
-                      <div className="event-meta clean">
-                        <span>
-                          <CalendarDays size={14} />
-                          {event.date}
-                        </span>
-                        <span>
-                          <MapPin size={14} />
-                          {event.location}
-                        </span>
-                      </div>
-                      <div className="event-actions">
-                        <a href={event.signupUrl} target="_blank" rel="noreferrer" className="table-link-button">
-                          Sign up
-                        </a>
-                        <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
-                          <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
-                          {isFavorite(favorite.id) ? "Saved" : "Save"}
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
+              <div className="view-toggle-bar">
+                <button type="button" className={eventView === "list" ? "filter-btn active" : "filter-btn"} onClick={() => setEventView("list")}>
+                  Event list
+                </button>
+                <button type="button" className={eventView === "month" ? "filter-btn active" : "filter-btn"} onClick={() => setEventView("month")}>
+                  Month view
+                </button>
               </div>
+
+              {eventView === "list" ? (
+                <div className="event-grid">
+                  {visibleEvents.map((event) => {
+                    const favorite: FavoriteItem = {
+                      id: `fav-${event.id}`,
+                      type: "Event",
+                      title: event.title,
+                      note: `${event.category} ÃƒÂ¯Ã‚Â¿Ã‚Â½ ${event.date}`,
+                      sourceId: event.id
+                    };
+
+                    return (
+                      <article key={event.id} className="event-card">
+                        <div className="event-card-top">
+                          <span className="news-cat">{event.category}</span>
+                          <small>{event.source}</small>
+                        </div>
+                        <strong>{event.title}</strong>
+                        <p>{event.description}</p>
+                        <div className="event-meta clean">
+                          <span>
+                            <CalendarDays size={14} />
+                            {event.date}
+                          </span>
+                          <span>
+                            <MapPin size={14} />
+                            {event.location}
+                          </span>
+                        </div>
+                        <div className="event-actions">
+                          <a href={event.signupUrl} target="_blank" rel="noreferrer" className="table-link-button">
+                            Sign up
+                          </a>
+                          <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
+                            <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                            {isFavorite(favorite.id) ? "Saved" : "Save"}
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="calendar-panel">
+                  <div className="calendar-head">
+                    <strong>{monthCalendar.label}</strong>
+                    <small>{visibleEvents.length} upcoming events</small>
+                  </div>
+                  <div className="calendar-grid">
+                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                      <div key={day} className="calendar-weekday">
+                        {day}
+                      </div>
+                    ))}
+                    {monthCalendar.cells.map((cell, index) => (
+                      <div key={`${cell.date?.toISOString() ?? "empty"}-${index}`} className={cell.items.length ? "calendar-cell active" : "calendar-cell"}>
+                        {cell.date ? <span className="calendar-date">{cell.date.getDate()}</span> : null}
+                        <div className="calendar-cell-events">
+                          {cell.items.slice(0, 2).map((item) => (
+                            <a key={item.id} href={item.signupUrl} target="_blank" rel="noreferrer" className="calendar-chip">
+                              {item.title}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </article>
           </section>
         ) : null}
@@ -1478,7 +1568,7 @@ export function DashboardShell() {
               <div className="partner-list clean">
                 {[...partnerBenefits, ...dynamicPartners.map((partner) => ({
                   name: partner.name,
-                  category: partner.category || "Partner",
+                  category: partner.category || (partner.name === "Grow in Kedungu" ? "International School" : "Partner"),
                   offer: partner.offer,
                   button: "CONTACT",
                   url: partner.url,
@@ -1522,16 +1612,11 @@ export function DashboardShell() {
                         <div className={items.length === 1 ? "favorites-grid clean single" : "favorites-grid clean"}>
                           {items.map((item) => (
                             <article key={item.id} className="favorite-card clean">
-                              {getFavoriteCover(item) ? (
-                                <div className="favorite-cover-wrap">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                              {item.type === "Podcast" || item.type === "Ressource" ? (
+                                <div className={item.type === "Ressource" ? "favorite-cover-wrap resource" : "favorite-cover-wrap podcast"}>
                                   <img src={getFavoriteCover(item) ?? ""} alt={item.title} className="favorite-cover-image" />
                                 </div>
-                              ) : (
-                                <div className="favorite-cover-wrap placeholder">
-                                  {item.type === "News" ? <Newspaper size={18} /> : <CalendarDays size={18} />}
-                                </div>
-                              )}
+                              ) : null}
                               <strong>{item.title}</strong>
                               <p>{getFavoriteDetail(item)}</p>
                               <div className="favorite-actions">
@@ -1786,18 +1871,21 @@ export function DashboardShell() {
               ) : null}
               <label>
                 WhatsApp number
-                <input
-                  className={formErrors["partner-whatsapp"] ? "field-error" : ""}
-                  type="tel"
-                  inputMode="numeric"
-                  required
-                  placeholder={partnerDialCode}
-                  value={partnerForm.whatsapp}
-                  onFocus={fillDialCodeIfNeeded}
-                  onChange={(event) =>
-                    setPartnerForm((current) => ({ ...current, whatsapp: normalizePhoneNumber(event.target.value) }))
-                  }
-                />
+                <div className="phone-input-wrap">
+                  <PhoneFlag phone={partnerForm.whatsapp || partnerDialCode} />
+                  <input
+                    className={formErrors["partner-whatsapp"] ? "field-error" : ""}
+                    type="tel"
+                    inputMode="numeric"
+                    required
+                    placeholder={partnerDialCode}
+                    value={partnerForm.whatsapp}
+                    onFocus={fillDialCodeIfNeeded}
+                    onChange={(event) =>
+                      setPartnerForm((current) => ({ ...current, whatsapp: normalizePhoneNumber(event.target.value) }))
+                    }
+                  />
+                </div>
               </label>
               <label>
                 Website
@@ -1805,10 +1893,16 @@ export function DashboardShell() {
               </label>
               <label>
                 Company logo
+                <div className="file-upload-row">
+                  <label className="blue-upload-button" htmlFor="partner-logo-upload">Choose file</label>
+                  <span>{partnerForm.logo ? "Logo selected" : "PNG or JPG"}</span>
+                </div>
                 <input
+                  id="partner-logo-upload"
                   key={partnerLogoInputKey}
                   type="file"
                   accept="image/*"
+                  className="hidden-file-input"
                   onChange={(event) => {
                     const file = event.target.files?.[0];
                     if (!file) {
@@ -1869,7 +1963,7 @@ export function DashboardShell() {
       {toastMessage ? (
         <div className="modal-overlay open toast-overlay">
           <div className="toast-card">
-            <div className="toast-check">✓</div>
+            <div className="toast-check">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</div>
             <strong>{toastMessage.title}</strong>
             <p>{toastMessage.copy}</p>
           </div>

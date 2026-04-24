@@ -46,7 +46,7 @@ const adminTabs = [
 const reportingTargets = ["market-insights", "news", "events", "podcasts", "resources", "partners"] as const;
 type AdminTab = (typeof adminTabs)[number]["id"];
 type MessageItem = (typeof adminMessages)[number] | InboxMessage;
-type MessageSection = "Events" | "Partnerships" | "Questions" | "Suggestions";
+type MessageSection = "Questions" | "Suggestions";
 
 function MiniBarChart({
   title,
@@ -167,13 +167,6 @@ export function AdminShell() {
     const timer = window.setTimeout(() => setAdminToast(null), 2200);
     return () => window.clearTimeout(timer);
   }, [adminToast]);
-
-  useEffect(() => {
-    if (messageSection === "Events" || messageSection === "Partnerships") {
-      setSubmissionView("pending");
-    }
-  }, [messageSection]);
-
   const visibleMessages = useMemo(() => {
     return allMessages.filter((message) => {
       const status = "status" in message ? message.status : "inbox";
@@ -432,7 +425,7 @@ export function AdminShell() {
               </div>
 
               <div className="filter-bar">
-                {(["Events", "Partnerships", "Questions", "Suggestions"] as const).map((section) => (
+                {(["Questions", "Suggestions"] as const).map((section) => (
                   <button
                     key={section}
                     type="button"
@@ -461,127 +454,7 @@ export function AdminShell() {
                 </div>
               ) : null}
 
-              {messageSection === "Events" ? (
-                <div className="admin-message-list">
-                  <div className="filter-bar">
-                    {([
-                      { id: "pending", label: "Pending" },
-                      { id: "approved", label: "Accepted" },
-                      { id: "declined", label: "Refused" }
-                    ] as const).map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className={submissionView === item.id ? "filter-btn active" : "filter-btn"}
-                        onClick={() => setSubmissionView(item.id)}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                  {(submissionView === "pending"
-                    ? eventSubmissions
-                    : reviewedEvents.filter((event) => event.status === submissionView)
-                  ).length ? (
-                    (submissionView === "pending"
-                      ? eventSubmissions
-                      : reviewedEvents.filter((event) => event.status === submissionView)
-                    ).map((event) => (
-                      <article key={event.id} className="admin-message-card submission-card">
-                        <div className="admin-message-top">
-                          <strong>{event.title}</strong>
-                          <small>{event.date}</small>
-                        </div>
-                        <p>{event.description}</p>
-                        <div className="admin-message-meta">
-                          <span>{event.category}</span>
-                          <span>{event.location}</span>
-                        </div>
-                        {submissionView === "pending" ? (
-                          <div className="event-actions">
-                            <button type="button" className="action-approve" onClick={() => handleEventReview(event.id, "approved")}>
-                              Approve
-                            </button>
-                            <button type="button" className="action-reject" onClick={() => handleEventReview(event.id, "declined")}>
-                              Reject
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="event-actions">
-                            <span className={event.status === "approved" ? "status-pill success" : "status-pill danger"}>
-                              {event.status === "approved" ? "Accepted" : "Refused"}
-                            </span>
-                          </div>
-                        )}
-                      </article>
-                    ))
-                  ) : (
-                    <p className="empty-copy">No event submissions in this section right now.</p>
-                  )}
-                </div>
-              ) : null}
-
-              {messageSection === "Partnerships" ? (
-                <div className="admin-message-list">
-                  <div className="filter-bar">
-                    {([
-                      { id: "pending", label: "Pending" },
-                      { id: "approved", label: "Accepted" },
-                      { id: "declined", label: "Refused" }
-                    ] as const).map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className={submissionView === item.id ? "filter-btn active" : "filter-btn"}
-                        onClick={() => setSubmissionView(item.id)}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                  {(submissionView === "pending"
-                    ? partnerSubmissions
-                    : reviewedPartners.filter((partner) => partner.status === submissionView)
-                  ).length ? (
-                    (submissionView === "pending"
-                      ? partnerSubmissions
-                      : reviewedPartners.filter((partner) => partner.status === submissionView)
-                    ).map((partner) => (
-                      <article key={partner.id} className="admin-message-card submission-card">
-                        <div className="admin-message-top">
-                          <strong>{partner.name}</strong>
-                          <small>{partner.source}</small>
-                        </div>
-                        <p>{partner.offer}</p>
-                        <div className="admin-message-meta">
-                          <span>{partner.url}</span>
-                          <span>{partner.whatsapp}</span>
-                        </div>
-                        {submissionView === "pending" ? (
-                          <div className="event-actions">
-                            <button type="button" className="action-approve" onClick={() => handlePartnerReview(partner.id, "approved")}>
-                              Approve
-                            </button>
-                            <button type="button" className="action-reject" onClick={() => handlePartnerReview(partner.id, "declined")}>
-                              Reject
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="event-actions">
-                            <span className={partner.status === "approved" ? "status-pill success" : "status-pill danger"}>
-                              {partner.status === "approved" ? "Accepted" : "Refused"}
-                            </span>
-                          </div>
-                        )}
-                      </article>
-                    ))
-                  ) : (
-                    <p className="empty-copy">No partner applications in this section right now.</p>
-                  )}
-                </div>
-              ) : null}
-
-              {messageSection === "Questions" || messageSection === "Suggestions" ? (
+                            {messageSection === "Questions" || messageSection === "Suggestions" ? (
                 <div className="admin-message-list">
                   {visibleMessages.map((message) => (
                     <article
@@ -594,10 +467,10 @@ export function AdminShell() {
                         <small>{message.date}</small>
                       </div>
                       <p>{message.message}</p>
-                      <div className="admin-message-meta">
-                        <span>{message.name}</span>
-                        <span>{message.email}</span>
-                        {"whatsapp" in message && message.whatsapp ? <span>{message.whatsapp}</span> : null}
+                      <div className="message-detail-stack compact card-stack">
+                        <span><User size={14} /> Name: {message.name}</span>
+                        <span><Mail size={14} /> Email: {message.email}</span>
+                        {"whatsapp" in message && message.whatsapp ? <span><MessageSquareText size={14} /> WhatsApp: {message.whatsapp}</span> : null}
                       </div>
                       <div className="event-actions">
                         <button
@@ -1170,3 +1043,4 @@ export function AdminShell() {
     </main>
   );
 }
+
