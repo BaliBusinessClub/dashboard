@@ -2171,3 +2171,99 @@ tbody td {
   align-items: center;
   gap: 8px;
 }
+
+.button-outline-unified,
+.table-link-button,
+.action-link,
+.primary-button.compact,
+.google-button,
+.link-button,
+.ghost-button.compact,
+.outline-yellow-button,
+.watch-pill,
+.mini-action {
+  background: transparent;
+  color: var(--bbc-yellow);
+  border: 1px solid var(--bbc-yellow);
+  box-shadow: none;
+}
+
+.button-outline-unified:hover,
+.table-link-button:hover,
+.action-link:hover,
+.primary-button.compact:hover,
+.google-button:hover,
+.link-button:hover,
+.ghost-button.compact:hover,
+.outline-yellow-button:hover,
+.watch-pill:hover,
+.mini-action:hover {
+  background: var(--bbc-yellow);
+  color: #000;
+  border-color: var(--bbc-yellow);
+  box-shadow: 0 10px 22px rgba(255, 216, 0, 0.16);
+}
+
+.button-outline-unified:hover svg,
+.table-link-button:hover svg,
+.action-link:hover svg,
+.primary-button.compact:hover svg,
+.google-button:hover svg,
+.link-button:hover svg,
+.ghost-button.compact:hover svg,
+.outline-yellow-button:hover svg,
+.watch-pill:hover svg,
+.mini-action:hover svg {
+  color: #000;
+}
+
+.news-actions .table-link-button,
+.event-actions .table-link-button,
+.resource-actions .table-link-button,
+.favorite-actions .table-link-button,
+.watch-pill,
+.mini-action {
+  min-height: 42px;
+  min-width: 96px;
+  padding: 0 14px;
+  font-size: 0.8rem;
+  border-radius: 12px;
+}
+
+.mini-action:not(.danger) svg,
+.save-heart {
+  color: var(--bbc-yellow);
+}
+
+.favorite-card.clean {
+  gap: 10px;
+  min-height: 0;
+  padding: 18px;
+}
+
+.favorite-card.clean strong {
+  line-height: 1.3;
+}
+
+.favorite-card.clean p {
+  margin-top: -2px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.favorite-actions {
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.favorites-grid.clean.favorites-fixed {
+  gap: 16px;
+}
+
+.favorite-cover-wrap.podcast {
+  max-width: 196px;
+}
+
+.favorite-cover-wrap.resource {
+  max-width: 152px;
+}

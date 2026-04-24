@@ -1751,7 +1751,7 @@ export function DashboardShell() {
                                 </div>
                               ) : null}
                               <strong>{item.title}</strong>
-                              <p>{getFavoriteDetail(item)}</p>
+                              {item.type === "News" || item.type === "Event" ? <p>{getFavoriteDetail(item)}</p> : null}
                               <div className="favorite-actions">
                                 <button type="button" className="table-link-button" onClick={() => openFavorite(item)}>
                                   Open
