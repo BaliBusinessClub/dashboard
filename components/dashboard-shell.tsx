@@ -120,15 +120,21 @@ function getDailyQuote() {
 
 function sanitizeCopy(value: string) {
   return value
-    .replaceAll("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢", "'")
-    .replaceAll("ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·", "Ãƒâ€šÃ‚Â·")
-    .replaceAll("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“", '"')
-    .replaceAll("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â", '"');
+    .replaceAll("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢", "'")
+    .replaceAll("ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·", "ï¿½")
+    .replaceAll("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ", '"')
+    .replaceAll("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â", '"')
+    .replaceAll("Â·", "ï¿½")
+    .replaceAll("â€™", "'")
+    .replaceAll("â€œ", '"')
+    .replaceAll("â€", '"')
+    .replaceAll("â€“", "-")
+    .replaceAll("â€”", "-");
 }
 
 function parseEventDateParts(value: string) {
-  const cleaned = sanitizeCopy(value).replaceAll("·", "�");
-  const [rawDate = "", rawTime = ""] = cleaned.split("�").map((part) => part.trim());
+  const cleaned = sanitizeCopy(value);
+  const [rawDate = "", rawTime = ""] = cleaned.split("ï¿½").map((part) => part.trim());
   const parsed = new Date(rawDate);
   const safeDate = Number.isNaN(parsed.getTime()) ? new Date("2026-04-24") : parsed;
   return {
@@ -210,13 +216,13 @@ function normalizeWebsite(value: string) {
 
 function getPhoneCountry(phone: string) {
   const normalized = phone.replace(/\s+/g, "");
-  if (normalized.startsWith("+62")) return { code: "ID", flag: "https://flagcdn.com/w40/id.png" };
-  if (normalized.startsWith("+61")) return { code: "AU", flag: "https://flagcdn.com/w40/au.png" };
-  if (normalized.startsWith("+65")) return { code: "SG", flag: "https://flagcdn.com/w40/sg.png" };
-  if (normalized.startsWith("+44")) return { code: "GB", flag: "https://flagcdn.com/w40/gb.png" };
-  if (normalized.startsWith("+1")) return { code: "US", flag: "https://flagcdn.com/w40/us.png" };
-  if (normalized.startsWith("+33")) return { code: "FR", flag: "https://flagcdn.com/w40/fr.png" };
-  if (normalized.startsWith("+971")) return { code: "AE", flag: "https://flagcdn.com/w40/ae.png" };
+  if (normalized.startsWith("+62") || normalized.startsWith("62")) return { code: "ID", flag: "https://flagcdn.com/w40/id.png" };
+  if (normalized.startsWith("+61") || normalized.startsWith("61")) return { code: "AU", flag: "https://flagcdn.com/w40/au.png" };
+  if (normalized.startsWith("+65") || normalized.startsWith("65")) return { code: "SG", flag: "https://flagcdn.com/w40/sg.png" };
+  if (normalized.startsWith("+44") || normalized.startsWith("44")) return { code: "GB", flag: "https://flagcdn.com/w40/gb.png" };
+  if (normalized.startsWith("+1") || normalized.startsWith("1")) return { code: "US", flag: "https://flagcdn.com/w40/us.png" };
+  if (normalized.startsWith("+33") || normalized.startsWith("33")) return { code: "FR", flag: "https://flagcdn.com/w40/fr.png" };
+  if (normalized.startsWith("+971") || normalized.startsWith("971")) return { code: "AE", flag: "https://flagcdn.com/w40/ae.png" };
   return { code: "ID", flag: "https://flagcdn.com/w40/id.png" };
 }
 
@@ -511,6 +517,7 @@ export function DashboardShell() {
   const [partnerFormOpen, setPartnerFormOpen] = useState(false);
   const [suggestionOpen, setSuggestionOpen] = useState(false);
   const [eventView, setEventView] = useState<"list" | "month">("list");
+  const [currentEventMonth, setCurrentEventMonth] = useState("2026-04");
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
@@ -617,6 +624,15 @@ export function DashboardShell() {
     setDynamicPartners(getApprovedPartners());
   }, []);
 
+  useEffect(() => {
+    const scopedEvents = approvedEvents.filter((event) => eventTopic === "All" || event.category === eventTopic);
+    if (!scopedEvents.length) {
+      return;
+    }
+    const firstMonth = parseEventDateParts(scopedEvents[0].date).key.slice(0, 7);
+    setCurrentEventMonth((current) => current || firstMonth);
+  }, [approvedEvents, eventTopic]);
+
   const filteredCharts = useMemo(
     () => marketReports.find((item) => item.report === marketFilter) ?? marketReports[0],
     [marketFilter]
@@ -649,12 +665,12 @@ export function DashboardShell() {
       const homepageTitleOverrides: Record<string, string> = {
         PG2TFBF0uY8: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
         Ayb4THzSjE0: "Bali Real Estate Market in 2026: What the Data Really Shows",
-        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONETÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s Real Estate Machine",
+        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONETÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s Real Estate Machine",
         "4jIi_bXuUSU": "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
         KScozjNYu9Q: "How Bali Business Founders Can Attract Investors from the Middle East",
         UNaQQiIjoCk: "Bali Property Made Simple: The 9-Step Process Explained",
         "0cMjvf1lb3g": "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
-        yxJwNl3n3t4: "The Kedungu FundÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s $10M Milestone: A Look Ahead",
+        yxJwNl3n3t4: "The Kedungu FundÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s $10M Milestone: A Look Ahead",
         bfHu20vi2g8: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
         G1lT0E2nSGQ: "The Secret Growth Formula Content Creators Must Know!",
         "7bXHvn8Vksw": "BALI REAL ESTATE: HOW TO TRIPLE YOUR INVESTMENT RETURNS!",
@@ -726,7 +742,7 @@ export function DashboardShell() {
   );
 
   const monthCalendar = useMemo(() => {
-    const anchor = parseEventDateParts(visibleEvents[0]?.date ?? "2026-04-24 � 9:00 AM").parsed;
+    const anchor = new Date(`${currentEventMonth}-01T00:00:00`);
     const year = anchor.getFullYear();
     const month = anchor.getMonth();
     const monthStart = new Date(year, month, 1);
@@ -745,7 +761,7 @@ export function DashboardShell() {
       label: new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(anchor),
       cells
     };
-  }, [visibleEvents]);
+  }, [currentEventMonth, visibleEvents]);
 
   function toggleFavorite(item: FavoriteItem) {
     setFavorites((current) =>
@@ -812,7 +828,7 @@ export function DashboardShell() {
   function getFavoriteDetail(item: FavoriteItem) {
     if (item.type === "News") {
       const article = allNewsArticles.find((entry) => entry.id === item.sourceId);
-      return article ? `${article.topic} Ãƒâ€šÃ‚Â· ${article.date}` : "";
+      return article ? `${article.topic} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${article.date}` : "";
     }
 
     if (item.type === "Podcast") {
@@ -826,7 +842,7 @@ export function DashboardShell() {
     }
 
     const event = approvedEvents.find((entry) => entry.id === item.sourceId);
-    return event ? `${event.location} Ãƒâ€šÃ‚Â· ${event.date}` : "";
+    return event ? `${event.location} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${event.date}` : "";
   }
 
   function normalizePhoneNumber(value: string) {
@@ -887,7 +903,7 @@ export function DashboardShell() {
     submitEvent({
       title: eventForm.title,
       category: finalCategory,
-      date: `${eventForm.date} Ãƒâ€šÃ‚Â· ${eventForm.time}`,
+      date: `${eventForm.date} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${eventForm.time}`,
       location: eventForm.location,
       description: eventForm.description,
       signupUrl: normalizedSignup,
@@ -1083,7 +1099,7 @@ export function DashboardShell() {
             <div className="home-intro">
               <div>
                 <h1>
-                  {greeting} <span className="home-name inline">{user.name}</span>
+                  {`${greeting},`} <span className="home-name inline">{user.name}</span>
                 </h1>
               </div>
               <p>Here is everything you need to know about what is happening in Bali.</p>
@@ -1145,7 +1161,7 @@ export function DashboardShell() {
               </div>
 
               {selectedMarketSeries ? (
-                <article className="chart-card clean chart-card-featured">
+                <article className="chart-card clean chart-card-featured page-plain">
                   <div className="chart-card-head">
                     <div>
                       <div className="metric-label">{selectedMarketSeries.title}</div>
@@ -1205,7 +1221,7 @@ export function DashboardShell() {
               </div>
             </article>
 
-            <article className="section-card clean">
+            <article className="section-card clean page-plain">
               <div className="section-heading">
                 <div>
                   <h2>Download the Market Reports of Bali</h2>
@@ -1385,7 +1401,7 @@ export function DashboardShell() {
                       id: `fav-${event.id}`,
                       type: "Event",
                       title: event.title,
-                      note: `${event.category} ÃƒÂ¯Ã‚Â¿Ã‚Â½ ${event.date}`,
+                      note: `${event.category} ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ ${event.date}`,
                       sourceId: event.id
                     };
 
@@ -1423,8 +1439,32 @@ export function DashboardShell() {
               ) : (
                 <div className="calendar-panel">
                   <div className="calendar-head">
-                    <strong>{monthCalendar.label}</strong>
-                    <small>{visibleEvents.length} upcoming events</small>
+                    <button
+                      type="button"
+                      className="ghost-button compact"
+                      onClick={() => {
+                        const anchor = new Date(`${currentEventMonth}-01T00:00:00`);
+                        anchor.setMonth(anchor.getMonth() - 1);
+                        setCurrentEventMonth(anchor.toISOString().slice(0, 7));
+                      }}
+                    >
+                      Previous
+                    </button>
+                    <div className="calendar-head-copy">
+                      <strong>{monthCalendar.label}</strong>
+                      <small>{visibleEvents.length} upcoming events</small>
+                    </div>
+                    <button
+                      type="button"
+                      className="ghost-button compact"
+                      onClick={() => {
+                        const anchor = new Date(`${currentEventMonth}-01T00:00:00`);
+                        anchor.setMonth(anchor.getMonth() + 1);
+                        setCurrentEventMonth(anchor.toISOString().slice(0, 7));
+                      }}
+                    >
+                      Next
+                    </button>
                   </div>
                   <div className="calendar-grid">
                     {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
@@ -1619,7 +1659,7 @@ export function DashboardShell() {
                     <div key={type} className="favorites-group">
                       <h3>{type}</h3>
                       {items.length ? (
-                        <div className={items.length === 1 ? "favorites-grid clean single" : "favorites-grid clean"}>
+                        <div className="favorites-grid clean favorites-fixed">
                           {items.map((item) => (
                             <article key={item.id} className="favorite-card clean">
                               {item.type === "Podcast" || item.type === "Ressource" ? (

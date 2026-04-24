@@ -765,6 +765,7 @@ label {
 }
 
 .chart-card-featured {
+  width: 100%;
   max-width: 100%;
 }
 
@@ -795,9 +796,8 @@ label {
 }
 
 .market-graph-frame {
-  padding: 14px 14px 6px;
-  max-width: 780px;
-  margin: 0 auto;
+  padding: 12px 12px 6px;
+  width: 100%;
   border: 1px solid var(--bbc-border);
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 42%), #0b0b0c;
@@ -1311,7 +1311,7 @@ tbody td {
 }
 
 .favorites-grid.clean.single {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .favorite-card.clean {
@@ -2078,6 +2078,7 @@ tbody td {
 .view-toggle-bar{display:flex;gap:12px;margin:8px 0 18px;}
 .calendar-panel{display:grid;gap:16px;padding:22px;border:1px solid var(--bbc-border);border-radius:24px;background:#101011;}
 .calendar-head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.calendar-head-copy{display:grid;justify-items:center;gap:4px;text-align:center;}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;}
 .calendar-weekday{color:var(--bbc-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;padding:0 4px;}
 .calendar-cell{min-height:118px;padding:10px;border:1px solid rgba(255,255,255,.06);border-radius:16px;background:#0d0d0e;display:grid;gap:8px;align-content:start;}
@@ -2091,5 +2092,12 @@ tbody td {
 .phone-flag{display:inline-flex;align-items:center;gap:8px;padding:0 10px;height:46px;border-radius:14px;border:1px solid var(--bbc-border);background:#121213;color:#fff;}
 .phone-flag img{width:18px;height:14px;object-fit:cover;border-radius:3px;}
 .file-upload-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.blue-upload-button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:12px;background:#06429a;color:#fff;cursor:pointer;}
+.blue-upload-button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 12px;border-radius:12px;background:#06429a;color:#fff;cursor:pointer;}
 .card-stack span{display:flex;align-items:center;gap:8px;}
+
+.favorites-fixed { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.favorite-cover-wrap.podcast { max-width: 100%; }
+.favorite-cover-wrap.resource { max-width: 100%; }
+.market-tooltip-box { fill: rgba(255,255,255,0.12); stroke: rgba(255,255,255,0.24); backdrop-filter: blur(18px); }
+.blue-upload-button { min-height: 34px; padding: 0 11px; font-size: 0.86rem; }
+.market-page-plain { background: transparent; border: 0; box-shadow: none; padding: 0; }
