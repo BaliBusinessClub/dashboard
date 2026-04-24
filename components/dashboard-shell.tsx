@@ -120,30 +120,34 @@ function getDailyQuote() {
 
 function sanitizeCopy(value: string) {
   return value
-    .replaceAll("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢", "'")
-    .replaceAll("ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·", "ï¿½")
-    .replaceAll("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ", '"')
-    .replaceAll("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â", '"')
-    .replaceAll("Â·", "ï¿½")
-    .replaceAll("â€™", "'")
-    .replaceAll("â€œ", '"')
-    .replaceAll("â€", '"')
-    .replaceAll("â€“", "-")
-    .replaceAll("â€”", "-");
+    .normalize("NFKD")
+    .replace(/[^\x20-\x7E]/g, " ")
+    .replace(/\s*[\-|.]\s*/g, " - ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function formatDateKey(date: Date) {
+  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+}
+
+function formatMonthKey(date: Date) {
+  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0")].join("-");
 }
 
 function parseEventDateParts(value: string) {
-  const cleaned = sanitizeCopy(value);
-  const [rawDate = "", rawTime = ""] = cleaned.split("ï¿½").map((part) => part.trim());
+  const cleaned = sanitizeCopy(value).replace(/\s+-\s+/g, " | ");
+  const parts = cleaned.split("|").map((part) => part.trim()).filter(Boolean);
+  const rawDate = parts[0] ?? "";
+  const rawTime = parts.slice(1).join(" | ");
   const parsed = new Date(rawDate);
-  const safeDate = Number.isNaN(parsed.getTime()) ? new Date("2026-04-24") : parsed;
+  const safeDate = Number.isNaN(parsed.getTime()) ? new Date("2026-04-24T00:00:00") : parsed;
   return {
     parsed: safeDate,
-    key: safeDate.toISOString().slice(0, 10),
+    key: formatDateKey(safeDate),
     time: rawTime
   };
 }
-
 const ebookCoverMap: Record<string, string> = {
   "Comprehensive Guide to Real Estate Investing in Bali": "/resources/covers/bbc-real-estate-investing.png",
   "Why Location Is Everything": "/resources/covers/bbc-why-location-is-everything.png",
@@ -215,14 +219,89 @@ function normalizeWebsite(value: string) {
 }
 
 function getPhoneCountry(phone: string) {
-  const normalized = phone.replace(/\s+/g, "");
-  if (normalized.startsWith("+62") || normalized.startsWith("62")) return { code: "ID", flag: "https://flagcdn.com/w40/id.png" };
-  if (normalized.startsWith("+61") || normalized.startsWith("61")) return { code: "AU", flag: "https://flagcdn.com/w40/au.png" };
-  if (normalized.startsWith("+65") || normalized.startsWith("65")) return { code: "SG", flag: "https://flagcdn.com/w40/sg.png" };
-  if (normalized.startsWith("+44") || normalized.startsWith("44")) return { code: "GB", flag: "https://flagcdn.com/w40/gb.png" };
-  if (normalized.startsWith("+1") || normalized.startsWith("1")) return { code: "US", flag: "https://flagcdn.com/w40/us.png" };
-  if (normalized.startsWith("+33") || normalized.startsWith("33")) return { code: "FR", flag: "https://flagcdn.com/w40/fr.png" };
-  if (normalized.startsWith("+971") || normalized.startsWith("971")) return { code: "AE", flag: "https://flagcdn.com/w40/ae.png" };
+  const normalized = phone.replace(/[^\d+]/g, "");
+  const digits = normalized.startsWith("+") ? normalized.slice(1) : normalized;
+  type PhoneCountry = { code: string; flag: string };
+  const lookup: Array<[string, PhoneCountry]> = [
+    ["998", { code: "UZ", flag: "https://flagcdn.com/w40/uz.png" }],
+    ["995", { code: "GE", flag: "https://flagcdn.com/w40/ge.png" }],
+    ["994", { code: "AZ", flag: "https://flagcdn.com/w40/az.png" }],
+    ["993", { code: "TM", flag: "https://flagcdn.com/w40/tm.png" }],
+    ["992", { code: "TJ", flag: "https://flagcdn.com/w40/tj.png" }],
+    ["977", { code: "NP", flag: "https://flagcdn.com/w40/np.png" }],
+    ["976", { code: "MN", flag: "https://flagcdn.com/w40/mn.png" }],
+    ["975", { code: "BT", flag: "https://flagcdn.com/w40/bt.png" }],
+    ["974", { code: "QA", flag: "https://flagcdn.com/w40/qa.png" }],
+    ["973", { code: "BH", flag: "https://flagcdn.com/w40/bh.png" }],
+    ["972", { code: "IL", flag: "https://flagcdn.com/w40/il.png" }],
+    ["971", { code: "AE", flag: "https://flagcdn.com/w40/ae.png" }],
+    ["966", { code: "SA", flag: "https://flagcdn.com/w40/sa.png" }],
+    ["965", { code: "KW", flag: "https://flagcdn.com/w40/kw.png" }],
+    ["964", { code: "IQ", flag: "https://flagcdn.com/w40/iq.png" }],
+    ["963", { code: "SY", flag: "https://flagcdn.com/w40/sy.png" }],
+    ["962", { code: "JO", flag: "https://flagcdn.com/w40/jo.png" }],
+    ["961", { code: "LB", flag: "https://flagcdn.com/w40/lb.png" }],
+    ["960", { code: "MV", flag: "https://flagcdn.com/w40/mv.png" }],
+    ["886", { code: "TW", flag: "https://flagcdn.com/w40/tw.png" }],
+    ["880", { code: "BD", flag: "https://flagcdn.com/w40/bd.png" }],
+    ["856", { code: "LA", flag: "https://flagcdn.com/w40/la.png" }],
+    ["855", { code: "KH", flag: "https://flagcdn.com/w40/kh.png" }],
+    ["853", { code: "MO", flag: "https://flagcdn.com/w40/mo.png" }],
+    ["852", { code: "HK", flag: "https://flagcdn.com/w40/hk.png" }],
+    ["84", { code: "VN", flag: "https://flagcdn.com/w40/vn.png" }],
+    ["82", { code: "KR", flag: "https://flagcdn.com/w40/kr.png" }],
+    ["81", { code: "JP", flag: "https://flagcdn.com/w40/jp.png" }],
+    ["66", { code: "TH", flag: "https://flagcdn.com/w40/th.png" }],
+    ["65", { code: "SG", flag: "https://flagcdn.com/w40/sg.png" }],
+    ["64", { code: "NZ", flag: "https://flagcdn.com/w40/nz.png" }],
+    ["63", { code: "PH", flag: "https://flagcdn.com/w40/ph.png" }],
+    ["62", { code: "ID", flag: "https://flagcdn.com/w40/id.png" }],
+    ["61", { code: "AU", flag: "https://flagcdn.com/w40/au.png" }],
+    ["60", { code: "MY", flag: "https://flagcdn.com/w40/my.png" }],
+    ["58", { code: "VE", flag: "https://flagcdn.com/w40/ve.png" }],
+    ["57", { code: "CO", flag: "https://flagcdn.com/w40/co.png" }],
+    ["56", { code: "CL", flag: "https://flagcdn.com/w40/cl.png" }],
+    ["55", { code: "BR", flag: "https://flagcdn.com/w40/br.png" }],
+    ["54", { code: "AR", flag: "https://flagcdn.com/w40/ar.png" }],
+    ["53", { code: "CU", flag: "https://flagcdn.com/w40/cu.png" }],
+    ["52", { code: "MX", flag: "https://flagcdn.com/w40/mx.png" }],
+    ["51", { code: "PE", flag: "https://flagcdn.com/w40/pe.png" }],
+    ["49", { code: "DE", flag: "https://flagcdn.com/w40/de.png" }],
+    ["48", { code: "PL", flag: "https://flagcdn.com/w40/pl.png" }],
+    ["47", { code: "NO", flag: "https://flagcdn.com/w40/no.png" }],
+    ["46", { code: "SE", flag: "https://flagcdn.com/w40/se.png" }],
+    ["45", { code: "DK", flag: "https://flagcdn.com/w40/dk.png" }],
+    ["44", { code: "GB", flag: "https://flagcdn.com/w40/gb.png" }],
+    ["43", { code: "AT", flag: "https://flagcdn.com/w40/at.png" }],
+    ["41", { code: "CH", flag: "https://flagcdn.com/w40/ch.png" }],
+    ["40", { code: "RO", flag: "https://flagcdn.com/w40/ro.png" }],
+    ["39", { code: "IT", flag: "https://flagcdn.com/w40/it.png" }],
+    ["36", { code: "HU", flag: "https://flagcdn.com/w40/hu.png" }],
+    ["34", { code: "ES", flag: "https://flagcdn.com/w40/es.png" }],
+    ["33", { code: "FR", flag: "https://flagcdn.com/w40/fr.png" }],
+    ["32", { code: "BE", flag: "https://flagcdn.com/w40/be.png" }],
+    ["31", { code: "NL", flag: "https://flagcdn.com/w40/nl.png" }],
+    ["30", { code: "GR", flag: "https://flagcdn.com/w40/gr.png" }],
+    ["27", { code: "ZA", flag: "https://flagcdn.com/w40/za.png" }],
+    ["20", { code: "EG", flag: "https://flagcdn.com/w40/eg.png" }],
+    ["95", { code: "MM", flag: "https://flagcdn.com/w40/mm.png" }],
+    ["94", { code: "LK", flag: "https://flagcdn.com/w40/lk.png" }],
+    ["93", { code: "AF", flag: "https://flagcdn.com/w40/af.png" }],
+    ["92", { code: "PK", flag: "https://flagcdn.com/w40/pk.png" }],
+    ["91", { code: "IN", flag: "https://flagcdn.com/w40/in.png" }],
+    ["90", { code: "TR", flag: "https://flagcdn.com/w40/tr.png" }],
+    ["86", { code: "CN", flag: "https://flagcdn.com/w40/cn.png" }],
+    ["7", { code: "KZ", flag: "https://flagcdn.com/w40/kz.png" }],
+    ["1", { code: "US", flag: "https://flagcdn.com/w40/us.png" }]
+  ];
+
+  const sortedLookup = [...lookup].sort((a, b) => b[0].length - a[0].length);
+  for (const [prefix, country] of sortedLookup) {
+    if (digits.startsWith(prefix)) {
+      return country;
+    }
+  }
+
   return { code: "ID", flag: "https://flagcdn.com/w40/id.png" };
 }
 
@@ -709,6 +788,7 @@ export function DashboardShell() {
           title: sanitizeCopy(article.title),
           teaser: sanitizeCopy(article.teaser),
           content: sanitizeCopy(article.content),
+          date: sanitizeCopy(article.date),
           topic: section.title,
           region:
             "region" in article && (article.region === "Bali" || article.region === "Indonesia")
@@ -743,6 +823,9 @@ export function DashboardShell() {
 
   const monthCalendar = useMemo(() => {
     const anchor = new Date(`${currentEventMonth}-01T00:00:00`);
+    if (Number.isNaN(anchor.getTime())) {
+      return { label: "No events", cells: [] };
+    }
     const year = anchor.getFullYear();
     const month = anchor.getMonth();
     const monthStart = new Date(year, month, 1);
@@ -752,7 +835,7 @@ export function DashboardShell() {
     for (let index = 0; index < startOffset; index += 1) cells.push({ date: null, items: [] });
     for (let day = 1; day <= monthEnd.getDate(); day += 1) {
       const currentDate = new Date(year, month, day);
-      const iso = currentDate.toISOString().slice(0, 10);
+      const iso = formatDateKey(currentDate);
       const items = visibleEvents.filter((event) => parseEventDateParts(event.date).key === iso);
       cells.push({ date: currentDate, items });
     }
@@ -828,7 +911,7 @@ export function DashboardShell() {
   function getFavoriteDetail(item: FavoriteItem) {
     if (item.type === "News") {
       const article = allNewsArticles.find((entry) => entry.id === item.sourceId);
-      return article ? `${article.topic} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${article.date}` : "";
+      return article ? sanitizeCopy(`${article.topic} - ${article.date}`) : "";
     }
 
     if (item.type === "Podcast") {
@@ -842,7 +925,7 @@ export function DashboardShell() {
     }
 
     const event = approvedEvents.find((entry) => entry.id === item.sourceId);
-    return event ? `${event.location} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${event.date}` : "";
+    return event ? sanitizeCopy(`${event.location} - ${event.date}`) : "";
   }
 
   function normalizePhoneNumber(value: string) {
@@ -1445,7 +1528,7 @@ export function DashboardShell() {
                       onClick={() => {
                         const anchor = new Date(`${currentEventMonth}-01T00:00:00`);
                         anchor.setMonth(anchor.getMonth() - 1);
-                        setCurrentEventMonth(anchor.toISOString().slice(0, 7));
+                        setCurrentEventMonth(formatMonthKey(anchor));
                       }}
                     >
                       Previous
@@ -1460,7 +1543,7 @@ export function DashboardShell() {
                       onClick={() => {
                         const anchor = new Date(`${currentEventMonth}-01T00:00:00`);
                         anchor.setMonth(anchor.getMonth() + 1);
-                        setCurrentEventMonth(anchor.toISOString().slice(0, 7));
+                        setCurrentEventMonth(formatMonthKey(anchor));
                       }}
                     >
                       Next

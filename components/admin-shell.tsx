@@ -331,7 +331,7 @@ export function AdminShell() {
 
       <section className="bbc-panel">
         {activeTab === "analytics" ? (
-          <section className="panel-stack">
+          <section className="panel-stack admin-upgraded">
             <article className="section-card clean">
               <div className="section-heading">
                 <div>
@@ -459,10 +459,10 @@ export function AdminShell() {
                   {visibleMessages.map((message) => (
                     <article
                       key={message.id}
-                      className="admin-message-card clickable"
+                      className="admin-message-card clickable enhanced"
                       onClick={() => setSelectedMessage(message)}
                     >
-                      <div className="admin-message-top">
+                      <div className="admin-message-top enhanced">
                         <strong>{message.subject}</strong>
                         <small>{message.date}</small>
                       </div>
@@ -577,7 +577,7 @@ export function AdminShell() {
                     .filter((event) => event.status === submissionView)
                     .map((event) => (
                       <article key={event.id} className="admin-message-card submission-card">
-                        <div className="admin-message-top">
+                        <div className="admin-message-top enhanced">
                           <strong>{event.title}</strong>
                           <span className={event.status === "approved" ? "status-pill success" : "status-pill danger"}>
                             {event.status === "approved" ? "Accepted" : "Refused"}
@@ -649,7 +649,7 @@ export function AdminShell() {
                     .filter((partner) => partner.status === submissionView)
                     .map((partner) => (
                       <article key={partner.id} className="admin-message-card submission-card">
-                        <div className="admin-message-top">
+                        <div className="admin-message-top enhanced">
                           <strong>{partner.name}</strong>
                           <span className={partner.status === "approved" ? "status-pill success" : "status-pill danger"}>
                             {partner.status === "approved" ? "Accepted" : "Refused"}
