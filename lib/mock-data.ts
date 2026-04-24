@@ -337,7 +337,7 @@ export const newsSections = [
       {
         id: "news-infrastructure-1",
         title: "Government pushes water taxi and pier development to support Bali tourism",
-        teaser: "Transport connectivity is becoming a more visible part of Bali’s long-term visitor experience and location logic.",
+        teaser: "Transport connectivity is becoming a more visible part of Baliâ€™s long-term visitor experience and location logic.",
         content:
           "ANTARA reported that the Transportation Ministry is accelerating work on water taxi and pier development in Bali. While these projects take time to materialize, they matter because they can gradually reshape how visitors move across the island and how congestion-heavy corridors are perceived.\n\nFor investors, developers, and hospitality operators, connectivity has strategic value. Improved movement between air, land, and sea transport can shift where demand strengthens next, particularly in areas that become easier to reach or better integrated into tourist itineraries.",
         source: "ANTARA News",
@@ -346,10 +346,10 @@ export const newsSections = [
       },
       {
         id: "news-infrastructure-2",
-        title: "Ticket discounts help cushion Bali’s tourism low season",
+        title: "Ticket discounts help cushion Baliâ€™s tourism low season",
         teaser: "Transport pricing support is feeding directly into retail optimism and travel resilience in Bali.",
         content:
-          "ANTARA reported that Bank Indonesia’s Bali office sees transportation ticket discounts as a meaningful buffer during Bali’s low season. The signal here is bigger than airfare: mobility cost is a real lever for keeping travel demand active, especially in softer seasonal periods.\n\nFor business owners, that matters because lower friction on travel can support occupancy, footfall, and consumer spending in periods that would otherwise be more vulnerable. It is another reminder that tourism performance is tied not just to destination appeal, but also to how affordable and easy Bali is to access.",
+          "ANTARA reported that Bank Indonesiaâ€™s Bali office sees transportation ticket discounts as a meaningful buffer during Baliâ€™s low season. The signal here is bigger than airfare: mobility cost is a real lever for keeping travel demand active, especially in softer seasonal periods.\n\nFor business owners, that matters because lower friction on travel can support occupancy, footfall, and consumer spending in periods that would otherwise be more vulnerable. It is another reminder that tourism performance is tied not just to destination appeal, but also to how affordable and easy Bali is to access.",
         source: "ANTARA News",
         date: "March 14, 2026",
         url: "https://en.antaranews.com/news/408422/homepage-v2.html"
@@ -438,7 +438,7 @@ export const podcastFeed = [
   },
   {
     id: "LkiYTQ1k0ss",
-    title: "From marketing to brokering and development: Inside GEONET’s Real Estate Machine",
+    title: "From marketing to brokering and development: Inside GEONETâ€™s Real Estate Machine",
     description: "An inside look at how marketing, brokerage, and development work together inside one Bali real estate platform.",
     published: "3 months ago",
     topic: "Property",
@@ -483,7 +483,7 @@ export const podcastFeed = [
   },
   {
     id: "yxJwNl3n3t4",
-    title: "The Kedungu Fund’s $10M Milestone: A Look Ahead",
+    title: "The Kedungu Fundâ€™s $10M Milestone: A Look Ahead",
     description: "A milestone review focused on fund growth, thesis validation, and the next phase.",
     published: "9 months ago",
     topic: "Investment",
@@ -763,6 +763,7 @@ export const resourceDocuments = [
 export const partnerBenefits = [
   {
     name: "Voxpop Studio",
+    category: "Recording Studio",
     offer: "10% off podcast studio online booking with code BBCMEMBER",
     button: "BOOK ONLINE",
     url: "https://voxpopbali.com/",
@@ -770,6 +771,7 @@ export const partnerBenefits = [
   },
   {
     name: "Legal Legends Indonesia",
+    category: "Visa Agency",
     offer: "5% discount for an admission, visa, KITAS, and PT PMA creation",
     button: "CONTACT",
     url: "https://legallegendsindonesia.com/contact-us/",
@@ -777,6 +779,7 @@ export const partnerBenefits = [
   },
   {
     name: "Bali Accounting Legends",
+    category: "Accounting Agency",
     offer: "5% discount on consulting",
     button: "CONTACT",
     url: "https://wa.me/6281239091087",
@@ -906,19 +909,6 @@ export const adminSettings = [
 
 export const baliEvents = [
   {
-    id: "event-bitcoin-house-bali",
-    title: "Aaron van Wirdum Live in Bali: The Genesis of Bitcoin",
-    category: "Networking",
-    date: "April 21, 2026 · 5:00 PM",
-    location: "Bitcoin House Bali, Kuta Utara",
-    description: "Talk, networking, live Q&A, and book signing with Aaron van Wirdum at Bitcoin House Bali.",
-    signupUrl:
-      "https://www.eventbrite.com/e/aaron-van-wirdum-live-in-bali-the-genesis-of-bitcoin-talk-book-signing-tickets-859907836487?aff=ebdssbcategorybrowse",
-    whatsappUrl: "https://wa.link/zg5xw8",
-    source: "Eventbrite",
-    status: "approved"
-  },
-  {
     id: "event-biamc-workshop",
     title: "Workshop Construction & Engineering Arbitration #1",
     category: "Business",
@@ -935,10 +925,9 @@ export const baliEvents = [
     title: "Awakened Dreamers - Bohemian Blossom at The Jungle Club",
     category: "Music & Culture",
     date: "April 25, 2026 · 5:00 PM",
-    location: "The Jungle Club Ubud",
+    location: "The Jungle Club, Ubud",
     description: "Season opening live set with Pippi Ciez and a Bali community crowd gathering at The Jungle Club.",
-    signupUrl:
-      "https://www.eventbrite.com/e/awakened-dreamers-bohemian-blossom-pippi-ciez-live-at-the-jungle-club-tickets-1985884964387?aff=erelexpmlt",
+    signupUrl: "https://www.eventbrite.com/e/awakened-dreamers-bohemian-blossom-pippi-ciez-live-at-the-jungle-club-tickets-1985884964387?aff=erelexpmlt",
     whatsappUrl: "https://wa.link/zg5xw8",
     source: "Eventbrite",
     status: "approved"
@@ -953,6 +942,294 @@ export const baliEvents = [
     signupUrl: "https://allevents.in/nusa-dua/fht-bali-food-hotel-and-tourism-bali-2026/3700027815332305",
     whatsappUrl: "https://wa.link/zg5xw8",
     source: "AllEvents",
+    status: "approved"
+  },
+  {
+    id: "event-festival-semarapura",
+    title: "Festival Semarapura",
+    category: "Music & Culture",
+    date: "April 28, 2026 · 6:00 PM",
+    location: "Klungkung, Bali",
+    description: "A regional cultural festival with performances, local food, and community programming in Klungkung.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-bali-spirit-festival",
+    title: "BaliSpirit Festival 2026",
+    category: "Wellness & Sport",
+    date: "May 6, 2026 · 9:00 AM",
+    location: "Ubud, Bali",
+    description: "One of Bali's best-known wellness festivals, blending yoga, movement, music, and conscious community experiences.",
+    signupUrl: "https://www.balispiritfestival.com/",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "BaliSpirit Festival",
+    status: "approved"
+  },
+  {
+    id: "event-btr-ultra",
+    title: "BTR Ultra 2026",
+    category: "Wellness & Sport",
+    date: "May 9, 2026 · 5:30 AM",
+    location: "Kintamani, Bali",
+    description: "A mountain ultra-running weekend bringing endurance athletes to Bali's volcanic highlands.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-ubud-food-festival",
+    title: "Ubud Food Festival 2026",
+    category: "Networking",
+    date: "May 29, 2026 · 10:00 AM",
+    location: "Ubud, Bali",
+    description: "A culinary festival with chef talks, tastings, and hospitality networking across Ubud.",
+    signupUrl: "https://www.ubudfoodfestival.com/",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Ubud Food Festival",
+    status: "approved"
+  },
+  {
+    id: "event-bbtf",
+    title: "Bali & Beyond Travel Fair 2026",
+    category: "Business",
+    date: "June 10, 2026 · 9:00 AM",
+    location: "Nusa Dua, Bali",
+    description: "A travel trade event focused on tourism partnerships, regional marketing, and destination business.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-pesta-kesenian-bali",
+    title: "Pesta Kesenian Bali 2026",
+    category: "Music & Culture",
+    date: "June 18, 2026 · 7:00 PM",
+    location: "Denpasar Art Centre",
+    description: "Bali's landmark arts festival featuring performances, exhibitions, and island-wide cultural showcases.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-gianyar-kite-festival",
+    title: "Gianyar Kite Festival 2026",
+    category: "Music & Culture",
+    date: "June 20, 2026 · 1:00 PM",
+    location: "Gianyar, Bali",
+    description: "A classic dry-season Bali event celebrating giant traditional kites, crews, and community spirit.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-balinale",
+    title: "Balinale 2026",
+    category: "Music & Culture",
+    date: "June 24, 2026 · 6:30 PM",
+    location: "Denpasar, Bali",
+    description: "Bali's international film festival with screenings, filmmaker conversations, and creative-industry networking.",
+    signupUrl: "https://www.balinale.com/",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Balinale",
+    status: "approved"
+  },
+  {
+    id: "event-bali-wellness-expo",
+    title: "Bali Wellness and Beauty Expo 2026",
+    category: "Business",
+    date: "June 26, 2026 · 10:00 AM",
+    location: "Denpasar, Bali",
+    description: "A consumer and trade expo for wellness, beauty, and lifestyle brands operating in Bali.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-ubud-open-studios",
+    title: "Ubud Open Studios 2026",
+    category: "Music & Culture",
+    date: "June 27, 2026 · 11:00 AM",
+    location: "Ubud, Bali",
+    description: "A creative open-house program connecting artists, studios, collectors, and culture-minded visitors.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-tenganan-festival",
+    title: "Tenganan Pegringsingan Festival 2026",
+    category: "Music & Culture",
+    date: "June 27, 2026 · 9:30 AM",
+    location: "Tenganan Village, Karangasem",
+    description: "A village festival spotlighting Bali Aga traditions, weaving heritage, and ritual performances.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-bali-international-choir",
+    title: "Bali International Choir Festival 2026",
+    category: "Music & Culture",
+    date: "July 27, 2026 · 5:00 PM",
+    location: "Denpasar, Bali",
+    description: "An international choir gathering with performances, workshops, and collaborative cultural programming.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-semarak-pandawa",
+    title: "Semarak Pandawa Festival 2026",
+    category: "Music & Culture",
+    date: "July 30, 2026 · 4:00 PM",
+    location: "Pandawa Beach, Bali",
+    description: "A beachfront festival centered on live performances, destination promotion, and local community showcases.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-ubud-village-jazz",
+    title: "Ubud Village Jazz Festival 2026",
+    category: "Music & Culture",
+    date: "August 1, 2026 · 6:00 PM",
+    location: "Ubud, Bali",
+    description: "An annual jazz event that blends high-quality live music with the intimate Ubud arts atmosphere.",
+    signupUrl: "https://www.ubudvillagejazzfestival.com/",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Ubud Village Jazz Festival",
+    status: "approved"
+  },
+  {
+    id: "event-buleleng-festival",
+    title: "Buleleng Festival 2026",
+    category: "Music & Culture",
+    date: "August 18, 2026 · 5:30 PM",
+    location: "Singaraja, North Bali",
+    description: "A regional showcase for arts, culture, and local enterprise in North Bali.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-tanah-lot-art-food",
+    title: "Tanah Lot Art and Food Festival 2026",
+    category: "Music & Culture",
+    date: "August 26, 2026 · 4:00 PM",
+    location: "Tanah Lot, Tabanan",
+    description: "A destination festival combining culinary stalls, local creators, and performances around Tanah Lot.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-karangasem-festival",
+    title: "Karangasem Festival 2026",
+    category: "Music & Culture",
+    date: "August 27, 2026 · 6:00 PM",
+    location: "Karangasem, Bali",
+    description: "A broad regional festival highlighting Karangasem's culture, music, and creative community.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-maybank-marathon",
+    title: "Maybank Marathon Bali 2026",
+    category: "Wellness & Sport",
+    date: "August 30, 2026 · 5:15 AM",
+    location: "Gianyar, Bali",
+    description: "Bali's marquee road-running event, attracting local and international runners across multiple distances.",
+    signupUrl: "https://maybankmarathon.com/",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Maybank Marathon",
+    status: "approved"
+  },
+  {
+    id: "event-mekotek-festival",
+    title: "Mekotek Festival 2026",
+    category: "Music & Culture",
+    date: "September 12, 2026 · 10:00 AM",
+    location: "Munggu, Mengwi",
+    description: "A powerful ritual tradition in Bali featuring dramatic community processions and ceremonial bamboo poles.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-penglipuran-festival",
+    title: "Penglipuran Village Festival 2026",
+    category: "Music & Culture",
+    date: "September 18, 2026 · 9:00 AM",
+    location: "Penglipuran Village, Bangli",
+    description: "A village-led festival focused on sustainability, traditional architecture, and local cultural life.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-lovina-festival",
+    title: "Lovina Festival 2026",
+    category: "Music & Culture",
+    date: "October 23, 2026 · 5:00 PM",
+    location: "Lovina, North Bali",
+    description: "A coastal North Bali festival that blends local culture, performances, and tourism activation.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-festival-bali-jani",
+    title: "Festival Bali Jani 2026",
+    category: "Music & Culture",
+    date: "October 24, 2026 · 7:00 PM",
+    location: "Denpasar, Bali",
+    description: "A contemporary arts program dedicated to modern Balinese creativity across disciplines and venues.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-jatiluwih-festival",
+    title: "Jatiluwih Festival 2026",
+    category: "Music & Culture",
+    date: "October 31, 2026 · 10:00 AM",
+    location: "Jatiluwih, Tabanan",
+    description: "A destination festival set around Bali's iconic rice terraces with culture, food, and local experiences.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
+    status: "approved"
+  },
+  {
+    id: "event-denpasar-festival",
+    title: "Denpasar Festival 2026",
+    category: "Music & Culture",
+    date: "December 22, 2026 · 6:00 PM",
+    location: "Denpasar, Bali",
+    description: "An end-of-year city festival highlighting food, art, performances, and the creative pulse of Denpasar.",
+    signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
+    whatsappUrl: "https://wa.link/zg5xw8",
+    source: "Bali.live calendar",
     status: "approved"
   }
 ] as const;

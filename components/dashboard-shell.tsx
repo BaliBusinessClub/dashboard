@@ -119,10 +119,10 @@ function getDailyQuote() {
 
 function sanitizeCopy(value: string) {
   return value
-    .replaceAll("Ã¢â‚¬â„¢", "'")
-    .replaceAll("Ã‚·", "·")
-    .replaceAll("Ã¢â‚¬Å“", '"')
-    .replaceAll("Ã¢â‚¬Â", '"');
+    .replaceAll("â€™", "'")
+    .replaceAll("Â·", "·")
+    .replaceAll("â€œ", '"')
+    .replaceAll("â€", '"');
 }
 
 const ebookCoverMap: Record<string, string> = {
@@ -131,6 +131,19 @@ const ebookCoverMap: Record<string, string> = {
   "Dubai-Based Entrepreneurs and Investors": "/resources/covers/bbc-dubai-investor-guide.jpg",
   "Escape to Bali - A Guide to a Better Life": "/resources/covers/bbc-escape-to-bali.png"
 };
+
+const partnerBusinessOptions = [
+  "Recording Studio",
+  "Visa Agency",
+  "Accounting Agency",
+  "Real Estate",
+  "Hospitality",
+  "Marketing Agency",
+  "Investment Firm",
+  "Wellness Business",
+  "Technology",
+  "Other"
+] as const;
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -164,13 +177,17 @@ function detectDialCode() {
   return codes[region] ?? "+62";
 }
 
-function isValidUrl(value: string) {
-  try {
-    const parsed = new URL(value);
-    return parsed.protocol === "http:" || parsed.protocol === "https:";
-  } catch {
-    return false;
+function isValidWebsite(value: string) {
+  return /^(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:[/?#].*)?$/.test(value.trim());
+}
+
+function normalizeWebsite(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
   }
+
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
 function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
@@ -466,6 +483,8 @@ export function DashboardShell() {
   });
   const [partnerForm, setPartnerForm] = useState({
     company: "",
+    businessType: "",
+    customBusinessType: "",
     whatsapp: "",
     website: "",
     offer: "",
@@ -589,12 +608,12 @@ export function DashboardShell() {
       const homepageTitleOverrides: Record<string, string> = {
         PG2TFBF0uY8: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
         Ayb4THzSjE0: "Bali Real Estate Market in 2026: What the Data Really Shows",
-        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONETâ€™s Real Estate Machine",
+        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONET’s Real Estate Machine",
         "4jIi_bXuUSU": "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
         KScozjNYu9Q: "How Bali Business Founders Can Attract Investors from the Middle East",
         UNaQQiIjoCk: "Bali Property Made Simple: The 9-Step Process Explained",
         "0cMjvf1lb3g": "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
-        yxJwNl3n3t4: "The Kedungu Fundâ€™s $10M Milestone: A Look Ahead",
+        yxJwNl3n3t4: "The Kedungu Fund’s $10M Milestone: A Look Ahead",
         bfHu20vi2g8: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
         G1lT0E2nSGQ: "The Secret Growth Formula Content Creators Must Know!",
         "7bXHvn8Vksw": "BALI REAL ESTATE: HOW TO TRIPLE YOUR INVESTMENT RETURNS!",
@@ -714,6 +733,39 @@ export function DashboardShell() {
     }
   }
 
+  function getFavoriteCover(item: FavoriteItem) {
+    if (item.type === "Podcast") {
+      return podcastFeed.find((episode) => episode.id === item.sourceId)?.image ?? null;
+    }
+
+    if (item.type === "Ressource") {
+      const resource = resourceDocuments.find((entry) => entry.id === item.sourceId);
+      return resource ? (ebookCoverMap[resource.title] ?? null) : null;
+    }
+
+    return null;
+  }
+
+  function getFavoriteDetail(item: FavoriteItem) {
+    if (item.type === "News") {
+      const article = allNewsArticles.find((entry) => entry.id === item.sourceId);
+      return article ? `${article.topic} · ${article.date}` : "";
+    }
+
+    if (item.type === "Podcast") {
+      const episode = podcastFeed.find((entry) => entry.id === item.sourceId);
+      return episode?.description ?? "";
+    }
+
+    if (item.type === "Ressource") {
+      const resource = resourceDocuments.find((entry) => entry.id === item.sourceId);
+      return resource?.source ?? "";
+    }
+
+    const event = approvedEvents.find((entry) => entry.id === item.sourceId);
+    return event ? `${event.location} · ${event.date}` : "";
+  }
+
   function normalizePhoneNumber(value: string) {
     const trimmed = value.trim();
     if (!trimmed) {
@@ -749,6 +801,7 @@ export function DashboardShell() {
 
   function handleEventSubmit() {
     const finalCategory = eventForm.category === "Other" ? eventForm.customCategory.trim() : eventForm.category;
+    const normalizedSignup = normalizeWebsite(eventForm.signupUrl);
     const missing = [
       !eventForm.title && "event-title",
       !eventForm.date && "event-date",
@@ -763,7 +816,7 @@ export function DashboardShell() {
       markMissing(missing);
       return;
     }
-    if (!isValidUrl(eventForm.signupUrl)) {
+    if (!isValidWebsite(eventForm.signupUrl)) {
       markMissing(["event-signup"]);
       return;
     }
@@ -774,7 +827,7 @@ export function DashboardShell() {
       date: `${eventForm.date} · ${eventForm.time}`,
       location: eventForm.location,
       description: eventForm.description,
-      signupUrl: eventForm.signupUrl,
+      signupUrl: normalizedSignup,
       whatsappUrl: eventForm.whatsappUrl || undefined,
       source: "BBC community submission"
     });
@@ -799,8 +852,11 @@ export function DashboardShell() {
 
   function handlePartnerSubmit() {
     const normalizedWhatsapp = normalizePhoneNumber(partnerForm.whatsapp);
+    const finalBusinessType =
+      partnerForm.businessType === "Other" ? partnerForm.customBusinessType.trim() : partnerForm.businessType.trim();
     const missing = [
       !partnerForm.company && "partner-company",
+      !finalBusinessType && "partner-business-type",
       !normalizedWhatsapp && "partner-whatsapp",
       !partnerForm.website && "partner-website",
       !partnerForm.offer && "partner-offer"
@@ -813,11 +869,16 @@ export function DashboardShell() {
       markMissing(["partner-whatsapp"]);
       return;
     }
+    if (!isValidWebsite(partnerForm.website)) {
+      markMissing(["partner-website"]);
+      return;
+    }
     setFormErrors({});
     submitPartnerApplication({
       name: partnerForm.company,
+      category: finalBusinessType,
       whatsapp: normalizedWhatsapp,
-      url: partnerForm.website,
+      url: normalizeWebsite(partnerForm.website),
       offer: partnerForm.offer,
       logo: partnerForm.logo
     });
@@ -835,6 +896,8 @@ export function DashboardShell() {
     });
     setPartnerForm({
       company: "",
+      businessType: "",
+      customBusinessType: "",
       whatsapp: "",
       website: "",
       offer: "",
@@ -1415,6 +1478,7 @@ export function DashboardShell() {
               <div className="partner-list clean">
                 {[...partnerBenefits, ...dynamicPartners.map((partner) => ({
                   name: partner.name,
+                  category: partner.category || "Partner",
                   offer: partner.offer,
                   button: "CONTACT",
                   url: partner.url,
@@ -1426,6 +1490,7 @@ export function DashboardShell() {
                         <Image src={partner.logo} alt={partner.name} width={260} height={88} className="partner-logo" />
                       </div>
                       <strong>{partner.name}</strong>
+                      <span className="partner-category">{partner.category}</span>
                       <p>{partner.offer}</p>
                     </div>
                     <a href={partner.url} target="_blank" rel="noreferrer" className="table-link-button">
@@ -1457,8 +1522,18 @@ export function DashboardShell() {
                         <div className={items.length === 1 ? "favorites-grid clean single" : "favorites-grid clean"}>
                           {items.map((item) => (
                             <article key={item.id} className="favorite-card clean">
+                              {getFavoriteCover(item) ? (
+                                <div className="favorite-cover-wrap">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={getFavoriteCover(item) ?? ""} alt={item.title} className="favorite-cover-image" />
+                                </div>
+                              ) : (
+                                <div className="favorite-cover-wrap placeholder">
+                                  {item.type === "News" ? <Newspaper size={18} /> : <CalendarDays size={18} />}
+                                </div>
+                              )}
                               <strong>{item.title}</strong>
-                              <p>{item.note}</p>
+                              <p>{getFavoriteDetail(item)}</p>
                               <div className="favorite-actions">
                                 <button type="button" className="table-link-button" onClick={() => openFavorite(item)}>
                                   Open
@@ -1580,8 +1655,8 @@ export function DashboardShell() {
       ) : null}
 
       {eventFormOpen ? (
-        <div className="modal-overlay open">
-          <div className="modal-card wide-form">
+        <div className="modal-overlay open" onClick={() => setEventFormOpen(false)}>
+          <div className="modal-card wide-form" onClick={(event) => event.stopPropagation()}>
             <div className="modal-head">
               <div>
                 <h2>Add an event</h2>
@@ -1645,7 +1720,7 @@ export function DashboardShell() {
               ) : null}
               <label>
                 Website to sign up
-                <input className={formErrors["event-signup"] ? "field-error" : ""} required value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="https://..." />
+                <input className={formErrors["event-signup"] ? "field-error" : ""} required value={eventForm.signupUrl} onChange={(event) => setEventForm((current) => ({ ...current, signupUrl: event.target.value }))} placeholder="example.com/event" />
               </label>
               <label>
                 WhatsApp link (optional)
@@ -1664,8 +1739,8 @@ export function DashboardShell() {
       ) : null}
 
       {partnerFormOpen ? (
-        <div className="modal-overlay open">
-          <div className="modal-card wide-form">
+        <div className="modal-overlay open" onClick={() => setPartnerFormOpen(false)}>
+          <div className="modal-card wide-form" onClick={(event) => event.stopPropagation()}>
             <div className="modal-head">
               <div>
                 <h2>Become a partner</h2>
@@ -1681,6 +1756,34 @@ export function DashboardShell() {
                 Company name
                 <input className={formErrors["partner-company"] ? "field-error" : ""} required placeholder="Your company name" value={partnerForm.company} onChange={(event) => setPartnerForm((current) => ({ ...current, company: event.target.value }))} />
               </label>
+              <label>
+                What does your business do?
+                <select
+                  className={formErrors["partner-business-type"] ? "field-error" : ""}
+                  required
+                  value={partnerForm.businessType}
+                  onChange={(event) => setPartnerForm((current) => ({ ...current, businessType: event.target.value, customBusinessType: "" }))}
+                >
+                  <option value="">Select a business type</option>
+                  {partnerBusinessOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {partnerForm.businessType === "Other" ? (
+                <label>
+                  Other business type
+                  <input
+                    className={formErrors["partner-business-type"] ? "field-error" : ""}
+                    required
+                    placeholder="Tell us what your business is"
+                    value={partnerForm.customBusinessType}
+                    onChange={(event) => setPartnerForm((current) => ({ ...current, customBusinessType: event.target.value }))}
+                  />
+                </label>
+              ) : null}
               <label>
                 WhatsApp number
                 <input
@@ -1698,7 +1801,7 @@ export function DashboardShell() {
               </label>
               <label>
                 Website
-                <input className={formErrors["partner-website"] ? "field-error" : ""} required placeholder="https://..." value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
+                <input className={formErrors["partner-website"] ? "field-error" : ""} required placeholder="example.com" value={partnerForm.website} onChange={(event) => setPartnerForm((current) => ({ ...current, website: event.target.value }))} />
               </label>
               <label>
                 Company logo
@@ -1731,8 +1834,8 @@ export function DashboardShell() {
       ) : null}
 
       {suggestionOpen ? (
-        <div className="modal-overlay open">
-          <div className="modal-card wide-form">
+        <div className="modal-overlay open" onClick={() => setSuggestionOpen(false)}>
+          <div className="modal-card wide-form" onClick={(event) => event.stopPropagation()}>
             <div className="modal-head">
               <div>
                 <h2>Make a suggestion</h2>
@@ -1766,7 +1869,7 @@ export function DashboardShell() {
       {toastMessage ? (
         <div className="modal-overlay open toast-overlay">
           <div className="toast-card">
-            <div className="toast-check">OK</div>
+            <div className="toast-check">✓</div>
             <strong>{toastMessage.title}</strong>
             <p>{toastMessage.copy}</p>
           </div>

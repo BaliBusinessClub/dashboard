@@ -3,6 +3,7 @@
 export type PartnerApplication = {
   id: string;
   name: string;
+  category?: string;
   offer: string;
   url: string;
   whatsapp: string;
