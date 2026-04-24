@@ -773,7 +773,9 @@ export function DashboardShell() {
         .filter((episode) => !["x5iGqCEj1og", "vyL_5E7htbo"].includes(episode.id))
         .map((episode) => ({
           ...episode,
-          title: homepageTitleOverrides[episode.id] ?? episode.title
+          title: sanitizeCopy(homepageTitleOverrides[episode.id] ?? episode.title),
+          description: sanitizeCopy(episode.description),
+          topic: sanitizeCopy(episode.topic)
         }))
         .filter((episode) => podcastTopic === "All" || episode.topic === podcastTopic);
     },
@@ -1430,7 +1432,7 @@ export function DashboardShell() {
                             Read more
                           </button>
                           <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
-                            <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                            <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
                         </div>
@@ -1511,7 +1513,7 @@ export function DashboardShell() {
                             Sign up
                           </a>
                           <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
-                            <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                            <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
                         </div>
@@ -1626,7 +1628,7 @@ export function DashboardShell() {
                               toggleFavorite(favorite);
                             }}
                           >
-                            <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                            <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
                         </div>
@@ -1670,7 +1672,7 @@ export function DashboardShell() {
                         </div>
                         <div className="resource-actions visual">
                           <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
-                            <Heart size={14} fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
+                            <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
                           <a href={resource.url} download className="table-link-button">
@@ -1744,7 +1746,7 @@ export function DashboardShell() {
                       {items.length ? (
                         <div className="favorites-grid clean favorites-fixed">
                           {items.map((item) => (
-                            <article key={item.id} className="favorite-card clean">
+                            <article key={item.id} className={`favorite-card clean ${item.type === "Podcast" ? "podcast-card" : item.type === "Ressource" ? "resource-card" : ""}`.trim()}>
                               {item.type === "Podcast" || item.type === "Ressource" ? (
                                 <div className={item.type === "Ressource" ? "favorite-cover-wrap resource" : "favorite-cover-wrap podcast"}>
                                   <img src={getFavoriteCover(item) ?? ""} alt={item.title} className="favorite-cover-image" />
