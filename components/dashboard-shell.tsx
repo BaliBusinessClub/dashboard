@@ -126,6 +126,18 @@ function sanitizeCopy(value: string) {
     .replaceAll("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â", '"');
 }
 
+function parseEventDateParts(value: string) {
+  const cleaned = sanitizeCopy(value).replaceAll("·", "�");
+  const [rawDate = "", rawTime = ""] = cleaned.split("�").map((part) => part.trim());
+  const parsed = new Date(rawDate);
+  const safeDate = Number.isNaN(parsed.getTime()) ? new Date("2026-04-24") : parsed;
+  return {
+    parsed: safeDate,
+    key: safeDate.toISOString().slice(0, 10),
+    time: rawTime
+  };
+}
+
 const ebookCoverMap: Record<string, string> = {
   "Comprehensive Guide to Real Estate Investing in Bali": "/resources/covers/bbc-real-estate-investing.png",
   "Why Location Is Everything": "/resources/covers/bbc-why-location-is-everything.png",
@@ -714,9 +726,7 @@ export function DashboardShell() {
   );
 
   const monthCalendar = useMemo(() => {
-    const base = visibleEvents[0]?.date ?? `2026-04-24 ÃƒÂ¯Ã‚Â¿Ã‚Â½ 9:00 AM`;
-    const [baseDate] = base.split(" ÃƒÂ¯Ã‚Â¿Ã‚Â½ ");
-    const anchor = new Date(baseDate);
+    const anchor = parseEventDateParts(visibleEvents[0]?.date ?? "2026-04-24 � 9:00 AM").parsed;
     const year = anchor.getFullYear();
     const month = anchor.getMonth();
     const monthStart = new Date(year, month, 1);
@@ -727,7 +737,7 @@ export function DashboardShell() {
     for (let day = 1; day <= monthEnd.getDate(); day += 1) {
       const currentDate = new Date(year, month, day);
       const iso = currentDate.toISOString().slice(0, 10);
-      const items = visibleEvents.filter((event) => event.date.startsWith(iso));
+      const items = visibleEvents.filter((event) => parseEventDateParts(event.date).key === iso);
       cells.push({ date: currentDate, items });
     }
     while (cells.length % 7 !== 0) cells.push({ date: null, items: [] });
@@ -1963,7 +1973,7 @@ export function DashboardShell() {
       {toastMessage ? (
         <div className="modal-overlay open toast-overlay">
           <div className="toast-card">
-            <div className="toast-check">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</div>
+            <div className="toast-check">?</div>
             <strong>{toastMessage.title}</strong>
             <p>{toastMessage.copy}</p>
           </div>
