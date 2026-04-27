@@ -2438,12 +2438,12 @@ tbody td {
 
 .watch-pill:hover {
   background: #ff3b30;
-  color: #000;
+  color: #fff;
   border-color: #ff3b30;
 }
 
 .watch-pill:hover svg {
-  color: #000;
+  color: #fff;
 }
 
 .market-graph-frame {
@@ -2592,8 +2592,8 @@ tbody td {
 }
 
 .modal-card.wide-form {
-  width: min(640px, calc(100vw - 32px));
-  padding: 28px;
+  width: min(720px, calc(100vw - 32px));
+  padding: 30px 30px 28px;
 }
 
 .modal-head {
@@ -2601,10 +2601,11 @@ tbody td {
 }
 
 .icon-button {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   margin-left: auto;
-  flex: 0 0 32px;
+  flex: 0 0 24px;
+  border-radius: 8px;
 }
 
 .blue-upload-button {
@@ -2672,6 +2673,53 @@ tbody td {
 
 .save-button:hover .save-heart {
   color: #000;
+}
+
+.blue-upload-button:hover {
+  background: #096cfe;
+  color: #fff;
+  border-color: #096cfe;
+}
+
+.region-filter-bar,
+.topic-filter-bar {
+  gap: 14px;
+}
+
+.auth-back-button {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+}
+
+.auth-back-button:hover {
+  background: #fff !important;
+  color: #000 !important;
+  border-color: #fff !important;
+}
+
+.google-live-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+.google-live-button:hover {
+  background: #4285f4 !important;
+  color: #fff !important;
+  border-color: #4285f4 !important;
+  box-shadow: 0 12px 22px rgba(66, 133, 244, 0.18) !important;
+}
+
+.google-live-button:hover svg {
+  color: inherit !important;
+}
+
+.google-live-button svg {
+  flex: 0 0 auto;
 }
 
 .watch-pill:hover {

@@ -10,6 +10,7 @@ import {
   CalendarRange,
   ChartColumn,
   ChevronDown,
+  Clock3,
   Globe,
   Heart,
   House,
@@ -17,9 +18,9 @@ import {
   MapPin,
   MessageCircleMore,
   MessagesSquare,
+  Mic,
   Newspaper,
   PencilLine,
-  Podcast,
   Save,
   Sparkles,
   Trash2,
@@ -51,7 +52,7 @@ const dashboardTabs = [
   { id: "market", label: "Market Insights", icon: ChartColumn },
   { id: "news", label: "News", icon: Newspaper },
   { id: "events", label: "Events", icon: CalendarRange },
-  { id: "podcasts", label: "Podcasts", icon: Podcast },
+  { id: "podcasts", label: "Podcasts", icon: Mic },
   { id: "resources", label: "Ressources", icon: BookOpen },
   { id: "partners", label: "Partners", icon: Building2 },
   { id: "favorites", label: "Favorites", icon: Heart },
@@ -873,7 +874,22 @@ export function DashboardShell() {
   );
 
   const visibleEvents = useMemo(
-    () => approvedEvents.filter((event) => eventTopic === "All" || event.category === eventTopic),
+    () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const sixMonthsAhead = new Date(today);
+      sixMonthsAhead.setMonth(sixMonthsAhead.getMonth() + 6);
+
+      return approvedEvents.filter((event) => {
+        const eventDate = parseEventDateParts(event.date).parsed;
+        eventDate.setHours(0, 0, 0, 0);
+        return (
+          (eventTopic === "All" || event.category === eventTopic) &&
+          eventDate >= today &&
+          eventDate <= sixMonthsAhead
+        );
+      });
+    },
     [approvedEvents, eventTopic]
   );
 
@@ -1541,11 +1557,12 @@ export function DashboardShell() {
               {eventView === "list" ? (
                 <div className="event-grid">
                   {visibleEvents.map((event) => {
+                    const eventDateParts = parseEventDateParts(event.date);
                     const favorite: FavoriteItem = {
                       id: `fav-${event.id}`,
                       type: "Event",
                       title: event.title,
-                      note: `${event.category} - ${event.date}`,
+                      note: `${event.category} - ${sanitizeCopy(event.date)}`,
                       sourceId: event.id
                     };
 
@@ -1559,7 +1576,15 @@ export function DashboardShell() {
                         <div className="event-meta clean">
                           <span>
                             <CalendarDays size={14} />
-                            {event.date}
+                            {eventDateParts.parsed.toLocaleDateString("en-US", {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric"
+                            })}
+                          </span>
+                          <span>
+                            <Clock3 size={14} />
+                            {eventDateParts.time}
                           </span>
                           <span>
                             <MapPin size={14} />

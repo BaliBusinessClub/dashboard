@@ -6,6 +6,7 @@ export type StoredAccount = {
   role: "admin" | "member";
   password?: string;
   provider: "email" | "google";
+  emailVerified?: boolean;
   memberSince: string;
   ageRange?: string;
   memberType?: string;
@@ -22,6 +23,7 @@ const seededAccounts: StoredAccount[] = [
     role: "member",
     password: "BBCmember2026!",
     provider: "email",
+    emailVerified: true,
     memberSince: "2026-01-03",
     ageRange: "25-34",
     memberType: "Investor",
@@ -33,6 +35,7 @@ const seededAccounts: StoredAccount[] = [
     role: "admin",
     password: "BBCadmin2026!",
     provider: "email",
+    emailVerified: true,
     memberSince: "2026-01-01"
   }
 ];
@@ -97,4 +100,11 @@ export function saveAccount(account: StoredAccount) {
 
   writeCustomAccounts(nextAccounts);
   return nextAccount;
+}
+
+export function deleteAccount(email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const existing = readCustomAccounts();
+  const nextAccounts = existing.filter((entry) => entry.email !== normalizedEmail);
+  writeCustomAccounts(nextAccounts);
 }

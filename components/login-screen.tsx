@@ -29,6 +29,8 @@ const ADMIN_EMAIL = "admin@balibusinessclub.com";
 const MEMBER_EMAIL = "member@balibusinessclub.com";
 const MEMBER_PASSWORD = "BBCmember2026!";
 const ADMIN_PASSWORD = "BBCadmin2026!";
+const GOOGLE_CLIENT_ID_FALLBACK = "137292364348-1a8kb9k2fdr7qpo3gcqfku9281omlahh.apps.googleusercontent.com";
+const PENDING_SIGNUP_KEY = "bbc-pending-signup";
 
 const memberTypeOptions = [
   "Business owner",
@@ -98,15 +100,48 @@ export function LoginScreen() {
   const [googleReady, setGoogleReady] = useState(false);
 
   const effectiveMemberType = memberType === "Other" ? memberTypeOther.trim() : memberType;
-  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID_FALLBACK;
 
   useEffect(() => {
     if (!ready || !user) {
       return;
     }
 
-    router.replace(user.role === "admin" ? "/admin" : "/dashboard");
+    router.replace(user.role === "admin" ? "/admin?tab=database" : "/dashboard");
   }, [ready, router, user]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const raw = window.localStorage.getItem(PENDING_SIGNUP_KEY);
+      if (!raw) {
+        return;
+      }
+
+      const pending = JSON.parse(raw) as {
+        name?: string;
+        email?: string;
+        whatsapp?: string;
+        ageRange?: string;
+        memberType?: string;
+        password?: string;
+        confirmPassword?: string;
+      };
+
+      if (pending.name) setName(pending.name);
+      if (pending.email) setEmail(pending.email);
+      if (pending.whatsapp) setWhatsapp(pending.whatsapp);
+      if (pending.ageRange) setAgeRange(pending.ageRange);
+      if (pending.memberType) setMemberType(pending.memberType);
+      if (pending.password) setPassword(pending.password);
+      if (pending.confirmPassword) setConfirmPassword(pending.confirmPassword);
+    } catch {
+      window.localStorage.removeItem(PENDING_SIGNUP_KEY);
+    }
+  }, []);
 
   useEffect(() => {
     if (!googleClientId || typeof window === "undefined") {
@@ -134,6 +169,26 @@ export function LoginScreen() {
     setCreateStep(1);
     setCode("");
     setPreviewCode(null);
+  }
+
+  function storePendingSignup() {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(
+      PENDING_SIGNUP_KEY,
+      JSON.stringify({
+        name,
+        email,
+        whatsapp: normalizePhoneNumber(whatsapp),
+        ageRange,
+        memberType,
+        memberTypeOther,
+        password,
+        confirmPassword
+      })
+    );
   }
 
   function goToMode(nextMode: Mode) {
@@ -193,6 +248,7 @@ export function LoginScreen() {
 
     setStatus("Sending account confirmation email...");
     setPreviewCode(null);
+    storePendingSignup();
 
     const response = await fetch("/api/auth/send-code", {
       method: "POST",
@@ -210,6 +266,10 @@ export function LoginScreen() {
     setMode("verify");
     setPreviewCode(result.code ?? null);
     setStatus("Account confirmation code sent.");
+  }
+
+  async function resendCode() {
+    await sendCreateVerification();
   }
 
   async function verifyCode() {
@@ -238,23 +298,27 @@ export function LoginScreen() {
       provider: "email"
     });
 
-    router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(PENDING_SIGNUP_KEY);
+    }
+
+    router.push(sessionUser.role === "admin" ? "/admin?tab=database" : "/dashboard");
   }
 
   function handleSignIn() {
     const sessionUser = signInWithPassword(email, password);
 
     if (!sessionUser) {
-      setStatus("We could not find a member with those credentials.");
+      setStatus("We could not sign you in. Check your email, password, or verify your account first.");
       return;
     }
 
-    router.push(sessionUser.role === "admin" ? "/admin" : "/dashboard");
+    router.push(sessionUser.role === "admin" ? "/admin?tab=database" : "/dashboard");
   }
 
   function continueWithGoogle() {
     if (!googleClientId || !googleReady || !window.google?.accounts?.id) {
-      setStatus("Google sign-in is ready to wire, but I still need the live Google OAuth client ID to activate it.");
+      setStatus("Google sign-in is not ready yet.");
       return;
     }
 
@@ -286,7 +350,7 @@ export function LoginScreen() {
           setStatus("That Google email already has a BBC account, so we signed you in directly.");
         }
 
-        router.push(result.user.role === "admin" ? "/admin" : "/dashboard");
+        router.push(result.user.role === "admin" ? "/admin?tab=database" : "/dashboard");
       }
     });
 
@@ -366,7 +430,8 @@ export function LoginScreen() {
                   <ArrowRight size={14} />
                   Continue
                 </button>
-                <button type="button" className="google-button compact-google" onClick={continueWithGoogle}>
+                <button type="button" className="google-button compact-google google-live-button" onClick={continueWithGoogle}>
+                  <GoogleIcon />
                   Continue with Google
                 </button>
               </div>
@@ -399,14 +464,15 @@ export function LoginScreen() {
               </label>
 
               <div className="minimal-login-actions two-button-row">
-                <button type="button" className="ghost-button compact" onClick={() => setCreateStep(1)}>
+                <button type="button" className="ghost-button compact auth-back-button" onClick={() => setCreateStep(1)}>
                   Back
                 </button>
                 <button type="button" className="primary-button compact" onClick={sendCreateVerification}>
                   <Mail size={14} />
                   Confirm account email
                 </button>
-                <button type="button" className="google-button compact-google" onClick={continueWithGoogle}>
+                <button type="button" className="google-button compact-google google-live-button" onClick={continueWithGoogle}>
+                  <GoogleIcon />
                   Continue with Google
                 </button>
               </div>
@@ -428,7 +494,8 @@ export function LoginScreen() {
                   <LockKeyhole size={14} />
                   Sign in
                 </button>
-                <button type="button" className="google-button compact-google" onClick={continueWithGoogle}>
+                <button type="button" className="google-button compact-google google-live-button" onClick={continueWithGoogle}>
+                  <GoogleIcon />
                   Continue with Google
                 </button>
               </div>
@@ -444,7 +511,7 @@ export function LoginScreen() {
               <div className="minimal-login-actions two-button-row">
                 <button
                   type="button"
-                  className="ghost-button compact"
+                  className="ghost-button compact auth-back-button"
                   onClick={() => {
                     setMode("create");
                     setCreateStep(2);
@@ -456,6 +523,10 @@ export function LoginScreen() {
                 <button type="button" className="primary-button compact" onClick={verifyCode}>
                   <LockKeyhole size={14} />
                   Continue
+                </button>
+                <button type="button" className="table-link-button" onClick={resendCode}>
+                  <Mail size={14} />
+                  Resend code
                 </button>
               </div>
             </>
@@ -473,3 +544,13 @@ export function LoginScreen() {
     </main>
   );
 }
+  function GoogleIcon() {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14">
+        <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.6 3.8-5.4 3.8-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3 .8 3.7 1.5l2.5-2.4C16.6 3.4 14.5 2.5 12 2.5 6.8 2.5 2.6 6.8 2.6 12S6.8 21.5 12 21.5c6.9 0 9.1-4.8 9.1-7.3 0-.5 0-.9-.1-1.3H12Z"/>
+        <path fill="#34A853" d="M2.6 12c0 1.9.7 3.7 2 5l3-2.3c-.8-.7-1.3-1.7-1.3-2.7s.5-2 1.3-2.7l-3-2.3c-1.3 1.3-2 3.1-2 5Z"/>
+        <path fill="#FBBC05" d="M12 21.5c2.5 0 4.6-.8 6.2-2.3l-3-2.4c-.8.6-1.9 1-3.2 1-2.4 0-4.5-1.6-5.2-3.8l-3 2.3c1.6 3.1 4.8 5.2 9 5.2Z"/>
+        <path fill="#4285F4" d="M18.2 19.2c1.7-1.6 2.9-4 2.9-7.2 0-.5 0-.9-.1-1.3H12v3.9h5.4c-.3 1.2-1 2.5-2.4 3.4l3.2 1.2Z"/>
+      </svg>
+    );
+  }

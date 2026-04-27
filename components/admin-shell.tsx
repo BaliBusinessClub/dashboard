@@ -28,10 +28,11 @@ import {
   Users
 } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
-import { adminAnalyticsCards, adminAnalyticsCharts, adminMessages, adminSettings, dashboardUsers } from "@/lib/mock-data";
+import { adminAnalyticsCards, adminAnalyticsCharts, adminMessages, adminSettings } from "@/lib/mock-data";
 import { DashboardEvent, getPendingEvents, getReviewedEvents, removeReviewedEvent, reviewEvent, updateReviewedEvent } from "@/lib/event-store";
 import { getStoredMessages, InboxMessage, updateMessageStatus } from "@/lib/message-store";
 import { getPendingPartners, getReviewedPartners, removeReviewedPartner, reviewPartnerApplication, PartnerApplication, updateReviewedPartner } from "@/lib/partner-store";
+import { deleteAccount, getAllAccounts } from "@/lib/user-store";
 
 const adminTabs = [
   { id: "analytics", label: "Analytics", icon: Users },
@@ -167,6 +168,16 @@ export function AdminShell() {
     const timer = window.setTimeout(() => setAdminToast(null), 2200);
     return () => window.clearTimeout(timer);
   }, [adminToast]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const nextTab = new URLSearchParams(window.location.search).get("tab") as AdminTab | null;
+    if (nextTab && adminTabs.some((tab) => tab.id === nextTab)) {
+      setActiveTab(nextTab);
+    }
+  }, []);
   const visibleMessages = useMemo(() => {
     return allMessages.filter((message) => {
       const status = "status" in message ? message.status : "inbox";
@@ -180,9 +191,22 @@ export function AdminShell() {
 
   const activeAnalyticsData = analyticsView === "pages" ? adminAnalyticsCharts.pageVisits : adminAnalyticsCharts.ageRanges;
   const activeAnalyticsTitle = analyticsView === "pages" ? "Most visited pages" : "Member age ranges";
+  const memberRows = useMemo(
+    () =>
+      getAllAccounts().map((account) => ({
+        name: account.name,
+        email: account.email,
+        phone: account.whatsapp ?? "-",
+        membership: account.memberType || (account.role === "admin" ? "Admin" : "Member"),
+        ageRange: account.ageRange || "-",
+        joined: account.memberSince,
+        role: account.role
+      })),
+    [adminToast]
+  );
   const filteredMembers = useMemo(
-    () => dashboardUsers.filter((member) => memberFilter === "All" || member.membership === memberFilter),
-    [memberFilter]
+    () => memberRows.filter((member) => memberFilter === "All" || member.membership === memberFilter),
+    [memberFilter, memberRows]
   );
 
   async function refreshSection(section: string) {
@@ -740,7 +764,7 @@ export function AdminShell() {
               </div>
 
               <div className="filter-bar">
-                {["All", ...Array.from(new Set(dashboardUsers.map((member) => member.membership)))].map((type) => (
+                {["All", ...Array.from(new Set(memberRows.map((member) => member.membership)))].map((type) => (
                   <button key={type} type="button" className={memberFilter === type ? "filter-btn active" : "filter-btn"} onClick={() => setMemberFilter(type)}>
                     {type}
                   </button>
@@ -757,6 +781,7 @@ export function AdminShell() {
                       <th>Membership</th>
                       <th>Age range</th>
                       <th>Joined</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -768,6 +793,23 @@ export function AdminShell() {
                         <td>{member.membership}</td>
                         <td>{member.ageRange}</td>
                         <td>{member.joined}</td>
+                        <td>
+                          {member.role !== "admin" ? (
+                            <button
+                              type="button"
+                              className="mini-action danger"
+                              onClick={() => {
+                                deleteAccount(member.email);
+                                setAdminToast("User deleted.");
+                              }}
+                            >
+                              <Trash2 size={14} />
+                              Delete
+                            </button>
+                          ) : (
+                            <span className="admin-locked-copy">Protected</span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

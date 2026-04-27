@@ -125,6 +125,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return null;
     }
 
+    if (account.provider === "email" && account.emailVerified === false) {
+      return null;
+    }
+
     const sessionUser = toSessionUser(account);
     persist(sessionUser);
     return sessionUser;
@@ -146,6 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password: account.password,
       role: account.email.trim().toLowerCase() === ADMIN_EMAIL ? "admin" : "member",
       provider: account.provider ?? "email",
+      emailVerified: account.provider === "google" ? true : true,
       memberSince: new Date().toISOString().slice(0, 10),
       ageRange: account.ageRange ?? "",
       memberType: account.memberType ?? "",
@@ -173,7 +178,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const updated = saveAccount({
         ...existing,
         picture: profile.picture || existing.picture,
-        name: profile.name || existing.name
+        name: profile.name || existing.name,
+        emailVerified: true
       });
       const sessionUser = toSessionUser(updated);
       persist(sessionUser);
