@@ -120,19 +120,17 @@ function getDailyQuote() {
 }
 
 function sanitizeCopy(value: string) {
-  const repaired = value
-    .replace(/ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢/g, "'")
-    .replace(/ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·/g, "·")
-    .replace(/Ã¢â‚¬â„¢|â€™/g, "'")
-    .replace(/Ã¢â‚¬â€œ|â€“/g, "-")
-    .replace(/Ã‚/g, " ")
-    .replace(/A A A A A a A A A A A A a A 3 4A A s/g, "'s");
-
-  return repaired
-    .normalize("NFKD")
-    .replace(/[^\x20-\x7E]/g, " ")
-    .replace(/\s*[\-|.]\s*/g, " - ")
+  return value
+    .replace(/GEONETA\s+A\s+A\s+A\s+A\s+A\s+a\s+A\s+A\s+A\s+A\s+A\s+A\s+a\s+A\s+3\s+4A\s+A\s+s/gi, "GEONET's")
+    .replace(/(Ã.|Â.|â.|Æ.|¢|€|™|‚|¬|ž|š|Å|¡|¾)+/g, " ")
+    .replace(/\s*\u00b7\s*/g, " · ")
+    .replace(/\s*[|]\s*/g, " · ")
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/[–—]/g, "-")
+    .replace(/\s+-\s*/g, " - ")
     .replace(/\s{2,}/g, " ")
+    .replace(/\s+[.-]$/, "")
     .trim();
 }
 
@@ -383,13 +381,15 @@ function CraneIcon({ size = 14 }: { size?: number }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
       <path
-        d="M4 20h16M6 20V8h4m0 0 4-3h4m-8 3h8m-2 0v8m0-8-4 4m4-4 2 2m-6 2h4"
+        d="M3 20.25h18M6.25 20V5.75h2.5V20m0-10.25h8.5m-4.75 0V6.25h4.25m-1.5 3.5V20m0-7.25-3.75 3.5m3.75-3.5 2.25 2m-8.5 2.5h6"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.7"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      <circle cx="15.75" cy="20" r="1.15" fill="currentColor" stroke="none" />
+      <circle cx="8.75" cy="20" r="1.15" fill="currentColor" stroke="none" />
     </svg>
   );
 }
@@ -829,7 +829,7 @@ export function DashboardShell() {
         .filter((episode) => !["x5iGqCEj1og", "vyL_5E7htbo"].includes(episode.id))
         .map((episode) => ({
           ...episode,
-          title: sanitizeCopy(homepageTitleOverrides[episode.id] ?? episode.title),
+          title: sanitizeCopy(homepageTitleOverrides[episode.id] ?? episode.title).replace(/\s+-$/, ""),
           description: sanitizeCopy(episode.description),
           topic: sanitizeCopy(episode.topic)
         }))
@@ -877,18 +877,36 @@ export function DashboardShell() {
     () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const sixMonthsAhead = new Date(today);
-      sixMonthsAhead.setMonth(sixMonthsAhead.getMonth() + 6);
+      const scopedEvents = approvedEvents.filter((event) => eventTopic === "All" || event.category === eventTopic);
+      const toDayStart = (value: Date) => {
+        const next = new Date(value);
+        next.setHours(0, 0, 0, 0);
+        return next;
+      };
 
-      return approvedEvents.filter((event) => {
-        const eventDate = parseEventDateParts(event.date).parsed;
-        eventDate.setHours(0, 0, 0, 0);
-        return (
-          (eventTopic === "All" || event.category === eventTopic) &&
-          eventDate >= today &&
-          eventDate <= sixMonthsAhead
-        );
-      });
+      const withParsedDates = scopedEvents
+        .map((event) => ({
+          event,
+          eventDate: toDayStart(parseEventDateParts(event.date).parsed)
+        }))
+        .filter(({ eventDate }) => !Number.isNaN(eventDate.getTime()))
+        .sort((left, right) => left.eventDate.getTime() - right.eventDate.getTime());
+
+      const withinWindow = (anchorDate: Date) => {
+        const sixMonthsAhead = new Date(anchorDate);
+        sixMonthsAhead.setMonth(sixMonthsAhead.getMonth() + 6);
+        return withParsedDates
+          .filter(({ eventDate }) => eventDate >= anchorDate && eventDate <= sixMonthsAhead)
+          .map(({ event }) => event);
+      };
+
+      const currentWindow = withinWindow(today);
+      if (currentWindow.length) {
+        return currentWindow;
+      }
+
+      const firstFutureDate = withParsedDates.find(({ eventDate }) => eventDate >= today)?.eventDate ?? withParsedDates[0]?.eventDate;
+      return firstFutureDate ? withinWindow(firstFutureDate) : [];
     },
     [approvedEvents, eventTopic]
   );

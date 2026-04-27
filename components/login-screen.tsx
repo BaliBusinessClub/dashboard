@@ -17,6 +17,16 @@ declare global {
           }) => void;
           prompt: () => void;
         };
+        oauth2?: {
+          initTokenClient: (config: {
+            client_id: string;
+            scope: string;
+            prompt?: string;
+            callback: (response: { access_token?: string; error?: string }) => void;
+          }) => {
+            requestAccessToken: () => void;
+          };
+        };
       };
     };
   }
@@ -25,10 +35,6 @@ declare global {
 type Mode = "signin" | "create" | "verify";
 type CreateStep = 1 | 2;
 
-const ADMIN_EMAIL = "admin@balibusinessclub.com";
-const MEMBER_EMAIL = "member@balibusinessclub.com";
-const MEMBER_PASSWORD = "BBCmember2026!";
-const ADMIN_PASSWORD = "BBCadmin2026!";
 const GOOGLE_CLIENT_ID_FALLBACK = "137292364348-1a8kb9k2fdr7qpo3gcqfku9281omlahh.apps.googleusercontent.com";
 const PENDING_SIGNUP_KEY = "bbc-pending-signup";
 
@@ -61,24 +67,6 @@ function isValidWhatsapp(value: string) {
   const normalized = normalizePhoneNumber(value);
   const digits = normalized.replace(/\D/g, "");
   return digits.length >= 8 && digits.length <= 15;
-}
-
-function decodeGoogleCredential(token: string) {
-  const parts = token.split(".");
-  if (parts.length < 2) {
-    return null;
-  }
-
-  try {
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
-    return {
-      email: String(payload.email ?? ""),
-      name: String(payload.name ?? ""),
-      picture: String(payload.picture ?? "")
-    };
-  } catch {
-    return null;
-  }
 }
 
 export function LoginScreen() {
@@ -316,8 +304,48 @@ export function LoginScreen() {
     router.push(sessionUser.role === "admin" ? "/admin?tab=database" : "/dashboard");
   }
 
+  async function handleGoogleAccessToken(accessToken: string) {
+    const profileResponse = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if (!profileResponse.ok) {
+      setStatus("Google sign-in could not load your account details.");
+      return;
+    }
+
+    const profile = (await profileResponse.json()) as {
+      email?: string;
+      name?: string;
+      picture?: string;
+    };
+
+    if (!profile.email) {
+      setStatus("Google sign-in could not read your account details.");
+      return;
+    }
+
+    const normalizedWhatsapp = normalizePhoneNumber(whatsapp);
+    const result = signInWithGoogleProfile({
+      email: profile.email,
+      name: profile.name || name,
+      picture: profile.picture,
+      ageRange,
+      memberType: effectiveMemberType,
+      whatsapp: mode === "create" ? normalizedWhatsapp : undefined
+    });
+
+    if (mode === "create" && !result.created) {
+      setStatus("That Google email already has a BBC account, so we signed you in directly.");
+    }
+
+    router.push(result.user.role === "admin" ? "/admin?tab=database" : "/dashboard");
+  }
+
   function continueWithGoogle() {
-    if (!googleClientId || !googleReady || !window.google?.accounts?.id) {
+    if (!googleClientId || !googleReady || !window.google?.accounts?.oauth2) {
       setStatus("Google sign-in is not ready yet.");
       return;
     }
@@ -326,35 +354,21 @@ export function LoginScreen() {
       return;
     }
 
-    window.google.accounts.id.initialize({
+    const tokenClient = window.google.accounts.oauth2.initTokenClient({
       client_id: googleClientId,
+      scope: "openid email profile",
+      prompt: "select_account",
       callback: (response) => {
-        const profile = response.credential ? decodeGoogleCredential(response.credential) : null;
-
-        if (!profile?.email) {
-          setStatus("Google sign-in could not read your account details.");
+        if (!response.access_token) {
+          setStatus(response.error ? `Google sign-in failed: ${response.error}` : "Google sign-in could not start.");
           return;
         }
-
-        const normalizedWhatsapp = normalizePhoneNumber(whatsapp);
-        const result = signInWithGoogleProfile({
-          email: profile.email,
-          name: profile.name || name,
-          picture: profile.picture,
-          ageRange,
-          memberType: effectiveMemberType,
-          whatsapp: mode === "create" ? normalizedWhatsapp : undefined
+        handleGoogleAccessToken(response.access_token).catch(() => {
+          setStatus("Google sign-in could not load your account details.");
         });
-
-        if (mode === "create" && !result.created) {
-          setStatus("That Google email already has a BBC account, so we signed you in directly.");
-        }
-
-        router.push(result.user.role === "admin" ? "/admin?tab=database" : "/dashboard");
       }
     });
-
-    window.google.accounts.id.prompt();
+    tokenClient.requestAccessToken();
   }
 
   if (!ready) {
@@ -534,11 +548,6 @@ export function LoginScreen() {
 
           {status ? <p className="status-banner">{status}</p> : null}
           {previewCode ? <p className="preview-banner">Preview code: {previewCode}</p> : null}
-          {mode === "signin" ? (
-            <p className="preview-banner">
-              Member demo: {MEMBER_EMAIL} / {MEMBER_PASSWORD} - Admin demo: {ADMIN_EMAIL} / {ADMIN_PASSWORD}
-            </p>
-          ) : null}
         </div>
       </section>
     </main>
