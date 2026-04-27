@@ -119,7 +119,15 @@ function getDailyQuote() {
 }
 
 function sanitizeCopy(value: string) {
-  return value
+  const repaired = value
+    .replace(/ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢/g, "'")
+    .replace(/ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·/g, "·")
+    .replace(/Ã¢â‚¬â„¢|â€™/g, "'")
+    .replace(/Ã¢â‚¬â€œ|â€“/g, "-")
+    .replace(/Ã‚/g, " ")
+    .replace(/A A A A A a A A A A A A a A 3 4A A s/g, "'s");
+
+  return repaired
     .normalize("NFKD")
     .replace(/[^\x20-\x7E]/g, " ")
     .replace(/\s*[\-|.]\s*/g, " - ")
@@ -388,7 +396,7 @@ function InteractiveMarketGraph({
   const max = Math.max(...values);
   const min = Math.min(...values);
   const width = 860;
-  const height = 300;
+  const height = 264;
   const paddingX = 42;
   const paddingTop = 28;
   const paddingBottom = 52;
@@ -415,6 +423,7 @@ function InteractiveMarketGraph({
     const y = paddingTop + step * usableHeight;
     return { value, y };
   });
+  const activePoint = points[activeIndex];
 
   return (
     <div className="market-graph-shell">
@@ -422,8 +431,12 @@ function InteractiveMarketGraph({
         <svg viewBox={`0 0 ${width} ${height}`} className="market-graph-svg" role="img" aria-label={title}>
           <defs>
             <linearGradient id="bbcMarketArea" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#ffd800" stopOpacity="0.32" />
-              <stop offset="100%" stopColor="#ffd800" stopOpacity="0.02" />
+              <stop offset="0%" stopColor="#096cfe" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="#096cfe" stopOpacity="0.02" />
+            </linearGradient>
+            <linearGradient id="bbcMarketLine" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="#ffd800" />
+              <stop offset="100%" stopColor="#096cfe" />
             </linearGradient>
           </defs>
 
@@ -445,6 +458,16 @@ function InteractiveMarketGraph({
           <path d={areaPath} className="market-area-path" />
           <path d={linePath} className="market-line-path" />
 
+          {activePoint ? (
+            <line
+              x1={activePoint.x}
+              x2={activePoint.x}
+              y1={paddingTop}
+              y2={height - paddingBottom}
+              className="market-active-line"
+            />
+          ) : null}
+
           {points.map((point, index) => (
             <g key={point.label}>
               <circle
@@ -461,19 +484,39 @@ function InteractiveMarketGraph({
             </g>
           ))}
 
-          {points[activeIndex] ? (
-            <g transform={`translate(${Math.min(points[activeIndex].x + 12, width - 190)}, ${Math.max(points[activeIndex].y - 78, 18)})`}>
-              <rect width="176" height="58" rx="14" className="market-tooltip-box" />
-              <text x="14" y="22" className="market-tooltip-label">
-                {points[activeIndex].label}
+          {activePoint ? (
+            <g transform={`translate(${Math.min(activePoint.x + 12, width - 224)}, ${Math.max(activePoint.y - 92, 18)})`}>
+              <rect width="210" height="74" rx="18" className="market-tooltip-box" />
+              <text x="16" y="22" className="market-tooltip-label">
+                {activePoint.label}
               </text>
-              <text x="14" y="42" className="market-tooltip-value">
-                {formatChartValue(points[activeIndex].value, unit)}
+              <text x="16" y="43" className="market-tooltip-value">
+                {formatChartValue(activePoint.value, unit)}
+              </text>
+              <text x="16" y="61" className="market-tooltip-copy">
+                Hover across the report points to compare the latest REID trend.
               </text>
             </g>
           ) : null}
         </svg>
       </div>
+
+      {activePoint ? (
+        <div className="market-summary-row">
+          <div className="market-summary-chip">
+            <span>Active point</span>
+            <strong>{activePoint.label}</strong>
+          </div>
+          <div className="market-summary-chip">
+            <span>Value</span>
+            <strong>{formatChartValue(activePoint.value, unit)}</strong>
+          </div>
+          <div className="market-summary-chip">
+            <span>Source</span>
+            <strong>REID market reports</strong>
+          </div>
+        </div>
+      ) : null}
 
       <div className="market-point-picker">
         {points.map((point, index) => (
@@ -744,12 +787,12 @@ export function DashboardShell() {
       const homepageTitleOverrides: Record<string, string> = {
         PG2TFBF0uY8: "Unlocking Winning Talent: Insights from a Top Bali Head Hunter",
         Ayb4THzSjE0: "Bali Real Estate Market in 2026: What the Data Really Shows",
-        LkiYTQ1k0ss: "From marketing to brokering and development: Inside GEONETÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s Real Estate Machine",
+        LkiYTQ1k0ss: "From Marketing to Brokering and Development: Inside GEONET's Real Estate Machine",
         "4jIi_bXuUSU": "Inside The Kedungu Fund: 2025 Growth, Strategy & Results",
         KScozjNYu9Q: "How Bali Business Founders Can Attract Investors from the Middle East",
         UNaQQiIjoCk: "Bali Property Made Simple: The 9-Step Process Explained",
         "0cMjvf1lb3g": "How to Sell Out Your Property Development in a Day: The Future of Off-Plan Sales",
-        yxJwNl3n3t4: "The Kedungu FundÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s $10M Milestone: A Look Ahead",
+        yxJwNl3n3t4: "The Kedungu Fund's $10M Milestone: A Look Ahead",
         bfHu20vi2g8: "Bali Property: Off-Plan Buyer Checklist (Avoid These Common Mistakes)",
         G1lT0E2nSGQ: "The Secret Growth Formula Content Creators Must Know!",
         "7bXHvn8Vksw": "BALI REAL ESTATE: HOW TO TRIPLE YOUR INVESTMENT RETURNS!",
@@ -988,7 +1031,7 @@ export function DashboardShell() {
     submitEvent({
       title: eventForm.title,
       category: finalCategory,
-      date: `${eventForm.date} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${eventForm.time}`,
+      date: `${eventForm.date} - ${eventForm.time}`,
       location: eventForm.location,
       description: eventForm.description,
       signupUrl: normalizedSignup,
@@ -1329,7 +1372,7 @@ export function DashboardShell() {
                     <div className="resource-actions market-report-actions">
                       <button
                         type="button"
-                        className="mini-action"
+                        className="mini-action save-button"
                         onClick={() =>
                           toggleFavorite({
                             id: `fav-${report.id}`,
@@ -1431,7 +1474,7 @@ export function DashboardShell() {
                           <button type="button" className="table-link-button" onClick={() => setActiveArticle(article)}>
                             Read more
                           </button>
-                          <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
+                          <button type="button" className="mini-action save-button" onClick={() => toggleFavorite(favorite)}>
                             <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
@@ -1486,7 +1529,7 @@ export function DashboardShell() {
                       id: `fav-${event.id}`,
                       type: "Event",
                       title: event.title,
-                      note: `${event.category} ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ ${event.date}`,
+                      note: `${event.category} - ${event.date}`,
                       sourceId: event.id
                     };
 
@@ -1494,7 +1537,6 @@ export function DashboardShell() {
                       <article key={event.id} className="event-card">
                         <div className="event-card-top">
                           <span className="news-cat">{event.category}</span>
-                          <small>{event.source}</small>
                         </div>
                         <strong>{event.title}</strong>
                         <p>{event.description}</p>
@@ -1512,7 +1554,7 @@ export function DashboardShell() {
                           <a href={event.signupUrl} target="_blank" rel="noreferrer" className="table-link-button">
                             Sign up
                           </a>
-                          <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
+                          <button type="button" className="mini-action save-button" onClick={() => toggleFavorite(favorite)}>
                             <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
@@ -1557,18 +1599,30 @@ export function DashboardShell() {
                         {day}
                       </div>
                     ))}
-                    {monthCalendar.cells.map((cell, index) => (
-                      <div key={`${cell.date?.toISOString() ?? "empty"}-${index}`} className={cell.items.length ? "calendar-cell active" : "calendar-cell"}>
-                        {cell.date ? <span className="calendar-date">{cell.date.getDate()}</span> : null}
-                        <div className="calendar-cell-events">
-                          {cell.items.slice(0, 2).map((item) => (
-                            <a key={item.id} href={item.signupUrl} target="_blank" rel="noreferrer" className="calendar-chip">
-                              {item.title}
-                            </a>
-                          ))}
+                    {monthCalendar.cells.map((cell, index) => {
+                      const isToday = cell.date ? formatDateKey(cell.date) === formatDateKey(new Date()) : false;
+                      return (
+                        <div
+                          key={`${cell.date?.toISOString() ?? "empty"}-${index}`}
+                          className={[
+                            "calendar-cell",
+                            cell.items.length ? "active" : "",
+                            isToday ? "today" : ""
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                        >
+                          {cell.date ? <span className="calendar-date">{cell.date.getDate()}</span> : null}
+                          <div className="calendar-cell-events">
+                            {cell.items.slice(0, 2).map((item) => (
+                              <a key={item.id} href={item.signupUrl} target="_blank" rel="noreferrer" className="calendar-chip">
+                                {item.title}
+                              </a>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1621,13 +1675,7 @@ export function DashboardShell() {
                             <Youtube size={14} />
                             Watch
                           </a>
-                          <button
-                            type="button"
-                            className="mini-action"
-                            onClick={() => {
-                              toggleFavorite(favorite);
-                            }}
-                          >
+                          <button type="button" className="mini-action save-button" onClick={() => toggleFavorite(favorite)}>
                             <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>
@@ -1671,7 +1719,7 @@ export function DashboardShell() {
                           <small>{resource.source}</small>
                         </div>
                         <div className="resource-actions visual">
-                          <button type="button" className="mini-action" onClick={() => toggleFavorite(favorite)}>
+                          <button type="button" className="mini-action save-button" onClick={() => toggleFavorite(favorite)}>
                             <Heart size={14} className="save-heart" fill={isFavorite(favorite.id) ? "currentColor" : "none"} />
                             {isFavorite(favorite.id) ? "Saved" : "Save"}
                           </button>

@@ -475,7 +475,7 @@ export function AdminShell() {
                       <div className="event-actions">
                         <button
                           type="button"
-                          className="ghost-button compact"
+                          className="copy-contact-button"
                           onClick={(event) => {
                             event.stopPropagation();
                             navigator.clipboard.writeText(("whatsapp" in message && message.whatsapp) ? message.whatsapp : message.email);
@@ -489,7 +489,7 @@ export function AdminShell() {
                           <>
                             <button
                               type="button"
-                              className="ghost-button compact"
+                              className="action-approve"
                               onClick={(event) => {
                                 event.stopPropagation();
                                 setMessageStatus(message, "replied");
@@ -500,7 +500,7 @@ export function AdminShell() {
                             </button>
                             <button
                               type="button"
-                              className="ghost-button compact"
+                              className="action-reject"
                               onClick={(event) => {
                                 event.stopPropagation();
                                 setMessageStatus(message, "archived");
@@ -513,7 +513,7 @@ export function AdminShell() {
                         ) : messageView === "archived" ? (
                           <button
                             type="button"
-                            className="ghost-button compact"
+                            className="action-approve"
                             onClick={(event) => {
                               event.stopPropagation();
                               setMessageStatus(message, "inbox");
@@ -525,7 +525,7 @@ export function AdminShell() {
                         ) : (
                           <button
                             type="button"
-                            className="ghost-button compact"
+                            className="action-reject"
                             onClick={(event) => {
                               event.stopPropagation();
                               setMessageStatus(message, "archived");
@@ -920,7 +920,7 @@ export function AdminShell() {
               <div className="event-actions">
                 <button
                   type="button"
-                  className="ghost-button compact"
+                  className="copy-contact-button"
                   onClick={() => {
                     navigator.clipboard.writeText(selectedMessage.email);
                     setAdminToast("Email copied.");
@@ -932,7 +932,7 @@ export function AdminShell() {
                 {"whatsapp" in selectedMessage && selectedMessage.whatsapp ? (
                   <button
                     type="button"
-                    className="ghost-button compact"
+                    className="copy-contact-button"
                     onClick={() => {
                       navigator.clipboard.writeText(selectedMessage.whatsapp ?? "");
                       setAdminToast("WhatsApp copied.");
@@ -944,7 +944,7 @@ export function AdminShell() {
                 ) : null}
                 <button
                   type="button"
-                  className="table-link-button"
+                  className="action-approve"
                   onClick={() => {
                     setMessageStatus(selectedMessage, "replied");
                     setSelectedMessage(null);
