@@ -2661,3 +2661,68 @@ tbody td {
 .action-approve:hover svg {
   color: #07130b;
 }
+
+.save-button:hover {
+  color: #fff;
+}
+
+.save-button:hover svg {
+  color: #fff;
+}
+
+.save-button:hover .save-heart {
+  color: #000;
+}
+
+.watch-pill:hover {
+  color: #fff;
+}
+
+.watch-pill:hover svg {
+  color: #fff;
+}
+
+.topic-filter-bar,
+.region-filter-bar {
+  gap: 14px;
+}
+
+.topic-filter-bar .filter-btn,
+.region-filter-bar .filter-btn {
+  margin-right: 0;
+}
+
+.favorite-event-meta {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.favorite-event-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bbc-copy);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.modal-card.wide-form {
+  width: min(720px, calc(100vw - 32px));
+  position: relative;
+  padding: 30px 30px 28px;
+}
+
+.modal-card.wide-form .icon-button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  border-radius: 10px;
+}
+
+.modal-card.wide-form .modal-head {
+  padding-right: 34px;
+}

@@ -378,6 +378,21 @@ function SocialLogo({ icon }: { icon: (typeof socials)[number]["icon"] }) {
   );
 }
 
+function CraneIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+      <path
+        d="M4 20h16M6 20V8h4m0 0 4-3h4m-8 3h8m-2 0v8m0-8-4 4m4-4 2 2m-6 2h4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function InteractiveMarketGraph({
   values,
   activeIndex,
@@ -486,15 +501,12 @@ function InteractiveMarketGraph({
 
           {activePoint ? (
             <g transform={`translate(${Math.min(activePoint.x + 12, width - 224)}, ${Math.max(activePoint.y - 92, 18)})`}>
-              <rect width="210" height="74" rx="18" className="market-tooltip-box" />
+              <rect width="210" height="56" rx="18" className="market-tooltip-box" />
               <text x="16" y="22" className="market-tooltip-label">
                 {activePoint.label}
               </text>
               <text x="16" y="43" className="market-tooltip-value">
                 {formatChartValue(activePoint.value, unit)}
-              </text>
-              <text x="16" y="61" className="market-tooltip-copy">
-                Hover across the report points to compare the latest REID trend.
               </text>
             </g>
           ) : null}
@@ -828,20 +840,24 @@ export function DashboardShell() {
   const allNewsArticles = useMemo(
     () =>
       newsSections.flatMap((section) =>
-        section.articles.map((article) => ({
-          ...article,
-          title: sanitizeCopy(article.title),
-          teaser: sanitizeCopy(article.teaser),
-          content: sanitizeCopy(article.content),
-          date: sanitizeCopy(article.date),
-          topic: section.title,
-          region:
-            "region" in article && (article.region === "Bali" || article.region === "Indonesia")
-              ? article.region
-              : article.url.includes("/indonesia/")
-                ? "Indonesia"
-                : "Bali"
-        }))
+        section.articles.map((article) => {
+          const entry = article as any;
+          const articleUrl = String(entry.url ?? "");
+          return {
+            ...entry,
+            title: sanitizeCopy(entry.title),
+            teaser: sanitizeCopy(entry.teaser),
+            content: sanitizeCopy(entry.content),
+            date: sanitizeCopy(entry.date),
+            topic: section.title,
+            region:
+              entry.region === "Bali" || entry.region === "Indonesia"
+                ? entry.region
+                : articleUrl.includes("/indonesia/")
+                  ? "Indonesia"
+                  : "Bali"
+          };
+        })
       ),
     []
   );
@@ -1435,7 +1451,7 @@ export function DashboardShell() {
                       className={newsTopic === section.title ? "filter-btn active" : "filter-btn"}
                       onClick={() => setNewsTopic(section.title)}
                     >
-                      <Icon size={14} />
+                      {section.title === "Infrastructure" ? <CraneIcon size={14} /> : <Icon size={14} />}
                       {section.title}
                     </button>
                   );
@@ -1801,10 +1817,36 @@ export function DashboardShell() {
                                 </div>
                               ) : null}
                               <strong>{item.title}</strong>
-                              {item.type === "News" || item.type === "Event" ? <p>{getFavoriteDetail(item)}</p> : null}
+                              {item.type === "News" ? <p>{getFavoriteDetail(item)}</p> : null}
+                              {item.type === "Event" ? (
+                                <div className="favorite-event-meta">
+                                  {(() => {
+                                    const event = approvedEvents.find((entry) => entry.id === item.sourceId);
+                                    return event ? (
+                                      <>
+                                        <span>
+                                          <CalendarDays size={14} />
+                                          {sanitizeCopy(event.date)}
+                                        </span>
+                                        <span>
+                                          <MapPin size={14} />
+                                          {sanitizeCopy(event.location)}
+                                        </span>
+                                      </>
+                                    ) : null;
+                                  })()}
+                                </div>
+                              ) : null}
                               <div className="favorite-actions">
                                 <button type="button" className="table-link-button" onClick={() => openFavorite(item)}>
-                                  Open
+                                  {item.type === "Podcast" ? (
+                                    <>
+                                      <Youtube size={14} />
+                                      Watch
+                                    </>
+                                  ) : (
+                                    "Open"
+                                  )}
                                 </button>
                                 <button
                                   type="button"

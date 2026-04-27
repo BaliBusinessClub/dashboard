@@ -259,35 +259,57 @@ export const newsSections = [
       {
         id: "news-business-1",
         region: "Indonesia",
-        title: "Indonesia leans on ASEAN and domestic demand to protect tourism activity",
-        teaser: "A strategy shift toward regional and domestic travelers could reshape how Bali-facing businesses think about demand resilience.",
+        title: "Finance Minister projects RI's economy to grow 5.7 percent in Q2 2026",
+        teaser: "The macro backdrop is still supportive for founders and investors watching demand, spending, and confidence.",
         content:
-          "The Jakarta Post reported that Indonesia is increasing its reliance on ASEAN and domestic travelers as geopolitical disruption affects long-haul routes. For Bali businesses, this matters because visitor composition can change quickly when airline networks face pressure. A stronger ASEAN and domestic mix can alter average spend, booking behavior, seasonality, and what kinds of products or services perform best.\n\nFor investors and operators, the practical takeaway is that demand planning cannot rely only on one international traveler profile. Hospitality, lifestyle, and service businesses should watch how policy, flight connectivity, and source market shifts affect both occupancy and pricing power. This also reinforces the value of adaptive business models that can serve short-term tourists, longer-stay residents, and regional travelers with different budgets and expectations.",
-        source: "The Jakarta Post",
-        date: "April 15, 2026",
-        url: "https://www.thejakartapost.com/business/2026/04/16/indonesia-to-tap-asean-domestic-tourism-amid-iran-war-fallout.html"
+          "ANTARA reported that Finance Minister Sri Mulyani projected Indonesia's economy could grow 5.7 percent in the second quarter of 2026. For Bali businesses, that matters because national momentum still shapes credit conditions, consumer confidence, and the broader investment appetite behind tourism, property, and lifestyle spending.\n\nThe key takeaway is that Bali may keep benefiting from a domestic economy that is still expanding even while global conditions remain noisy. Members should read this as a signal that demand resilience is still present, but execution quality and market positioning will decide who captures it.",
+        source: "ANTARA News",
+        date: "April 24, 2026",
+        url: "https://en.antaranews.com/business"
       },
       {
         id: "news-business-2",
         region: "Indonesia",
-        title: "Community-based tourism is moving higher on the national agenda",
-        teaser: "Policy is signaling a broader tourism model that may reward local partnerships and more distributed value creation.",
+        title: "Indonesia sees Q1 growth at or above 5.5 percent: minister",
+        teaser: "The government is still presenting a strong first-quarter growth picture despite a mixed global environment.",
         content:
-          "The Jakarta Post reported that the Tourism Ministry is pushing community-based tourism higher up its priority list. That signal matters in Bali because it suggests future tourism growth may be evaluated not just by arrival numbers, but also by how value is distributed locally and how regional access improves.\n\nFor business owners, the larger implication is that local collaboration, compliance, and community alignment may become more important strategic assets. Businesses that integrate well with local economies and deliver visible value beyond pure visitor volume may be better placed as policy and investor expectations evolve.",
-        source: "The Jakarta Post",
-        date: "April 13, 2026",
-        url: "https://www.thejakartapost.com/business/2026/04/16/ministry-seeks-to-bolster-community-based-tourism-as-priority-agenda.html"
+          "ANTARA reported that Indonesia expected first-quarter economic growth to land at or above 5.5 percent. That sets a useful context for BBC members because it suggests domestic spending and business confidence are holding up better than many investors feared at the start of the year.\n\nFor Bali, strong national growth can support occupancy, discretionary spending, and real estate absorption. It does not guarantee performance in every submarket, but it does keep the broader demand environment constructive.",
+        source: "ANTARA News",
+        date: "April 23, 2026",
+        url: "https://en.antaranews.com/business"
       },
       {
         id: "news-business-3",
         region: "Indonesia",
-        title: "Mideast route disruption may reduce foreign arrivals and tourism receipts",
-        teaser: "Flight disruption is becoming a planning variable that businesses with tourism exposure cannot ignore.",
+        title: "RI's green energy projects attractive for foreign investors: minister",
+        teaser: "Capital allocation is still looking for Indonesia opportunities, especially where long-term themes are clear.",
         content:
-          "According to The Jakarta Post, the Tourism Ministry warned that prolonged route disruption linked to the Middle East conflict could reduce foreign visitor numbers and tourism-linked earnings. For Bali operators, that is less about one headline and more about a reminder that exogenous shocks can alter arrival timing, booking patterns, and revenue expectations with very little notice.\n\nThis makes diversification increasingly important. Businesses exposed to inbound travel may need broader market mixes, more flexible pricing, stronger repeat-guest strategies, and better conversion from domestic or regional audiences when international conditions soften.",
-        source: "The Jakarta Post",
-        date: "April 2, 2026",
-        url: "https://www.thejakartapost.com/business/2026/04/02/ri-to-lose-60000-foreign-visitors-to-mideast-crisis-tourism-ministry.html"
+          "ANTARA reported that the government sees Indonesia's green energy projects as highly attractive to foreign investors. While this is not Bali-specific, it matters to BBC members because it signals continued external appetite for Indonesian projects that connect to long-term growth, sustainability, and infrastructure themes.\n\nFor founders, developers, and operators, this is also a reminder that international capital is still looking for well-structured narratives. The clearer the thesis and execution path, the easier it becomes to stand out.",
+        source: "ANTARA News",
+        date: "April 23, 2026",
+        url: "https://en.antaranews.com/business"
+      },
+      {
+        id: "news-business-4",
+        region: "Indonesia",
+        title: "Indonesia's investment grade remains secure: Deputy Finance Minister",
+        teaser: "The sovereign-risk conversation still matters for how foreign capital prices Indonesia and Bali opportunities.",
+        content:
+          "ANTARA reported that Indonesia's investment grade remains secure, according to the Deputy Finance Minister. For Bali-facing investors and operators, that matters because country risk perception influences debt costs, investor confidence, and how easily international capital keeps flowing into the market.\n\nThis is not a day-to-day operating story, but it is an important background signal. Stable sovereign credibility helps maintain confidence in longer-duration projects, especially in real estate and hospitality.",
+        source: "ANTARA News",
+        date: "April 23, 2026",
+        url: "https://en.antaranews.com/business"
+      },
+      {
+        id: "news-business-5",
+        region: "Indonesia",
+        title: "Indonesia optimistic about achieving Rp497 T investment in Q1 2026",
+        teaser: "The investment board is still signaling strong deployment momentum across the country.",
+        content:
+          "ANTARA reported that Indonesia remained optimistic about reaching Rp497 trillion in realized investment during the first quarter of 2026. The significance for BBC members is that capital formation is still moving, which tends to support business expansion, services demand, and project activity across sectors linked to Bali.\n\nFor investors and operators, strong national investment momentum is a useful confidence signal. It suggests that well-positioned projects can still attract attention even in a more selective environment.",
+        source: "ANTARA News",
+        date: "April 13, 2026",
+        url: "https://en.antaranews.com/business"
       }
     ]
   },
@@ -297,36 +319,58 @@ export const newsSections = [
     articles: [
       {
         id: "news-tourism-1",
-        region: "Bali",
-        title: "Tourism Ministry strengthens Bali accommodation governance",
-        teaser: "Compliance, licensing, and operating clarity are becoming more central to Bali's tourism environment.",
+        region: "Indonesia",
+        title: "Ministry, Jasaraharja Putera strengthen tourism risk governance",
+        teaser: "Risk management is becoming part of how the sector protects demand, credibility, and operational continuity.",
         content:
-          "ANTARA reported that the Tourism Ministry is working to strengthen Bali's accommodation governance through better coordination, communication, and regulatory clarity. This is meaningful for villa operators, hotel owners, managers, and service providers because enforcement and standards often shape the long-term attractiveness of a market just as much as raw demand does.\n\nA stronger governance environment can produce winners and losers. Businesses that are structured correctly and operate transparently may benefit from a more stable competitive field, while weaker or non-compliant operators may face increasing friction. For BBC members, this is a policy trend worth tracking because it affects operations, risk, and valuation quality.",
+          "ANTARA reported that the Tourism Ministry and Jasaraharja Putera were strengthening tourism risk governance. For Bali businesses, this matters because insurance, safety planning, and destination readiness are no longer side issues; they are increasingly part of the sector's operating standard.\n\nMembers should read this as a signal that better risk processes are becoming a competitive advantage. Operators that manage guest safety and continuity well are likely to be more resilient and more attractive to partners.",
+        source: "ANTARA News",
+        date: "April 22, 2026",
+        url: "https://en.antaranews.com"
+      },
+      {
+        id: "news-tourism-2",
+        region: "Indonesia",
+        title: "Gov't provides up-to-down fiscal incentives to sustain tourism",
+        teaser: "Travel affordability remains an active policy lever for keeping tourism demand resilient.",
+        content:
+          "ANTARA reported that the government was using fiscal incentives to help sustain tourism activity. For Bali-facing businesses, that matters because lower travel friction can support occupancy, restaurant traffic, retail spending, and overall visitor movement during softer periods.\n\nThe bigger signal is that tourism remains a strategic sector worth actively supporting. That gives operators a little more confidence when planning around demand volatility.",
+        source: "ANTARA News",
+        date: "April 17, 2026",
+        url: "https://en.antaranews.com/news/412684/govt-provides-up-to-down-fiscal-incentives-to-sustain-tourism"
+      },
+      {
+        id: "news-tourism-3",
+        region: "Indonesia",
+        title: "Indonesia shifts tourism focus to Asia and Oceania amid Middle East tensions",
+        teaser: "Source-market strategy is changing, which may alter traveler mix and booking patterns.",
+        content:
+          "ANTARA reported that Indonesia was refocusing tourism promotion toward Asia and Oceania as tensions in the Middle East disrupted longer-haul patterns. For Bali businesses, that shift matters because different source markets often bring different booking windows, spending profiles, and stay durations.\n\nThe practical takeaway is simple: members should keep watching not just total demand, but demand composition. The traveler mix can change business performance faster than the headline arrival number alone.",
+        source: "ANTARA News",
+        date: "April 17, 2026",
+        url: "https://en.antaranews.com/news/412669/homepage-v2.html"
+      },
+      {
+        id: "news-tourism-4",
+        region: "Bali",
+        title: "Tourism Ministry moves to bolster Bali's accommodation governance",
+        teaser: "Compliance, licensing, and standards are becoming more central to Bali's tourism environment.",
+        content:
+          "ANTARA reported that the Tourism Ministry was working to strengthen accommodation governance in Bali through better coordination and clearer regulatory discipline. For villa operators, hotel groups, and managers, this matters because operating quality and compliance increasingly shape long-term trust in the market.\n\nFor BBC members, the takeaway is that stronger governance can reward structured operators and create more friction for weak or non-compliant competition. That is worth tracking closely.",
         source: "ANTARA News",
         date: "April 11, 2026",
         url: "https://en.antaranews.com/amp/news/411959/tourism-ministry-moves-to-bolster-balis-accommodation-governance"
       },
       {
-        id: "news-tourism-2",
-        region: "Bali",
-        title: "Government pushes water taxi and pier development to support Bali tourism",
-        teaser: "Mobility and visitor flow remain long-term factors behind which Bali areas gain or lose momentum.",
-        content:
-          "ANTARA reported that the Transportation Ministry is supporting water taxi and pier development in Bali as part of a wider effort to improve connectivity and reduce congestion. Although infrastructure projects take time to shape real outcomes, they often influence both tourism convenience and how investors think about future location strength.\n\nFor market watchers, better connectivity can change where attention goes next. Areas that become easier to reach or integrate more smoothly into visitor itineraries often become more attractive not just to tourists, but also to operators, developers, and service businesses positioning for future demand.",
-        source: "ANTARA News",
-        date: "April 10, 2026",
-        url: "https://en.antaranews.com/news/411837/govt-pushes-water-taxi-pier-development-to-support-balis-tourism"
-      },
-      {
-        id: "news-tourism-3",
+        id: "news-tourism-5",
         region: "Indonesia",
-        title: "Fiscal support is being used to sustain tourism demand",
-        teaser: "Travel affordability remains a live policy lever for keeping visitor numbers resilient.",
+        title: "Indonesia focuses on wellness tourism to boost arrivals: Ministry",
+        teaser: "Higher-quality visitor segments remain part of the national tourism growth strategy.",
         content:
-          "ANTARA reported that Indonesia is using fiscal tools, including support around airfare-related costs, to help sustain tourism. This matters because the government is clearly treating travel affordability as something that can materially influence tourism demand.\n\nFor Bali-facing businesses, policy support does not remove volatility, but it does signal that demand-side resilience is a national concern. If affordability remains a policy priority, businesses may find more stability in visitor flow than they would in a fully hands-off environment, particularly during periods of broader travel cost pressure.",
+          "ANTARA reported that Indonesia was leaning further into wellness tourism as a way to increase arrivals, raise spending quality, and widen job creation. For Bali, that matters because the island already has strong product-market fit for wellness-led travel.\n\nFor founders and operators, this is a useful signal that premium and experience-led positioning may keep gaining relevance. Businesses aligned with longer-stay, wellness, and lifestyle demand could benefit.",
         source: "ANTARA News",
-        date: "April 17, 2026",
-        url: "https://en.antaranews.com/news/412684/govt-provides-up-to-down-fiscal-incentives-to-sustain-tourism"
+        date: "April 11, 2026",
+        url: "https://en.antaranews.com"
       }
     ]
   },
@@ -336,23 +380,58 @@ export const newsSections = [
     articles: [
       {
         id: "news-infrastructure-1",
-        title: "Government pushes water taxi and pier development to support Bali tourism",
-        teaser: "Transport connectivity is becoming a more visible part of Baliâ€™s long-term visitor experience and location logic.",
+        region: "Indonesia",
+        title: "Indonesia to spend Rp1,200 trillion on massive rail expansion to 2045",
+        teaser: "Long-run transport investment keeps signaling how seriously the country is treating connectivity capacity.",
         content:
-          "ANTARA reported that the Transportation Ministry is accelerating work on water taxi and pier development in Bali. While these projects take time to materialize, they matter because they can gradually reshape how visitors move across the island and how congestion-heavy corridors are perceived.\n\nFor investors, developers, and hospitality operators, connectivity has strategic value. Improved movement between air, land, and sea transport can shift where demand strengthens next, particularly in areas that become easier to reach or better integrated into tourist itineraries.",
-        source: "ANTARA News",
-        date: "April 10, 2026",
-        url: "https://en.antaranews.com/amp/news/411837/govt-pushes-water-taxi-pier-development-to-support-balis-tourism"
+          "Reuters reported that Indonesia planned a huge long-term rail expansion program through 2045. While this is national rather than Bali-specific, it matters because transport ambition shapes investor confidence in logistics, regional access, and long-horizon economic development.\n\nMembers should see this as another sign that connectivity remains central to Indonesia's growth agenda. Infrastructure scale often influences where future commercial value pools emerge.",
+        source: "Reuters",
+        date: "April 23, 2026",
+        url: "https://www.reuters.com/world/asia-pacific/indonesia-spend-rp1200-trillion-massive-rail-expansion-2045-2026-04-23/"
       },
       {
         id: "news-infrastructure-2",
-        title: "Ticket discounts help cushion Baliâ€™s tourism low season",
-        teaser: "Transport pricing support is feeding directly into retail optimism and travel resilience in Bali.",
+        region: "Indonesia",
+        title: "Indonesia's BRIN develops railway technologies to boost transport",
+        teaser: "Domestic technology capability is increasingly part of the infrastructure story, not just construction spend.",
         content:
-          "ANTARA reported that Bank Indonesiaâ€™s Bali office sees transportation ticket discounts as a meaningful buffer during Baliâ€™s low season. The signal here is bigger than airfare: mobility cost is a real lever for keeping travel demand active, especially in softer seasonal periods.\n\nFor business owners, that matters because lower friction on travel can support occupancy, footfall, and consumer spending in periods that would otherwise be more vulnerable. It is another reminder that tourism performance is tied not just to destination appeal, but also to how affordable and easy Bali is to access.",
+          "ANTARA reported that BRIN was developing railway technologies to support Indonesia's transport ambitions. That matters because infrastructure competitiveness is not only about budget size; it is also about technology, execution speed, and local capability.\n\nFor BBC members, this is another signal that infrastructure is becoming more sophisticated and system-led. Better delivery capacity can create stronger second-order effects across logistics, tourism, and real estate.",
         source: "ANTARA News",
-        date: "March 14, 2026",
-        url: "https://en.antaranews.com/news/408422/homepage-v2.html"
+        date: "April 23, 2026",
+        url: "https://en.antaranews.com"
+      },
+      {
+        id: "news-infrastructure-3",
+        region: "Indonesia",
+        title: "Indonesia plans national satellite consortium to cut foreign dependence",
+        teaser: "Digital infrastructure resilience is moving higher on the strategic agenda.",
+        content:
+          "Reuters reported that Indonesia planned a national satellite consortium to reduce foreign dependence. For members building tech, operations, hospitality systems, or data-heavy businesses, digital infrastructure resilience matters more than it used to.\n\nThe practical takeaway is that infrastructure is no longer only roads and ports. Connectivity, redundancy, and communications capacity increasingly matter for how businesses operate and scale.",
+        source: "Reuters",
+        date: "April 23, 2026",
+        url: "https://www.reuters.com/world/asia-pacific/indonesia-plans-national-satellite-consortium-cut-foreign-dependence-2026-04-23/"
+      },
+      {
+        id: "news-infrastructure-4",
+        region: "Indonesia",
+        title: "Govt outlines strategy to expand digital infrastructure",
+        teaser: "Digital build-out remains a live priority, and it affects how modern businesses reach customers and run operations.",
+        content:
+          "ANTARA reported that the government had outlined a strategy to widen Indonesia's digital infrastructure. For Bali founders and operators, that is relevant because better digital systems improve payments, marketing reach, data operations, and customer experience.\n\nThis is especially important for businesses serving mobile, international, or digitally native audiences. Better infrastructure can expand what is commercially possible.",
+        source: "ANTARA News",
+        date: "April 9, 2026",
+        url: "https://en.antaranews.com"
+      },
+      {
+        id: "news-infrastructure-5",
+        region: "Bali",
+        title: "Government pushes water taxi and pier development to support Bali tourism",
+        teaser: "Transport connectivity remains a long-term factor behind which Bali areas gain or lose momentum.",
+        content:
+          "ANTARA reported that the Transportation Ministry was pushing water taxi and pier development to support Bali tourism. For the island, better sea connectivity could gradually ease movement friction, improve itinerary flow, and influence which areas become more attractive over time.\n\nFor investors, developers, and hospitality operators, this is exactly the kind of infrastructure signal that can change future location logic well before every project is finished.",
+        source: "ANTARA News",
+        date: "April 10, 2026",
+        url: "https://en.antaranews.com/news/411837/govt-pushes-water-taxi-pier-development-to-support-balis-tourism"
       }
     ]
   },
@@ -362,36 +441,58 @@ export const newsSections = [
     articles: [
       {
         id: "news-policy-1",
-        region: "Indonesia",
-        title: "Indonesia shifts tourism focus to Asia and Oceania amid Middle East tensions",
-        teaser: "Source-market strategy is changing, which may alter the visitor mix many Bali businesses depend on.",
+        region: "Bali",
+        title: "US praises Indonesian Immigration for arrest of murder suspect in Bali",
+        teaser: "International cooperation and enforcement quality are staying visible in Bali's operating environment.",
         content:
-          "ANTARA reported that Indonesia is refocusing tourism promotion toward Asia and Oceania as geopolitical tensions disrupt longer-haul travel patterns. For Bali businesses, this could influence the composition of visitors more than total demand alone.\n\nA stronger emphasis on shorter-haul markets may change booking windows, price sensitivity, length of stay, and the kinds of products that perform best. Operators who understand changing traveler profiles will likely adapt faster than those relying on one familiar international audience.",
+          "ANTARA reported that the United States praised Indonesian Immigration after the arrest of a murder suspect in Bali. For BBC members, the significance is less about the individual case and more about the signal that cross-border enforcement capability is being watched closely.\n\nSecurity, compliance, and international cooperation all influence confidence in the Bali operating environment. That matters for tourism-facing businesses and internationally mobile communities alike.",
         source: "ANTARA News",
-        date: "April 17, 2026",
-        url: "https://en.antaranews.com/news/412669/homepage-v2.html"
+        date: "April 24, 2026",
+        url: "https://en.antaranews.com"
       },
       {
         id: "news-policy-2",
         region: "Bali",
-        title: "Bali tightens security after violent crimes linked to international groups",
-        teaser: "Security and compliance are increasingly part of the operational context for tourism-facing businesses.",
+        title: "Ngurah Rai Immigration detains 10 foreigners in enforcement operation",
+        teaser: "Oversight of foreigner compliance is staying active in Bali's main gateway market.",
         content:
-          "The Jakarta Post reported that Bali has tightened security measures after a series of violent crimes linked to international groups. Patrols have been increased in core tourism areas, and accommodation providers face stronger expectations around guest reporting and foreigner oversight.\n\nFor BBC members, this is a practical operating issue as much as a public-safety story. Compliance, reporting systems, and risk protocols are becoming more important for accommodation businesses and service operators, especially those dealing with international guests at scale.",
-        source: "The Jakarta Post",
-        date: "April 15, 2026",
-        url: "https://www.thejakartapost.com/indonesia/2026/04/15/bali-tightens-security-after-violent-crimes-linked-to-international-groups.html"
+          "ANTARA reported that Ngurah Rai Immigration detained 10 foreigners during an enforcement operation. For BBC members, this reinforces how visible compliance and immigration discipline remain in Bali.\n\nFor accommodation providers, agencies, and service operators, better reporting systems and cleaner documentation practices are becoming even more important to day-to-day operations.",
+        source: "ANTARA News",
+        date: "April 14, 2026",
+        url: "https://en.antaranews.com"
       },
       {
         id: "news-policy-3",
-        region: "Indonesia",
-        title: "New circular sets safety protocols for the 2026 Eid holiday season",
-        teaser: "Government is leaning into destination readiness, service standards, and safety discipline before major travel peaks.",
+        region: "Bali",
+        title: "Bali police foil cocaine smuggling attempt linked to int'l network",
+        teaser: "Policing and cross-border enforcement continue to shape the island's risk backdrop.",
         content:
-          "ANTARA reported that the Tourism Ministry has issued a new circular covering safety and service expectations for the 2026 Eid holiday period. The focus includes readiness, cleanliness, health, and environmental standards across tourism destinations.\n\nThe underlying signal is that destination management and risk readiness are staying high on the policy agenda. Businesses that can demonstrate strong operating standards are likely to be better positioned as public-sector expectations keep rising.",
+          "ANTARA reported that Bali police had foiled a cocaine smuggling attempt tied to an international network. For the business community, stories like this matter because they reinforce why monitoring, security, and compliance standards remain central to Bali's international reputation.\n\nThe broader implication is that risk management is not theoretical. It remains part of the operating context for businesses serving global guests and foreign residents.",
         source: "ANTARA News",
-        date: "March 15, 2026",
-        url: "https://en.antaranews.com/amp/news/408550/new-circular-sets-safety-protocols-for-2026-eid-holiday-season"
+        date: "April 14, 2026",
+        url: "https://en.antaranews.com"
+      },
+      {
+        id: "news-policy-4",
+        region: "Bali",
+        title: "Bali police foil ecstasy distribution attempt in South Kuta",
+        teaser: "Local enforcement remains active in key tourism corridors around the island.",
+        content:
+          "ANTARA reported that police had disrupted an ecstasy distribution attempt in South Kuta. For BBC members, the story underlines that high-traffic tourism zones remain under close operational scrutiny.\n\nThe policy signal is that safety, monitoring, and compliance pressure are unlikely to fade. Businesses with strong operating discipline will be better positioned when enforcement attention increases.",
+        source: "ANTARA News",
+        date: "April 15, 2026",
+        url: "https://en.antaranews.com"
+      },
+      {
+        id: "news-policy-5",
+        region: "Bali",
+        title: "Bali tightens security after violent crimes linked to international groups",
+        teaser: "Security and compliance are increasingly part of the operational context for tourism-facing businesses.",
+        content:
+          "The Jakarta Post reported that Bali had tightened security after violent crimes linked to international groups. Patrols increased in tourism zones and there were stronger expectations around reporting and oversight.\n\nFor BBC members, this is a practical operating issue as much as a public-safety story. Risk protocols, guest reporting, and internal controls are becoming more important for tourism-facing businesses.",
+        source: "The Jakarta Post",
+        date: "April 15, 2026",
+        url: "https://www.thejakartapost.com/indonesia/2026/04/15/bali-tightens-security-after-violent-crimes-linked-to-international-groups.html"
       }
     ]
   }
@@ -438,7 +539,7 @@ export const podcastFeed = [
   },
   {
     id: "LkiYTQ1k0ss",
-    title: "From marketing to brokering and development: Inside GEONETâ€™s Real Estate Machine",
+    title: "From marketing to brokering and development: Inside GEONETÃ¢â‚¬â„¢s Real Estate Machine",
     description: "An inside look at how marketing, brokerage, and development work together inside one Bali real estate platform.",
     published: "3 months ago",
     topic: "Property",
@@ -483,7 +584,7 @@ export const podcastFeed = [
   },
   {
     id: "yxJwNl3n3t4",
-    title: "The Kedungu Fundâ€™s $10M Milestone: A Look Ahead",
+    title: "The Kedungu FundÃ¢â‚¬â„¢s $10M Milestone: A Look Ahead",
     description: "A milestone review focused on fund growth, thesis validation, and the next phase.",
     published: "9 months ago",
     topic: "Investment",
@@ -912,7 +1013,7 @@ export const baliEvents = [
     id: "event-biamc-workshop",
     title: "Workshop Construction & Engineering Arbitration #1",
     category: "Business",
-    date: "April 24, 2026 · 10:00 AM",
+    date: "April 24, 2026 Â· 10:00 AM",
     location: "Jalan Cemara, Denpasar Selatan",
     description: "A full-day workshop focused on construction and engineering arbitration with BIAMC speakers and networking.",
     signupUrl: "https://www.eventbrite.com/e/workshop-construction-engineering-arbitration-1-tickets-1986393521495",
@@ -924,7 +1025,7 @@ export const baliEvents = [
     id: "event-awakened-dreamers",
     title: "Awakened Dreamers - Bohemian Blossom at The Jungle Club",
     category: "Music & Culture",
-    date: "April 25, 2026 · 5:00 PM",
+    date: "April 25, 2026 Â· 5:00 PM",
     location: "The Jungle Club, Ubud",
     description: "Season opening live set with Pippi Ciez and a Bali community crowd gathering at The Jungle Club.",
     signupUrl: "https://www.eventbrite.com/e/awakened-dreamers-bohemian-blossom-pippi-ciez-live-at-the-jungle-club-tickets-1985884964387?aff=erelexpmlt",
@@ -936,7 +1037,7 @@ export const baliEvents = [
     id: "event-fht-bali",
     title: "FHT Bali - Food, Hotel & Tourism Bali 2026",
     category: "Networking",
-    date: "April 28, 2026 · 8:30 AM",
+    date: "April 28, 2026 Â· 8:30 AM",
     location: "Bali Nusa Dua Convention Center",
     description: "A large-format hospitality and tourism exhibition bringing together suppliers, operators, and investors.",
     signupUrl: "https://allevents.in/nusa-dua/fht-bali-food-hotel-and-tourism-bali-2026/3700027815332305",
@@ -948,7 +1049,7 @@ export const baliEvents = [
     id: "event-festival-semarapura",
     title: "Festival Semarapura",
     category: "Music & Culture",
-    date: "April 28, 2026 · 6:00 PM",
+    date: "April 28, 2026 Â· 6:00 PM",
     location: "Klungkung, Bali",
     description: "A regional cultural festival with performances, local food, and community programming in Klungkung.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -960,7 +1061,7 @@ export const baliEvents = [
     id: "event-bali-spirit-festival",
     title: "BaliSpirit Festival 2026",
     category: "Wellness & Sport",
-    date: "May 6, 2026 · 9:00 AM",
+    date: "May 6, 2026 Â· 9:00 AM",
     location: "Ubud, Bali",
     description: "One of Bali's best-known wellness festivals, blending yoga, movement, music, and conscious community experiences.",
     signupUrl: "https://www.balispiritfestival.com/",
@@ -972,7 +1073,7 @@ export const baliEvents = [
     id: "event-btr-ultra",
     title: "BTR Ultra 2026",
     category: "Wellness & Sport",
-    date: "May 9, 2026 · 5:30 AM",
+    date: "May 9, 2026 Â· 5:30 AM",
     location: "Kintamani, Bali",
     description: "A mountain ultra-running weekend bringing endurance athletes to Bali's volcanic highlands.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -984,7 +1085,7 @@ export const baliEvents = [
     id: "event-ubud-food-festival",
     title: "Ubud Food Festival 2026",
     category: "Networking",
-    date: "May 29, 2026 · 10:00 AM",
+    date: "May 29, 2026 Â· 10:00 AM",
     location: "Ubud, Bali",
     description: "A culinary festival with chef talks, tastings, and hospitality networking across Ubud.",
     signupUrl: "https://www.ubudfoodfestival.com/",
@@ -996,7 +1097,7 @@ export const baliEvents = [
     id: "event-bbtf",
     title: "Bali & Beyond Travel Fair 2026",
     category: "Business",
-    date: "June 10, 2026 · 9:00 AM",
+    date: "June 10, 2026 Â· 9:00 AM",
     location: "Nusa Dua, Bali",
     description: "A travel trade event focused on tourism partnerships, regional marketing, and destination business.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1008,7 +1109,7 @@ export const baliEvents = [
     id: "event-pesta-kesenian-bali",
     title: "Pesta Kesenian Bali 2026",
     category: "Music & Culture",
-    date: "June 18, 2026 · 7:00 PM",
+    date: "June 18, 2026 Â· 7:00 PM",
     location: "Denpasar Art Centre",
     description: "Bali's landmark arts festival featuring performances, exhibitions, and island-wide cultural showcases.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1020,7 +1121,7 @@ export const baliEvents = [
     id: "event-gianyar-kite-festival",
     title: "Gianyar Kite Festival 2026",
     category: "Music & Culture",
-    date: "June 20, 2026 · 1:00 PM",
+    date: "June 20, 2026 Â· 1:00 PM",
     location: "Gianyar, Bali",
     description: "A classic dry-season Bali event celebrating giant traditional kites, crews, and community spirit.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1032,7 +1133,7 @@ export const baliEvents = [
     id: "event-balinale",
     title: "Balinale 2026",
     category: "Music & Culture",
-    date: "June 24, 2026 · 6:30 PM",
+    date: "June 24, 2026 Â· 6:30 PM",
     location: "Denpasar, Bali",
     description: "Bali's international film festival with screenings, filmmaker conversations, and creative-industry networking.",
     signupUrl: "https://www.balinale.com/",
@@ -1044,7 +1145,7 @@ export const baliEvents = [
     id: "event-bali-wellness-expo",
     title: "Bali Wellness and Beauty Expo 2026",
     category: "Business",
-    date: "June 26, 2026 · 10:00 AM",
+    date: "June 26, 2026 Â· 10:00 AM",
     location: "Denpasar, Bali",
     description: "A consumer and trade expo for wellness, beauty, and lifestyle brands operating in Bali.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1056,7 +1157,7 @@ export const baliEvents = [
     id: "event-ubud-open-studios",
     title: "Ubud Open Studios 2026",
     category: "Music & Culture",
-    date: "June 27, 2026 · 11:00 AM",
+    date: "June 27, 2026 Â· 11:00 AM",
     location: "Ubud, Bali",
     description: "A creative open-house program connecting artists, studios, collectors, and culture-minded visitors.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1068,7 +1169,7 @@ export const baliEvents = [
     id: "event-tenganan-festival",
     title: "Tenganan Pegringsingan Festival 2026",
     category: "Music & Culture",
-    date: "June 27, 2026 · 9:30 AM",
+    date: "June 27, 2026 Â· 9:30 AM",
     location: "Tenganan Village, Karangasem",
     description: "A village festival spotlighting Bali Aga traditions, weaving heritage, and ritual performances.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1080,7 +1181,7 @@ export const baliEvents = [
     id: "event-bali-international-choir",
     title: "Bali International Choir Festival 2026",
     category: "Music & Culture",
-    date: "July 27, 2026 · 5:00 PM",
+    date: "July 27, 2026 Â· 5:00 PM",
     location: "Denpasar, Bali",
     description: "An international choir gathering with performances, workshops, and collaborative cultural programming.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1092,7 +1193,7 @@ export const baliEvents = [
     id: "event-semarak-pandawa",
     title: "Semarak Pandawa Festival 2026",
     category: "Music & Culture",
-    date: "July 30, 2026 · 4:00 PM",
+    date: "July 30, 2026 Â· 4:00 PM",
     location: "Pandawa Beach, Bali",
     description: "A beachfront festival centered on live performances, destination promotion, and local community showcases.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1104,7 +1205,7 @@ export const baliEvents = [
     id: "event-ubud-village-jazz",
     title: "Ubud Village Jazz Festival 2026",
     category: "Music & Culture",
-    date: "August 1, 2026 · 6:00 PM",
+    date: "August 1, 2026 Â· 6:00 PM",
     location: "Ubud, Bali",
     description: "An annual jazz event that blends high-quality live music with the intimate Ubud arts atmosphere.",
     signupUrl: "https://www.ubudvillagejazzfestival.com/",
@@ -1116,7 +1217,7 @@ export const baliEvents = [
     id: "event-buleleng-festival",
     title: "Buleleng Festival 2026",
     category: "Music & Culture",
-    date: "August 18, 2026 · 5:30 PM",
+    date: "August 18, 2026 Â· 5:30 PM",
     location: "Singaraja, North Bali",
     description: "A regional showcase for arts, culture, and local enterprise in North Bali.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1128,7 +1229,7 @@ export const baliEvents = [
     id: "event-tanah-lot-art-food",
     title: "Tanah Lot Art and Food Festival 2026",
     category: "Music & Culture",
-    date: "August 26, 2026 · 4:00 PM",
+    date: "August 26, 2026 Â· 4:00 PM",
     location: "Tanah Lot, Tabanan",
     description: "A destination festival combining culinary stalls, local creators, and performances around Tanah Lot.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1140,7 +1241,7 @@ export const baliEvents = [
     id: "event-karangasem-festival",
     title: "Karangasem Festival 2026",
     category: "Music & Culture",
-    date: "August 27, 2026 · 6:00 PM",
+    date: "August 27, 2026 Â· 6:00 PM",
     location: "Karangasem, Bali",
     description: "A broad regional festival highlighting Karangasem's culture, music, and creative community.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1152,7 +1253,7 @@ export const baliEvents = [
     id: "event-maybank-marathon",
     title: "Maybank Marathon Bali 2026",
     category: "Wellness & Sport",
-    date: "August 30, 2026 · 5:15 AM",
+    date: "August 30, 2026 Â· 5:15 AM",
     location: "Gianyar, Bali",
     description: "Bali's marquee road-running event, attracting local and international runners across multiple distances.",
     signupUrl: "https://maybankmarathon.com/",
@@ -1164,7 +1265,7 @@ export const baliEvents = [
     id: "event-mekotek-festival",
     title: "Mekotek Festival 2026",
     category: "Music & Culture",
-    date: "September 12, 2026 · 10:00 AM",
+    date: "September 12, 2026 Â· 10:00 AM",
     location: "Munggu, Mengwi",
     description: "A powerful ritual tradition in Bali featuring dramatic community processions and ceremonial bamboo poles.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1176,7 +1277,7 @@ export const baliEvents = [
     id: "event-penglipuran-festival",
     title: "Penglipuran Village Festival 2026",
     category: "Music & Culture",
-    date: "September 18, 2026 · 9:00 AM",
+    date: "September 18, 2026 Â· 9:00 AM",
     location: "Penglipuran Village, Bangli",
     description: "A village-led festival focused on sustainability, traditional architecture, and local cultural life.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1188,7 +1289,7 @@ export const baliEvents = [
     id: "event-lovina-festival",
     title: "Lovina Festival 2026",
     category: "Music & Culture",
-    date: "October 23, 2026 · 5:00 PM",
+    date: "October 23, 2026 Â· 5:00 PM",
     location: "Lovina, North Bali",
     description: "A coastal North Bali festival that blends local culture, performances, and tourism activation.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1200,7 +1301,7 @@ export const baliEvents = [
     id: "event-festival-bali-jani",
     title: "Festival Bali Jani 2026",
     category: "Music & Culture",
-    date: "October 24, 2026 · 7:00 PM",
+    date: "October 24, 2026 Â· 7:00 PM",
     location: "Denpasar, Bali",
     description: "A contemporary arts program dedicated to modern Balinese creativity across disciplines and venues.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1212,7 +1313,7 @@ export const baliEvents = [
     id: "event-jatiluwih-festival",
     title: "Jatiluwih Festival 2026",
     category: "Music & Culture",
-    date: "October 31, 2026 · 10:00 AM",
+    date: "October 31, 2026 Â· 10:00 AM",
     location: "Jatiluwih, Tabanan",
     description: "A destination festival set around Bali's iconic rice terraces with culture, food, and local experiences.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
@@ -1224,7 +1325,7 @@ export const baliEvents = [
     id: "event-denpasar-festival",
     title: "Denpasar Festival 2026",
     category: "Music & Culture",
-    date: "December 22, 2026 · 6:00 PM",
+    date: "December 22, 2026 Â· 6:00 PM",
     location: "Denpasar, Bali",
     description: "An end-of-year city festival highlighting food, art, performances, and the creative pulse of Denpasar.",
     signupUrl: "https://bali.live/p/the-bali-authorities-released-the-calendar-of-events-for-2026",
